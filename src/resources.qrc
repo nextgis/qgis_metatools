@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/metatools" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
