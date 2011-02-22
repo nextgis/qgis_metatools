@@ -27,8 +27,11 @@ from qgis.core import *
 # Initialize Qt resources from file resources.py
 import resources
 
-# Import the code for the dialog
+# Import the code for the dialogs
 from metatoolsdialog import MetatoolsDialog
+from metatoolsviewer import MetatoolsViewer
+from metatoolseditor import MetatoolsEditor
+
 
 class MetatoolsPlugin:
 
@@ -68,18 +71,18 @@ class MetatoolsPlugin:
 
 
     def initGui(self):
-        # Create editAction that will start plugin configuration
-        self.editAction = QAction(QIcon(":/icon.png"), QCoreApplication.translate("Metatools", "Edit metadata"), self.iface.mainWindow())
+        # Create editAction that will start editor window
+        self.editAction = QAction(QIcon(":/plugins/metatools/icon.png"), QCoreApplication.translate("Metatools", "Edit metadata"), self.iface.mainWindow())
         # connect the editAction to the doEdit method
         QObject.connect(self.editAction, SIGNAL("triggered()"), self.doEdit)
 
-        # Create viewAction that will start plugin configuration
-        self.viewAction = QAction(QIcon(":/python/plugins/Metatools/icon.png"), QCoreApplication.translate("Metatools", "View metadata"), self.iface.mainWindow())
+        # Create viewAction that will start viewer window
+        self.viewAction = QAction(QIcon(":/plugins/metatools/icon.png"), QCoreApplication.translate("Metatools", "View metadata"), self.iface.mainWindow())
         # connect the viewAction to the doView method
         QObject.connect(self.viewAction, SIGNAL("triggered()"), self.doView)
 
         # Create configAction that will start plugin configuration
-        self.configAction = QAction(QIcon(":/icon.png"), QCoreApplication.translate("Metatools", "Configure metadata plugin"), self.iface.mainWindow())
+        self.configAction = QAction(QIcon(":/plugins/metatools/icon.png"), QCoreApplication.translate("Metatools", "Configure metadata plugin"), self.iface.mainWindow())
         # connect the configAction to the doConfigure method
         QObject.connect(self.configAction, SIGNAL("triggered()"), self.doConfigure)
 
@@ -108,7 +111,7 @@ class MetatoolsPlugin:
     # run method that performs all the real work
     def doEdit(self):
         # create and show the dialog
-        dlg = MetatoolsDialog()
+        dlg = MetatoolsEditor()
         # show the dialog
         dlg.show()
         result = dlg.exec_()
@@ -121,8 +124,9 @@ class MetatoolsPlugin:
     # run method that performs all the real work
     def doView(self):
         # create and show the dialog
-        dlg = MetatoolsDialog()
+        dlg = MetatoolsViewer()
         # show the dialog
+        dlg.setContent(self.iface.activeLayer())
         dlg.show()
         result = dlg.exec_()
         # See if OK was pressed
