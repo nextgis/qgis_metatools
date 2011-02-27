@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 """
 /***************************************************************************
- MetatoolsDialog
+ Metatools Viewer
                                  A QGIS plugin
  Metadata browser/editor
                              -------------------
@@ -19,40 +20,44 @@
  ***************************************************************************/
 """
 
-from PyQt4 import QtCore, QtGui, QtXml
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtXml import *
 from PyQt4.QtXmlPatterns  import *
+
+from qgis.core import *
 from ui_viewer import Ui_MetatoolsViewer
 
 
+#debug
 class Handler(QAbstractMessageHandler):
     def handleMessage(self, msg_type, desc, identifier, loc):
-        QtGui.QMessageBox.information(QtGui.QWidget(), 'Error', desc + " " + identifier.toString() + " " + QtCore.QString(str(loc.line())))
+        QMessageBox.information(QWidget(), 'Error', desc + " " + identifier.toString() + " " + QString(str(loc.line())))
 
 
 # create the dialog for zoom to point
-class MetatoolsViewer(QtGui.QDialog):
+class MetatoolsViewer(QDialog):
     def __init__(self):
-        QtGui.QDialog.__init__(self)
+        QDialog.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_MetatoolsViewer()
         self.ui.setupUi(self)
 
-    def setContent(self, layer):
+    def setContent(self, metaFilePath, xsltFilePath):
         #----test!
+        xsltFile = QFile(xsltFilePath)
+        srcFile = QFile(metaFilePath)
 
-        #need check DS type and RasterLayer
-        #originalFile = layer.source()
+        xsltFile.open(QIODevice.ReadOnly)
+        srcFile.open(QIODevice.ReadOnly)
 
-        xsltFile = QtCore.QFile('C:\Temp\Metadata\exCat\\xsl\metadata-iso19139.xsl')   #  \isoXML2HTML.xslt')
-        srcFile = QtCore.QFile('C:\Temp\Metadata\ORD_421119_20110202_20110202_SPOT-_V01_1\Metadata\ISOMetadata\DN_L1A\S5-_HRG_A--_CAM2_0143_00_0407_00_110127_075405_L1A-_ORBIT-.xml')
-
-        xsltFile.open(QtCore.QIODevice.ReadOnly)
-        srcFile.open(QtCore.QIODevice.ReadOnly)
-
-        xslt = QtCore.QString(xsltFile.readAll())
-        src = QtCore.QString(srcFile.readAll())
+        xslt = QString(xsltFile.readAll())
+        src = QString(srcFile.readAll())
+        
+        xsltFile.close()
+        srcFile.close()
+        
         qry = QXmlQuery(QXmlQuery.XSLT20)
-
 
         self.handler = Handler();
         qry.setMessageHandler(self.handler)
@@ -60,25 +65,23 @@ class MetatoolsViewer(QtGui.QDialog):
         qry.setFocus(src)
         qry.setQuery(xslt)
 
-
         #if qry.isValid():
-        #    QtGui.QMessageBox.information(self, 'Valid', "Valid!")
+        #    QMessageBox.information(self, 'Valid', "Valid!")
         #else:
-        #    QtGui.QMessageBox.information(self, 'Valid', "Invalid!")
+        #    QMessageBox.information(self, 'Valid', "Invalid!")
 
-        result = QtCore.QString()
+        result = QString()
         qry.setMessageHandler(self.handler)
         #success = qry.evaluateTo(result)
 
         #if success:
-        #    QtGui.QMessageBox.information(self, 'success', "success!")
+        #    QMessageBox.information(self, 'success', "success!")
         #else:
-        #    QtGui.QMessageBox.information(self, 'success', "Unsuccess!")
+        #    QMessageBox.information(self, 'success', "Unsuccess!")
         result = qry.evaluateToString()
         if result:
             self.ui.webView.setHtml(result)
 
-        #self.ui.webView.setUrl(QtCore.QUrl('c:\Temp\Metadata\mos.xml'))
         #----end test!
 
 
