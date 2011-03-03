@@ -19,12 +19,34 @@
  ***************************************************************************/
 """
 
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore, QtGui, QtXml
+from dom_model import DomModel
 from ui_editor import Ui_MetatoolsEditor
-# create the dialog for zoom to point
+
+
 class MetatoolsEditor(QtGui.QDialog):
     def __init__(self):
         QtGui.QDialog.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_MetatoolsEditor()
         self.ui.setupUi(self)
+        #events
+        self.connect(self.ui.treeView,QtCore.SIGNAL("clicked(QModelIndex)"),self.item_select)
+    
+    def setContent(self, metaFilePath ):
+        self.file = QtCore.QFile(metaFilePath)
+        self.metaXML = QtXml.QDomDocument()
+        self.metaXML.setContent(self.file)
+                
+        self.model = DomModel(self.metaXML, self)
+        self.ui.treeView.setModel(self.model)
+        
+    def item_select(self, mindex):
+        '''Item selected in TreeView will be displayed in edit box.'''
+        self.text = QtCore.QVariant()
+        self.mindex = mindex
+        self.text = self.model.data(self.mindex,0)
+        self.ui.textEdit.clear()
+        #TODO: use the type detection to turn on things like date picker self.text.Type()
+        self.ui.textEdit.insertPlainText(str(self.text.toString().toAscii()))
+        #self.buttonBox.button(QDialogButtonBox.Apply).setDisabled(False)

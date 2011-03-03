@@ -113,18 +113,58 @@ class MetatoolsPlugin:
         self.iface.removePluginMenu("&Metatools", self.configAction)
         del self.toolBar
 
-    # run method that performs all the real work
+    # Edit metadata
     def doEdit(self):
-        # create and show the dialog
+        # shortcuts
+        translatedMetatools=QCoreApplication.translate("Metatools", "Metatools")
+        mainWindow=self.iface.mainWindow()
+        
+        # get active layer
+        layer=self.iface.activeLayer()
+        if not layer:
+            QMessageBox.information(mainWindow, translatedMetatools, 'Choose any map layer')
+            return
+        
+        # check layer type
+        if layer.type()==QgsMapLayer.RasterLayer:
+            pass
+        else:
+            if layer.type()==QgsMapLayer.VectorLayer:
+                QMessageBox.warning(mainWindow,translatedMetatools, QCoreApplication.translate("Metatools", "Vector layers are not supported yet!"))
+            else:
+                QMessageBox.critical(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Unsupported layer type!"))
+            return
+        
+        #TODO: check layer DS type (local, DB, service)
+        
+        # get metafile path 
+        metaFilePath=utils.getMetafilePath(layer)
+        
+        # check metadata file exists
+        #TODO: create suggestion
+        if not path.exists(metaFilePath):
+            QMessageBox.warning(mainWindow, translatedMetatools, "The layer does not have metadata!")
+            return
+        
+        # check matadata standard
+        standard=MetaInfoStandard.tryDetermineStandard(metaFilePath)
+        if standard != MetaInfoStandard.ISO19138:
+            QMessageBox.critical(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19139 support now! "))
+            return
+        
+        #------------ create and show the dialog
+        #TODO: need singleton!        
         dlg = MetatoolsEditor()
-        # show the dialog
+        dlg.setContent(metaFilePath)
         dlg.show()
         result = dlg.exec_()
-        # See if OK was pressed
-        if result == 1:
-            # do something useful (delete the line containing pass and
-            # substitute with your code
-            pass
+
+
+
+        
+    #### NEED REMOVE COMMON CODE!      
+       
+        
 
     # View metadata
     def doView(self):

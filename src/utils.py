@@ -19,9 +19,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-from qgis.core import *
 from os import path
-from PyQt4 import QtGui
 
 META_EXT='.xml'
 
