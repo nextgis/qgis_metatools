@@ -55,11 +55,9 @@ class DomItem:
         return self.rowNumber
 
 class DomModel(QtCore.QAbstractItemModel):
-    def __init__(self, document, parent = None):
+    def __init__(self, document, parent=None):
         QtCore.QAbstractItemModel.__init__(self, parent)
-
         self.domDocument = document
-
         self.rootItem = DomItem(self.domDocument, 0)
 
     def columnCount(self, parent):
@@ -80,7 +78,7 @@ class DomModel(QtCore.QAbstractItemModel):
 
         if index.column() == 0:
             return QtCore.QVariant(node.nodeName())
-        
+
         elif index.column() == 1:
             for i in range(0, attributeMap.count()):
                 attribute = attributeMap.item(i)
@@ -92,7 +90,7 @@ class DomModel(QtCore.QAbstractItemModel):
             return QtCore.QVariant(node.nodeValue().split("\n").join(" "))
         else:
             return QtCore.QVariant()
-        
+
     def setData(self, index, value, role=QtCore.Qt.EditRole):
         # Call base class method
         #return_value = QtCore.QAbstractItemModel.setData(self, index, value, role) 
@@ -106,13 +104,13 @@ class DomModel(QtCore.QAbstractItemModel):
             self.emit(QtCore.SIGNAL('dataChanged(const QModelIndex &,const QModelIndex &)'), index, index)
             return node
         return False
-        
+
     def flags(self, index):
         if not index.isValid():
             return QtCore.Qt.ItemIsEnabled
 
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable #| QtCore.Qt.ItemIsEditable
-    
+
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             if section == 0:
@@ -163,4 +161,3 @@ class DomModel(QtCore.QAbstractItemModel):
             parentItem = parent.internalPointer()
 
         return parentItem.node().childNodes().count()
-        

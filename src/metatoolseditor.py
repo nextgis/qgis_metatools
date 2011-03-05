@@ -31,22 +31,26 @@ class MetatoolsEditor(QtGui.QDialog):
         self.ui = Ui_MetatoolsEditor()
         self.ui.setupUi(self)
         #events
-        self.connect(self.ui.treeView,QtCore.SIGNAL("clicked(QModelIndex)"),self.item_select)
-    
-    def setContent(self, metaFilePath ):
+        self.connect(self.ui.treeView, QtCore.SIGNAL("clicked(QModelIndex)"), self.item_select)
+
+    def setContent(self, metaFilePath):
         self.file = QtCore.QFile(metaFilePath)
         self.metaXML = QtXml.QDomDocument()
         self.metaXML.setContent(self.file)
-                
+
         self.model = DomModel(self.metaXML, self)
         self.ui.treeView.setModel(self.model)
-        
+        self.ui.treeView.hideColumn(1) #hide attrs
+        self.ui.treeView.resizeColumnToContents(0) #aresize value column
+
     def item_select(self, mindex):
         '''Item selected in TreeView will be displayed in edit box.'''
         self.text = QtCore.QVariant()
-        self.mindex = mindex
-        self.text = self.model.data(self.mindex,0)
+        self.mindex = self.model.index(mindex.row(), 2, mindex.parent())
+
+        self.text = self.model.data(self.mindex, 0)
         self.ui.textEdit.clear()
+
         #TODO: use the type detection to turn on things like date picker self.text.Type()
-        self.ui.textEdit.insertPlainText(str(self.text.toString().toAscii()))
+        self.ui.textEdit.insertPlainText(self.text.toString())
         #self.buttonBox.button(QDialogButtonBox.Apply).setDisabled(False)
