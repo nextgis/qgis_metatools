@@ -25,6 +25,13 @@ import sys
 from PyQt4 import QtCore, QtGui, QtXml
 
 
+
+def getPath(node):
+    path = ''
+    if not node.parentNode().isNull():
+        path = getPath(node.parentNode())
+    return path + "->" + node.nodeName()
+
 class DomItem:
     def __init__(self, node, row, parent=None):
         self.domNode = node
@@ -32,6 +39,11 @@ class DomItem:
         self.rowNumber = row
         self.parentItem = parent
         self.childItems = {}
+
+        self.editable = False
+        if self.domNode.nodeType() == QtXml.QDomNode.ElementNode:
+            self.editable = (self.domNode.childNodes().count() == 1 and self.domNode.childNodes().at(0).nodeType() == QtXml.QDomNode.TextNode) or (not self.domNode.hasChildNodes())
+
 
     def node(self):
         return self.domNode
@@ -54,6 +66,40 @@ class DomItem:
     def row(self):
         return self.rowNumber
 
+
+    #-------additional 
+
+    #editable flag. Need to remove #text nodes and organize editable control
+    def isEditable(self):
+        return self.editable
+
+    #child counts. Need to remove #text nodes
+    def childCount(self):
+        if self.editable:
+            return 0
+        else:
+            return self.domNode.childNodes().count()
+
+    #item value. Need to remove #text nodes
+    def itemValue(self):
+        if self.editable:
+            return self.domNode.childNodes().at(0).nodeValue()
+        else:
+            return self.domNode.nodeValue()
+
+    #set item value. Need to remove #text nodes
+    def setItemValue(self, value):
+        if self.editable:
+            #node.setNodeValue(str(value.toString().toUtf8()))
+            #node.setNodeValue(str(value.toString()))
+            self.domNode.setNodeValue(str(value))
+
+    def getNodePath(self):
+        return getPath(self.domNode)
+
+
+
+
 class DomModel(QtCore.QAbstractItemModel):
     def __init__(self, document, parent=None):
         QtCore.QAbstractItemModel.__init__(self, parent)
@@ -62,6 +108,25 @@ class DomModel(QtCore.QAbstractItemModel):
 
     def columnCount(self, parent):
         return 3
+
+    #get editable flag by index
+    def isEditable(self, index):
+        if not index.isValid():
+            return QtCore.QVariant()
+
+        item = index.internalPointer()
+
+        return item.isEditable()
+
+    def nodePath(self, index):
+        if not index.isValid():
+            return QtCore.QVariant()
+
+        item = index.internalPointer()
+
+        return item.getNodePath()
+
+
 
     def data(self, index, role):
         if not index.isValid():
@@ -87,7 +152,9 @@ class DomModel(QtCore.QAbstractItemModel):
 
             return QtCore.QVariant(attributes.join(" "))
         elif index.column() == 2:
-            return QtCore.QVariant(node.nodeValue().split("\n").join(" "))
+            #return QtCore.QVariant(node.nodeValue().split("\n").join(" "))
+            return QtCore.QVariant(item.itemValue().split("\n").join(" "))
+
         else:
             return QtCore.QVariant()
 
@@ -98,9 +165,7 @@ class DomModel(QtCore.QAbstractItemModel):
         if index.isValid():
             item = index.internalPointer()
             node = item.node()
-            #node.setNodeValue(str(value.toString().toUtf8()))
-            #node.setNodeValue(str(value.toString()))
-            node.setNodeValue(str(value))
+            item.setItemValue(value)
             self.emit(QtCore.SIGNAL('dataChanged(const QModelIndex &,const QModelIndex &)'), index, index)
             return node
         return False
@@ -109,7 +174,8 @@ class DomModel(QtCore.QAbstractItemModel):
         if not index.isValid():
             return QtCore.Qt.ItemIsEnabled
 
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable #| QtCore.Qt.ItemIsEditable
+        item = index.internalPointer()
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
@@ -160,4 +226,4 @@ class DomModel(QtCore.QAbstractItemModel):
         else:
             parentItem = parent.internalPointer()
 
-        return parentItem.node().childNodes().count()
+        return parentItem.childCount()

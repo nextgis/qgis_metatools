@@ -30,8 +30,12 @@ class MetatoolsEditor(QtGui.QDialog):
         # Set up the user interface from Designer.
         self.ui = Ui_MetatoolsEditor()
         self.ui.setupUi(self)
+
         #events
         self.connect(self.ui.treeView, QtCore.SIGNAL("clicked(QModelIndex)"), self.item_select)
+        self.connect(self.ui.treeView, QtCore.SIGNAL("collapsed(QModelIndex)"), self.collapsedExpanded)
+        self.connect(self.ui.treeView, QtCore.SIGNAL("expanded(QModelIndex)"), self.collapsedExpanded)
+        #self.connect(, QtCore.SIGNAL("clicked(QModelIndex)"), self.item_select)
 
     def setContent(self, metaFilePath):
         self.file = QtCore.QFile(metaFilePath)
@@ -41,16 +45,24 @@ class MetatoolsEditor(QtGui.QDialog):
         self.model = DomModel(self.metaXML, self)
         self.ui.treeView.setModel(self.model)
         self.ui.treeView.hideColumn(1) #hide attrs
-        self.ui.treeView.resizeColumnToContents(0) #aresize value column
+        self.ui.treeView.resizeColumnToContents(0) #resize value column
 
     def item_select(self, mindex):
         '''Item selected in TreeView will be displayed in edit box.'''
         self.text = QtCore.QVariant()
         self.mindex = self.model.index(mindex.row(), 2, mindex.parent())
 
-        self.text = self.model.data(self.mindex, 0)
         self.ui.textEdit.clear()
+        self.ui.editorGroupBox.setTitle(self.model.nodePath(self.mindex))
 
-        #TODO: use the type detection to turn on things like date picker self.text.Type()
-        self.ui.textEdit.insertPlainText(self.text.toString())
-        #self.buttonBox.button(QDialogButtonBox.Apply).setDisabled(False)
+        if(self.model.isEditable(self.mindex)):
+            self.text = self.model.data(self.mindex, 0)
+            self.ui.textEdit.insertPlainText(self.text.toString())
+            self.ui.editorGroupBox.setEnabled(True)
+            self.ui.valueButtonBox.setEnabled(False) #disable buttons
+        else:
+            self.ui.editorGroupBox.setEnabled(False)
+
+
+    def collapsedExpanded(self, mindex):
+        self.ui.treeView.resizeColumnToContents(0)
