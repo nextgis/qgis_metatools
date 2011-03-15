@@ -20,14 +20,15 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
  *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   *
  *                                                                         *
- ***************************************************************************/	 
+ ***************************************************************************/
+ <xsl:output method="html" encoding="ISO-8859-1"/>	 
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
          xmlns:gco="http://www.isotc211.org/2005/gco"
          xmlns:gmd="http://www.isotc211.org/2005/gmd"
          >
-<xsl:output method="html" encoding="ISO-8859-1"/>
+<xsl:output method="html" encoding="UTF-8"/>
 
 <xsl:template name="tablerow" >
     <xsl:param name="cname"/>
@@ -50,13 +51,12 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
   </xsl:template>
   
 <xsl:template match="gmd:MD_Metadata">
-    <!-- First the Identification block -->
-  <xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification"/>
-  <xsl:apply-templates select="./gmd:distributionInfo/gmd:MD_Distribution"/> 
-
+   
 <!-- Metadata block -->
+ 
  <html>
    <head>
+   	 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   	 <style type="text/css">
  	.captioneddiv { margin: 2em 0em 0em 0em;
     				padding: 1em;
@@ -106,9 +106,14 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
       <xsl:with-param name="cvalue" select="./gmd:metadataStandardVersion/gco:CharacterString"/>
       </xsl:call-template>
 </table>
+ 
 
   <xsl:apply-templates select="./gmd:contact"/>
-</div>
+</div> 
+
+<!-- First the Identification block -->
+  <xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification"/>
+  <xsl:apply-templates select="./gmd:distributionInfo/gmd:MD_Distribution"/> 
    </body>
  </html>
 </xsl:template>
@@ -283,7 +288,6 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
 
 
   <!-- 'Identification->Geographic box' block -->
-
   <xsl:template match="gmd:extent">
     <xsl:if test="./gmd:EX_Extent/gmd:geographicElement">
       <div class="captioneddiv">

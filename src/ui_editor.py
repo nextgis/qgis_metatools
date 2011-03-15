@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_editor.ui'
 #
-# Created: Mon Mar 14 22:50:37 2011
+# Created: Tue Mar 15 16:06:47 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -33,9 +33,14 @@ class Ui_MetatoolsEditor(object):
         self.editorGroupBox.setObjectName(_fromUtf8("editorGroupBox"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.editorGroupBox)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.textEdit = QtGui.QTextEdit(self.editorGroupBox)
-        self.textEdit.setObjectName(_fromUtf8("textEdit"))
-        self.verticalLayout_2.addWidget(self.textEdit)
+        self.nodePathLabel = QtGui.QLabel(self.editorGroupBox)
+        self.nodePathLabel.setText(_fromUtf8(""))
+        self.nodePathLabel.setWordWrap(True)
+        self.nodePathLabel.setObjectName(_fromUtf8("nodePathLabel"))
+        self.verticalLayout_2.addWidget(self.nodePathLabel)
+        self.valueTextEdit = QtGui.QTextEdit(self.editorGroupBox)
+        self.valueTextEdit.setObjectName(_fromUtf8("valueTextEdit"))
+        self.verticalLayout_2.addWidget(self.valueTextEdit)
         self.valueButtonBox = QtGui.QDialogButtonBox(self.editorGroupBox)
         self.valueButtonBox.setStandardButtons(QtGui.QDialogButtonBox.Apply|QtGui.QDialogButtonBox.Discard)
         self.valueButtonBox.setObjectName(_fromUtf8("valueButtonBox"))
@@ -48,8 +53,6 @@ class Ui_MetatoolsEditor(object):
         self.verticalLayout.addWidget(self.mainButtonBox)
 
         self.retranslateUi(MetatoolsEditor)
-        QtCore.QObject.connect(self.mainButtonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), MetatoolsEditor.accept)
-        QtCore.QObject.connect(self.mainButtonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), MetatoolsEditor.reject)
         QtCore.QMetaObject.connectSlotsByName(MetatoolsEditor)
 
     def retranslateUi(self, MetatoolsEditor):

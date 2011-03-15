@@ -44,7 +44,6 @@ class MetatoolsViewer(QDialog):
         self.ui.setupUi(self)
 
     def setContent(self, metaFilePath, xsltFilePath):
-        #----test!
         xsltFile = QFile(xsltFilePath)
         srcFile = QFile(metaFilePath)
 
@@ -53,10 +52,10 @@ class MetatoolsViewer(QDialog):
 
         xslt = QString(xsltFile.readAll())
         src = QString(srcFile.readAll())
-        
+
         xsltFile.close()
         srcFile.close()
-        
+
         qry = QXmlQuery(QXmlQuery.XSLT20)
 
         self.handler = Handler();
@@ -80,8 +79,4 @@ class MetatoolsViewer(QDialog):
         #    QMessageBox.information(self, 'success', "Unsuccess!")
         result = qry.evaluateToString()
         if result:
-            self.ui.webView.setHtml(result)
-
-        #----end test!
-
-
+            self.ui.webView.setHtml(QString.fromUtf8(result))

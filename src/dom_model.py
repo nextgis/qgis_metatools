@@ -28,9 +28,9 @@ from PyQt4 import QtCore, QtGui, QtXml
 
 def getPath(node):
     path = ''
-    if not node.parentNode().isNull():
-        path = getPath(node.parentNode())
-    return path + "->" + node.nodeName()
+    if not node.parentNode().isNull() and node.parentNode().nodeType() != QtXml.QDomNode.DocumentNode:
+        path = getPath(node.parentNode()) + " -> "
+    return path + node.nodeName()
 
 class DomItem:
     def __init__(self, node, row, parent=None):
@@ -90,9 +90,14 @@ class DomItem:
     #set item value. Need to remove #text nodes
     def setItemValue(self, value):
         if self.editable:
-            #node.setNodeValue(str(value.toString().toUtf8()))
-            #node.setNodeValue(str(value.toString()))
-            self.domNode.setNodeValue(str(value))
+            if not self.domNode.hasChildNodes():
+                #create text node
+                textNode = self.domNode.ownerDocument().createTextNode(value)
+                self.domNode.appendChild(textNode)
+            else:
+                self.domNode.childNodes().at(0).setNodeValue(value)
+
+
 
     def getNodePath(self):
         return getPath(self.domNode)
@@ -159,13 +164,11 @@ class DomModel(QtCore.QAbstractItemModel):
             return QtCore.QVariant()
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
-        # Call base class method
-        #return_value = QtCore.QAbstractItemModel.setData(self, index, value, role) 
-        #id, value = self.insertRecord(str(value.toString()))
         if index.isValid():
             item = index.internalPointer()
             node = item.node()
             item.setItemValue(value)
+
             self.emit(QtCore.SIGNAL('dataChanged(const QModelIndex &,const QModelIndex &)'), index, index)
             return node
         return False
