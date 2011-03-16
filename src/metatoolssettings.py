@@ -1,6 +1,6 @@
 """
 /***************************************************************************
- MetatoolsDialog
+ MetatoolsSettings
                                  A QGIS plugin
  Metadata browser/editor
                              -------------------
@@ -20,11 +20,11 @@
 """
 
 from PyQt4 import QtCore, QtGui
-from ui_metatools import Ui_Metatools
-# create the dialog for zoom to point
-class MetatoolsDialog(QtGui.QDialog):
+from ui_settings import Ui_MetatoolsSettingsDialog
+class MetatoolsSettings(QtGui.QDialog):
     def __init__(self):
         QtGui.QDialog.__init__(self)
         # Set up the user interface from Designer.
-        self.ui = Ui_Metatools()
+        self.ui = Ui_MetatoolsSettingsDialog()
         self.ui.setupUi(self)
+

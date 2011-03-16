@@ -30,7 +30,7 @@ import resources
 from os import path
 
 # Import the code for the dialogs
-from metatoolsdialog import MetatoolsDialog
+from metatoolssettings import MetatoolsSettings
 from metatoolsviewer import MetatoolsViewer
 from metatoolseditor import MetatoolsEditor
 
@@ -49,15 +49,15 @@ class MetatoolsPlugin:
             self.QgisVersion = unicode(QGis.QGIS_VERSION_INT)
         except:
             self.QgisVersion = unicode(QGis.qgisVersion)[ 0 ]
-        
+
         # Get plugin folder
         userPluginPath = QFileInfo(QgsApplication.qgisUserDbFilePath()).path() + "/python/plugins/Metatools"
         systemPluginPath = QgsApplication.prefixPath() + "/python/plugins/Metatools"
 
         if QFileInfo(userPluginPath).exists():
-            self.pluginPath=userPluginPath
+            self.pluginPath = userPluginPath
         else:
-            self.pluginPath=systemPluginPath
+            self.pluginPath = systemPluginPath
 
         # i18n support
         overrideLocale = QSettings().value("locale/overrideFlag", QVariant(False)).toBool()
@@ -67,7 +67,7 @@ class MetatoolsPlugin:
             localeFullName = QSettings().value("locale/userLocale", QVariant("")).toString()
 
         self.localePath = self.pluginPath + "/i18n/metatools_" + localeFullName + ".qm"
-        
+
         if QFileInfo(self.localePath).exists():
             self.translator = QTranslator()
             self.translator.load(self.localePath)
@@ -116,42 +116,42 @@ class MetatoolsPlugin:
     # Edit metadata
     def doEdit(self):
         # shortcuts
-        translatedMetatools=QCoreApplication.translate("Metatools", "Metatools")
-        mainWindow=self.iface.mainWindow()
-        
+        translatedMetatools = QCoreApplication.translate("Metatools", "Metatools")
+        mainWindow = self.iface.mainWindow()
+
         # get active layer
-        layer=self.iface.activeLayer()
+        layer = self.iface.activeLayer()
         if not layer:
             QMessageBox.information(mainWindow, translatedMetatools, 'Choose any map layer')
             return
-        
+
         # check layer type
-        if layer.type()==QgsMapLayer.RasterLayer:
+        if layer.type() == QgsMapLayer.RasterLayer:
             pass
         else:
-            if layer.type()==QgsMapLayer.VectorLayer:
-                QMessageBox.warning(mainWindow,translatedMetatools, QCoreApplication.translate("Metatools", "Vector layers are not supported yet!"))
+            if layer.type() == QgsMapLayer.VectorLayer:
+                QMessageBox.warning(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Vector layers are not supported yet!"))
             else:
                 QMessageBox.critical(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Unsupported layer type!"))
             return
-        
+
         #TODO: check layer DS type (local, DB, service)
-        
+
         # get metafile path 
-        metaFilePath=utils.getMetafilePath(layer)
-        
+        metaFilePath = utils.getMetafilePath(layer)
+
         # check metadata file exists
         #TODO: create suggestion
         if not path.exists(metaFilePath):
             QMessageBox.warning(mainWindow, translatedMetatools, "The layer does not have metadata!")
             return
-        
+
         # check matadata standard
-        standard=MetaInfoStandard.tryDetermineStandard(metaFilePath)
+        standard = MetaInfoStandard.tryDetermineStandard(metaFilePath)
         if standard != MetaInfoStandard.ISO19138:
             QMessageBox.critical(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19139 support now! "))
             return
-        
+
         #------------ create and show the dialog
         #TODO: need singleton!        
         dlg = MetatoolsEditor()
@@ -161,63 +161,63 @@ class MetatoolsPlugin:
 
 
 
-        
+
     #### NEED REMOVE COMMON CODE!      
-       
-        
+
+
 
     # View metadata
     def doView(self):
         # shortcuts
-        translatedMetatools=QCoreApplication.translate("Metatools", "Metatools")
-        mainWindow=self.iface.mainWindow()
-        
+        translatedMetatools = QCoreApplication.translate("Metatools", "Metatools")
+        mainWindow = self.iface.mainWindow()
+
         # get active layer
-        layer=self.iface.activeLayer()
+        layer = self.iface.activeLayer()
         if not layer:
             QMessageBox.information(mainWindow, translatedMetatools, 'Choose any map layer')
             return
-        
+
         # check layer type
-        if layer.type()==QgsMapLayer.RasterLayer:
+        if layer.type() == QgsMapLayer.RasterLayer:
             pass
         else:
-            if layer.type()==QgsMapLayer.VectorLayer:
-                QMessageBox.warning(mainWindow,translatedMetatools, QCoreApplication.translate("Metatools", "Vector layers are not supported yet!"))
+            if layer.type() == QgsMapLayer.VectorLayer:
+                QMessageBox.warning(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Vector layers are not supported yet!"))
             else:
                 QMessageBox.critical(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Unsupported layer type!"))
             return
-        
+
         #TODO: check layer DS type (local, DB, service)
-        
+
         # get metafile path 
-        metaFilePath=utils.getMetafilePath(layer)
-        
+        metaFilePath = utils.getMetafilePath(layer)
+
         # check metadata file exists
         #TODO: create suggestion
         if not path.exists(metaFilePath):
             QMessageBox.warning(mainWindow, translatedMetatools, "The layer does not have metadata!")
             return
-        
+
         # check matadata standard
-        standard=MetaInfoStandard.tryDetermineStandard(metaFilePath)
+        standard = MetaInfoStandard.tryDetermineStandard(metaFilePath)
         if standard != MetaInfoStandard.ISO19138:
             QMessageBox.critical(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19139 support now! "))
             return
-                
+
         #TODO: validate metadata file
-        
+
         # get xsl file path
         #TODO: select xls by metadata type and settings
-        xsltFilePath=self.pluginPath+'/xsl/iso19139.xsl'
-        
+        xsltFilePath = self.pluginPath + '/xsl/iso19139.xsl'
+
         #------------ create and show the dialog
         #TODO: need singleton!        
         dlg = MetatoolsViewer()
-        dlg.setContent(metaFilePath,xsltFilePath)
+        dlg.setContent(metaFilePath, xsltFilePath)
         dlg.show()
         result = dlg.exec_()
-        
+
         """
         #for dock widget
         if not self.metadataDock:
@@ -234,7 +234,7 @@ class MetatoolsPlugin:
 
     def doConfigure(self):
         # create and show the dialog
-        dlg = MetatoolsDialog()
+        dlg = MetatoolsSettings()
         # show the dialog
         dlg.show()
         result = dlg.exec_()
