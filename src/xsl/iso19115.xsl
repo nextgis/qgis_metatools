@@ -111,9 +111,13 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
   <xsl:apply-templates select="./gmd:contact"/>
 </div> 
 
-<!-- First the Identification block -->
-  <xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification"/>
-  <xsl:apply-templates select="./gmd:distributionInfo/gmd:MD_Distribution"/> 
+		<!-- Identification block -->
+  		<xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification"/>
+  		<xsl:apply-templates select="./gmd:distributionInfo/gmd:MD_Distribution"/>
+  		
+  		<!-- License info block -->
+  		<xsl:apply-templates select="./gmd:metadataConstraints/gmd:MD_LegalConstraints"/>
+  		 
    </body>
  </html>
 </xsl:template>
@@ -220,6 +224,25 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
 </div>
 </xsl:template>
 
+
+ <!-- 'License info' block -->
+  <xsl:template match="gmd:MD_LegalConstraints">
+  	<xsl:if test="./gmd:useLimitation/gco:CharacterString">
+      <div class="captioneddiv">
+        <h3>Constraints</h3>
+        <table class="meta"><tr></tr>
+        <xsl:call-template name="tablerow">
+      		<xsl:with-param name="cname" select="'Constraint type'"/>
+      		<xsl:with-param name="cvalue" select="./gmd:useConstraints/gmd:MD_RestrictionCode"/>
+      	</xsl:call-template>
+      	<xsl:call-template name="tablerow">
+      		<xsl:with-param name="cname" select="'Constraint text'"/>
+      		<xsl:with-param name="cvalue" select="./gmd:useLimitation/gco:CharacterString"/>
+      	</xsl:call-template>
+      	</table>
+      </div>
+    </xsl:if>
+  </xsl:template>
 
 <!-- 'Identification->Point of Contact' block -->
 <xsl:template match="gmd:pointOfContact">
@@ -334,10 +357,8 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
       </div>
     </xsl:if>
   </xsl:template>
-
-
+  
   <!-- 'Distribution Info' block -->
-
   <xsl:template match="gmd:MD_Distribution">
     <div class="captioneddiv">
       <h3>Distribution info</h3>

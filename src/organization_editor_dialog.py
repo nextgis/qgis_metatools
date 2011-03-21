@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- Metatools license template editor
+ Metatools organization template editor
                                  A QGIS plugin
  Metadata browser/editor
                              -------------------
@@ -29,15 +29,15 @@ from PyQt4.QtXmlPatterns  import *
 from qgis.core import *
 
 #plugin imports
-from ui_license_editor import Ui_LicenseEditorDialog
-from license_template_manager import LicenseTemplateManager, LicenseTemplate
+from ui_organization_editor import Ui_OrganizationEditorDialog
+#from license_template_manager import LicenseTemplateManager, LicenseTemplate
 
 
-class LicenseEditorDialog(QDialog):
+class OrganizationEditorDialog(QDialog):
     def __init__(self, basePluginPath):
         QDialog.__init__(self)
         # Set up the user interface from Designer.
-        self.ui = Ui_LicenseEditorDialog()
+        self.ui = Ui_OrganizationEditorDialog()
         self.ui.setupUi(self)
 
         #env vars
@@ -120,10 +120,7 @@ class LicenseEditorDialog(QDialog):
                 return
             #reload form
             self.reloadTemplatesList()
-            #set editable item:
-            index = self.ui.licenseComboBox.findText(template.name)
-            if index != -1:
-                self.ui.licenseComboBox.setCurrentIndex(index)
+            #self.ui.licenseComboBox. #set 
         else:
             self.setLicenseTemplateToForm(self.licenseTemplate)
         self.ui.licenseButtonBox.setEnabled(False)

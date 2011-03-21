@@ -103,6 +103,6 @@ class LicenseTemplate:
         self.description = description
 
     def stringRepresentation(self):
-        return self.name + ' Version:' + self.version + ' ' + self.description
+        return self.name + ' Version:' + self.version + '\n' + self.description
 
 

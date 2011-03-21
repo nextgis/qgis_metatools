@@ -36,6 +36,7 @@ from license_editor_dialog import LicenseEditorDialog
 from license_template_manager import LicenseTemplateManager
 from standard import MetaInfoStandard
 import utils
+from cgitb import text
 
 
 class ApplyTemplatesDialog(QDialog):
@@ -57,6 +58,8 @@ class ApplyTemplatesDialog(QDialog):
 
         #events
         self.connect(self.ui.licenseManageButton, SIGNAL("clicked()"), self.licenseManageButtonClick)
+        self.connect(self.ui.organizationManageButton, SIGNAL("clicked()"), self.organizationManageButtonClick)
+        self.connect(self.ui.workflowManageButton, SIGNAL("clicked()"), self.workflowManageButtonClick)
         self.connect(self.ui.mainButtonBox, SIGNAL("clicked(QAbstractButton*)"), self.mainButtonClicked)
 
         #init gui
@@ -76,8 +79,20 @@ class ApplyTemplatesDialog(QDialog):
         dlg.show()
         result = dlg.exec_()
 
+        oldValue = self.ui.licenseComboBox.currentText()
+
         self.updateLicenseTemplatesList()
-        #need to set old value!
+
+        #try restore old selected value
+        index = self.ui.licenseComboBox.findText(oldValue)
+        if index != -1:
+            self.ui.licenseComboBox.setCurrentIndex(index)
+
+    def organizationManageButtonClick(self):
+        QMessageBox.information(self, "Metatools", "Not implimented!")
+
+    def workflowManageButtonClick(self):
+        QMessageBox.information(self, "Metatools", "Not implimented!")
 
     def updateLicenseTemplatesList(self):
         licenseTemplatesList = self.licenseTemplateManager.getLicenseTemplateList()
@@ -131,39 +146,59 @@ class ApplyTemplatesDialog(QDialog):
                     metafile = codecs.open(metaFilePath, 'w', encoding='utf-8')
                     metafile.write(unicode(metaXML.toString().toUtf8(), 'utf-8'))
                     metafile.close()
+
+                QMessageBox.information(self, QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Templates successfully applied!"))
+                self.accept()
             except:
                 QMessageBox.critical(self, QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Templates can't be applyed: ") + str(sys.exc_info()[1]))
         else:
             self.reject()
 
     def applyLicenseTemplate(self, metaXML):
+        #TODO: make more safe
         if self.ui.licenseComboBox.currentText() == self.translatedNoneLabel:
             return
+
         licenseTemplate = self.licenseTemplateManager.loadLicenseTemplate(self.ui.licenseComboBox.currentText())
 
         root = metaXML.documentElement()
 
-        mdConstraintsElement = root.firstChildElement ("metadataConstraints")
-        if mdConstraintsElement.isNull():
-            mdConstraintsElement = metaXML.createElement("metadataConstraints")
-            root.appendChild(mdConstraintsElement)
+        mdConstraintsElement = self.getOrCreateChild(root, "metadataConstraints")
+        mdLegalConstraintsElement = self.getOrCreateChild(mdConstraintsElement, "MD_LegalConstraints")
 
-        mdLegalConstraintsElement = mdConstraintsElement.firstChildElement ("MD_LegalConstraints")
-        if mdLegalConstraintsElement.isNull():
-            mdLegalConstraintsElement = metaXML.createElement("MD_LegalConstraints")
-            mdConstraintsElement.appendChild(mdLegalConstraintsElement)
+        #useLimitation
+        mdUseLimitationElement = self.getOrCreateChild(mdLegalConstraintsElement, "useLimitation")
+        mdCharStringElement = self.getOrCreateChild(mdUseLimitationElement, "gco:CharacterString")
+        textNode = self.getOrCreateTextChild(mdCharStringElement)
+        textNode.setNodeValue(licenseTemplate.stringRepresentation())
 
-        mdUseLimitationElement = mdLegalConstraintsElement.firstChildElement("useLimitation")
-        if mdUseLimitationElement.isNull():
-            mdUseLimitationElement = metaXML.createElement("useLimitation")
-            mdLegalConstraintsElement.appendChild(mdUseLimitationElement)
+        #useConstraints
+        mdUseConstraintsElement = self.getOrCreateChild(mdLegalConstraintsElement, "useConstraints")
+        mdRestrictionCodeElement = self.getOrCreateChild(mdUseConstraintsElement, "MD_RestrictionCode")
 
-        mdCharStringElement = mdUseLimitationElement.firstChildElement("gco:CharacterString")
-        if mdCharStringElement.isNull():
-            mdCharStringElement = metaXML.createElement("gco:CharacterString")
-            mdUseLimitationElement.appendChild(mdCharStringElement)
+        mdRestrictionCodeElement.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode")
+        mdRestrictionCodeElement.setAttribute("codeListValue", "license")
 
-        textNode = mdCharStringElement.childNodes().at(0)
-        if textNode.isNull():
-            textNode = metaXML.createTextNode(licenseTemplate.stringRepresentation())
-            mdCharStringElement.appendChild(textNode)
+        textNode = self.getOrCreateTextChild(mdRestrictionCodeElement)
+        textNode.setNodeValue("license")
+
+
+    def getOrCreateChild(self, element, childName):
+        child = element.firstChildElement(childName)
+        if child.isNull():
+            child = element.ownerDocument().createElement(childName)
+            element.appendChild(child)
+        return child
+
+    def getOrCreateTextChild(self, element):
+        childTextNode = element.childNodes().at(0) #bad! need full search and type checker
+        if childTextNode.isNull():
+            childTextNode = element.ownerDocument().createTextNode('')
+            element.appendChild(childTextNode)
+        return childTextNode
+
+
+
+
+
+
