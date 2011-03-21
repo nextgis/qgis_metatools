@@ -28,15 +28,18 @@ import resources
 
 #Import sys libs
 from os import path
+import sys, shutil
 
 # Import the code for the dialogs
 from metatoolssettings import MetatoolsSettings
 from metatoolsviewer import MetatoolsViewer
 from metatoolseditor import MetatoolsEditor
+from apply_templates_dialog import ApplyTemplatesDialog
 
 #Import plugin code
 import utils
 from standard import MetaInfoStandard
+
 
 class MetatoolsPlugin:
 
@@ -81,6 +84,11 @@ class MetatoolsPlugin:
         # connect the editAction to the doEdit method
         QObject.connect(self.editAction, SIGNAL("triggered()"), self.doEdit)
 
+        # Create applyTemplateAction that will start templates window
+        self.applyTemplatesAction = QAction(QIcon(":/plugins/metatools/icon.png"), QCoreApplication.translate("Metatools", "Apply templates"), self.iface.mainWindow())
+        # connect the applyTemplatesAction to the doApplyTemplates method
+        QObject.connect(self.applyTemplatesAction, SIGNAL("triggered()"), self.doApplyTemplates)
+
         # Create viewAction that will start viewer window
         self.viewAction = QAction(QIcon(":/plugins/metatools/icon.png"), QCoreApplication.translate("Metatools", "View metadata"), self.iface.mainWindow())
         # connect the viewAction to the doView method
@@ -93,6 +101,7 @@ class MetatoolsPlugin:
 
         # Add menu item
         self.iface.addPluginToMenu("&Metatools", self.editAction)
+        self.iface.addPluginToMenu("&Metatools", self.applyTemplatesAction)
         self.iface.addPluginToMenu("&Metatools", self.viewAction)
         self.iface.addPluginToMenu("&Metatools", self.configAction)
 
@@ -101,6 +110,7 @@ class MetatoolsPlugin:
         self.toolBar.setObjectName(QCoreApplication.translate("Metatools", "Metatools"))
 
         self.toolBar.addAction(self.editAction)
+        self.toolBar.addAction(self.applyTemplatesAction)
         self.toolBar.addAction(self.viewAction)
         self.toolBar.addAction(self.configAction)
 
@@ -109,6 +119,7 @@ class MetatoolsPlugin:
     def unload(self):
         # Remove the plugin menu item and icon
         self.iface.removePluginMenu("&Metatools", self.editAction)
+        self.iface.removePluginMenu("&Metatools", self.applyTemplatesAction)
         self.iface.removePluginMenu("&Metatools", self.viewAction)
         self.iface.removePluginMenu("&Metatools", self.configAction)
         del self.toolBar
@@ -141,15 +152,24 @@ class MetatoolsPlugin:
         metaFilePath = utils.getMetafilePath(layer)
 
         # check metadata file exists
-        #TODO: create suggestion
+
         if not path.exists(metaFilePath):
-            QMessageBox.warning(mainWindow, translatedMetatools, "The layer does not have metadata!")
-            return
+            result = QMessageBox.question (mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "The layer does not have metadata! Create metadata file?"), QDialogButtonBox.Yes, QDialogButtonBox.No)
+            if result == QDialogButtonBox.Yes:
+                #TODO: get profile name from standart&settings
+                try:
+                    profilePath = path.join(str(self.pluginPath), 'xml_profiles/csir_sac_profile.xml') #BAD!
+                    shutil.copyfile(profilePath, metaFilePath)
+                except:
+                    QMessageBox.warning(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Metadata file can't be created: ") + str(sys.exc_info()[1]))
+                    return
+            else:
+                return
 
         # check matadata standard
         standard = MetaInfoStandard.tryDetermineStandard(metaFilePath)
-        if standard != MetaInfoStandard.ISO19138:
-            QMessageBox.critical(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19139 support now! "))
+        if standard != MetaInfoStandard.ISO19115:
+            QMessageBox.critical(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19115 support now! "))
             return
 
         #------------ create and show the dialog
@@ -201,15 +221,15 @@ class MetatoolsPlugin:
 
         # check matadata standard
         standard = MetaInfoStandard.tryDetermineStandard(metaFilePath)
-        if standard != MetaInfoStandard.ISO19138:
-            QMessageBox.critical(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19139 support now! "))
+        if standard != MetaInfoStandard.ISO19115:
+            QMessageBox.critical(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19115 support now! "))
             return
 
         #TODO: validate metadata file
 
         # get xsl file path
         #TODO: select xls by metadata type and settings
-        xsltFilePath = self.pluginPath + '/xsl/iso19139.xsl'
+        xsltFilePath = self.pluginPath + '/xsl/iso19115.xsl'
 
         #------------ create and show the dialog
         #TODO: need singleton!        
@@ -231,6 +251,19 @@ class MetatoolsPlugin:
         self.metadataDock.widget().setContent(???)    
         self.metadataDock.show()
         """
+
+    def doApplyTemplates(self):
+        mapLayers = self.iface.mapCanvas().layers()
+
+        dlg = ApplyTemplatesDialog(self.pluginPath, mapLayers)
+        # show the dialog
+        dlg.show()
+        result = dlg.exec_()
+        # See if OK was pressed
+        if result == 1:
+            # do something useful (delete the line containing pass and
+            # substitute with your code
+            pass
 
     def doConfigure(self):
         # create and show the dialog

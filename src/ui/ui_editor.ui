@@ -34,6 +34,9 @@
       </property>
      </widget>
      <widget class="QGroupBox" name="editorGroupBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="title">
        <string>Edit value</string>
       </property>

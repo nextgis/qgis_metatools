@@ -27,7 +27,7 @@ from qgis.core import *
 #Import plugin code
 from dom_model import DomModel
 from ui_editor import Ui_MetatoolsEditor
-import codecs
+import codecs,sys
 
 
 class MetatoolsEditor(QDialog):
@@ -85,6 +85,7 @@ class MetatoolsEditor(QDialog):
     def valueButtonClicked(self, button):
         if self.ui.valueButtonBox.standardButton(button) == QDialogButtonBox.Apply:
             self.model.setData(self.mindex, self.ui.valueTextEdit.toPlainText())
+            self.text = self.model.data(self.mindex, 0) #reload value!
             self.ui.mainButtonBox.button(QDialogButtonBox.Save).setEnabled(True) #Enable Save button on first edit
         else:
             self.ui.valueTextEdit.setPlainText(self.text.toString())
@@ -99,7 +100,7 @@ class MetatoolsEditor(QDialog):
                 metafile.close()
                 self.ui.mainButtonBox.button(QDialogButtonBox.Save).setEnabled(False) #Disable Save button
             except:
-                QMessageBox.critical(self, QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Metadata file can't be saved!"))
+                QMessageBox.critical(self, QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Metadata file can't be saved!")+str(sys.exc_info()[0]))
         else:
             self.reject()
 

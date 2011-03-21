@@ -22,7 +22,7 @@
 
 
 class MetaInfoStandard:
-    UNKNOWN, ISO19138, FGDC, DC=range(4)
+    UNKNOWN, ISO19115, FGDC, DC=range(4)
     
     @staticmethod
     def tryDetermineStandard(metaFilePath):
@@ -31,8 +31,8 @@ class MetaInfoStandard:
         metaFile.close()
     
         #simple test for iso doc
-        if text.find('MD_Metadata')>=0:
-            return MetaInfoStandard.ISO19138
+        if text.find('MD_Metadata')>=0 or text.find('MI_Metadata')>=0:
+            return MetaInfoStandard.ISO19115
     
         #only iso support now
         return MetaInfoStandard.UNKNOWN
