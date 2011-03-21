@@ -89,10 +89,10 @@ class ApplyTemplatesDialog(QDialog):
             self.ui.licenseComboBox.setCurrentIndex(index)
 
     def organizationManageButtonClick(self):
-        QMessageBox.information(self, "Metatools", "Not implimented!")
+        QMessageBox.information(self, "Metatools", "Not implemented!")
 
     def workflowManageButtonClick(self):
-        QMessageBox.information(self, "Metatools", "Not implimented!")
+        QMessageBox.information(self, "Metatools", "Not implemented!")
 
     def updateLicenseTemplatesList(self):
         licenseTemplatesList = self.licenseTemplateManager.getLicenseTemplateList()
@@ -150,7 +150,7 @@ class ApplyTemplatesDialog(QDialog):
                 QMessageBox.information(self, QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Templates successfully applied!"))
                 self.accept()
             except:
-                QMessageBox.critical(self, QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Templates can't be applyed: ") + str(sys.exc_info()[1]))
+                QMessageBox.critical(self, QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Templates can't be applied: ") + str(sys.exc_info()[1]))
         else:
             self.reject()
 
