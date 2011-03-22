@@ -32,7 +32,7 @@ def version():
     return pluginVersion
 
 def icon():
-    return "icon.png"
+    return "icons/view.png"
 
 def qgisMinimumVersion():
     return "1.5"
