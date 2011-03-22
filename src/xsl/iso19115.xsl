@@ -115,9 +115,6 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
   		<xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification"/>
   		<xsl:apply-templates select="./gmd:distributionInfo/gmd:MD_Distribution"/>
   		
-  		<!-- License info block -->
-  		<xsl:apply-templates select="./gmd:metadataConstraints/gmd:MD_LegalConstraints"/>
-  		 
    </body>
  </html>
 </xsl:template>
@@ -219,6 +216,8 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
       </td>
       </tr>
 </table>
+    <!-- License info block -->
+    <xsl:apply-templates select="./gmd:resourceConstraints/gmd:MD_LegalConstraints"/>
     <xsl:apply-templates select="./gmd:extent"/>
     <xsl:apply-templates select="./gmd:pointOfContact"/>
 </div>

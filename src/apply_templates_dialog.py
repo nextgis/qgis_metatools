@@ -163,8 +163,11 @@ class ApplyTemplatesDialog(QDialog):
 
         root = metaXML.documentElement()
 
-        mdConstraintsElement = self.getOrCreateChild(root, "metadataConstraints")
-        mdLegalConstraintsElement = self.getOrCreateChild(mdConstraintsElement, "MD_LegalConstraints")
+        mdIdentificationInfo = self.getOrCreateChild(root, "identificationInfo")
+        mdDataIdentification = self.getOrCreateChild(mdIdentificationInfo, "MD_DataIdentification")
+
+        mdResourceConstraints = self.getOrIsertAfterChild(mdDataIdentification, "resourceConstraints", ['resourceSpecificUsage', 'descriptiveKeywords', 'resourceFormat', 'graphicOverview', 'resourceMaintenance', 'pointOfContact', 'status', 'credit', 'purpose', 'abstract'])
+        mdLegalConstraintsElement = self.getOrCreateChild(mdResourceConstraints, "MD_LegalConstraints")
 
         #useLimitation
         mdUseLimitationElement = self.getOrCreateChild(mdLegalConstraintsElement, "useLimitation")
@@ -187,6 +190,22 @@ class ApplyTemplatesDialog(QDialog):
         child = element.firstChildElement(childName)
         if child.isNull():
             child = element.ownerDocument().createElement(childName)
+            element.appendChild(child)
+        return child
+
+    def getOrIsertAfterChild(self, element, childName, prevChildsName):
+        child = element.firstChildElement(childName)
+        if child.isNull():
+            child = element.ownerDocument().createElement(childName)
+
+            #search previous element
+            for elementName in prevChildsName:
+                prevElement = element.firstChildElement(elementName)
+                if not prevElement.isNull():
+                    element.insertAfter(child, prevElement)
+                    return child
+
+            #if not found, simple append
             element.appendChild(child)
         return child
 

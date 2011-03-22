@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/plugins/metatools" >
-        <file>icon.png</file>
+        <file>icons/icon.png</file>
+        <file>icons/edit.png</file>
+        <file>icons/settings.png</file>
+        <file>icons/templates.png</file>
+        <file>icons/view.png</file>
     </qresource>
 </RCC>

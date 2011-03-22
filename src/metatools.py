@@ -42,10 +42,17 @@ from standard import MetaInfoStandard
 
 
 class MetatoolsPlugin:
+    minQtVersion = '4.6.0'
+    qtReqFailed = False
 
     def __init__(self, iface):
         # Save reference to the QGIS interface
         self.iface = iface
+
+        #Check Qt version 
+        if qVersion() < self.minQtVersion:
+            self.qtReqFailed = True
+            return
 
         # Get QGIS version
         try:
@@ -79,23 +86,27 @@ class MetatoolsPlugin:
 
 
     def initGui(self):
+        if self.qtReqFailed:
+            QMessageBox.critical(self.iface.mainWindow(), QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2").arg(self.minQtVersion).arg(qVersion()))
+            return
+
         # Create editAction that will start editor window
-        self.editAction = QAction(QIcon(":/plugins/metatools/icon.png"), QCoreApplication.translate("Metatools", "Edit metadata"), self.iface.mainWindow())
+        self.editAction = QAction(QIcon(":/plugins/metatools/icons/edit.png"), QCoreApplication.translate("Metatools", "Edit metadata"), self.iface.mainWindow())
         # connect the editAction to the doEdit method
         QObject.connect(self.editAction, SIGNAL("triggered()"), self.doEdit)
 
         # Create applyTemplateAction that will start templates window
-        self.applyTemplatesAction = QAction(QIcon(":/plugins/metatools/icon.png"), QCoreApplication.translate("Metatools", "Apply templates"), self.iface.mainWindow())
+        self.applyTemplatesAction = QAction(QIcon(":/plugins/metatools/icons/templates.png"), QCoreApplication.translate("Metatools", "Apply templates"), self.iface.mainWindow())
         # connect the applyTemplatesAction to the doApplyTemplates method
         QObject.connect(self.applyTemplatesAction, SIGNAL("triggered()"), self.doApplyTemplates)
 
         # Create viewAction that will start viewer window
-        self.viewAction = QAction(QIcon(":/plugins/metatools/icon.png"), QCoreApplication.translate("Metatools", "View metadata"), self.iface.mainWindow())
+        self.viewAction = QAction(QIcon(":/plugins/metatools/icons/view.png"), QCoreApplication.translate("Metatools", "View metadata"), self.iface.mainWindow())
         # connect the viewAction to the doView method
         QObject.connect(self.viewAction, SIGNAL("triggered()"), self.doView)
 
         # Create configAction that will start plugin configuration
-        self.configAction = QAction(QIcon(":/plugins/metatools/icon.png"), QCoreApplication.translate("Metatools", "Configure metadata plugin"), self.iface.mainWindow())
+        self.configAction = QAction(QIcon(":/plugins/metatools/icons/settings.png"), QCoreApplication.translate("Metatools", "Configure metadata plugin"), self.iface.mainWindow())
         # connect the configAction to the doConfigure method
         QObject.connect(self.configAction, SIGNAL("triggered()"), self.doConfigure)
 
@@ -117,6 +128,10 @@ class MetatoolsPlugin:
 
 
     def unload(self):
+        #check requirements
+        if self.qtReqFailed:
+            return
+
         # Remove the plugin menu item and icon
         self.iface.removePluginMenu("&Metatools", self.editAction)
         self.iface.removePluginMenu("&Metatools", self.applyTemplatesAction)
