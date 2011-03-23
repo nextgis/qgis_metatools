@@ -34,9 +34,11 @@ import sys, os, codecs, shutil
 from ui_apply_templates import Ui_ApplyTemplatesDialog
 from license_editor_dialog import LicenseEditorDialog
 from license_template_manager import LicenseTemplateManager
+from workflow_editor_dialog import WorkflowEditorDialog
+from workflow_template_manager import WorkflowTemplateManager
 from standard import MetaInfoStandard
 import utils
-from cgitb import text
+
 
 
 class ApplyTemplatesDialog(QDialog):
@@ -55,24 +57,24 @@ class ApplyTemplatesDialog(QDialog):
 
         #internal vars
         self.licenseTemplateManager = LicenseTemplateManager(self.basePluginPath)
+        self.workflowTemplateManager = WorkflowTemplateManager(self.basePluginPath)
 
         #events
         self.connect(self.ui.licenseManageButton, SIGNAL("clicked()"), self.licenseManageButtonClick)
         self.connect(self.ui.organizationManageButton, SIGNAL("clicked()"), self.organizationManageButtonClick)
         self.connect(self.ui.workflowManageButton, SIGNAL("clicked()"), self.workflowManageButtonClick)
+        self.connect(self.ui.selectFileButton, SIGNAL("clicked()"), self.selectFileButtonClick)
         self.connect(self.ui.mainButtonBox, SIGNAL("clicked(QAbstractButton*)"), self.mainButtonClicked)
 
         #init gui
         self.updateLicenseTemplatesList()
+        self.updateWorkflowTemplatesList()
 
-        self.ui.organizationComboBox.addItem(self.translatedNoneLabel)
-
-        self.ui.workflowComboBox.addItem(self.translatedNoneLabel)
+        self.ui.organizationComboBox.addItem(self.translatedNoneLabel) #temporary
 
         for layer in mapLayers:
             if layer.type() == QgsMapLayer.RasterLayer:
                 self.ui.layerListView.addItem(layer.name())
-
 
     def licenseManageButtonClick(self):
         dlg = LicenseEditorDialog(self.basePluginPath)
@@ -92,13 +94,37 @@ class ApplyTemplatesDialog(QDialog):
         QMessageBox.information(self, "Metatools", "Not implemented!")
 
     def workflowManageButtonClick(self):
-        QMessageBox.information(self, "Metatools", "Not implemented!")
+        dlg = WorkflowEditorDialog(self.basePluginPath)
+        dlg.show()
+        result = dlg.exec_()
+
+        oldValue = self.ui.workflowComboBox.currentText()
+
+        self.updateWorkflowTemplatesList()
+
+        #try restore old selected value
+        index = self.ui.workflowComboBox.findText(oldValue)
+        if index != -1:
+            self.ui.workflowComboBox.setCurrentIndex(index)
+
+    def selectFileButtonClick(self):
+        fileDialog = QFileDialog()
+        #need to save last dir and set it in dialog
+        logFileName = fileDialog.getOpenFileName(self, QCoreApplication.translate("Metatools", "Select log file"), '', QCoreApplication.translate("Metatools", "Text files (*.txt);;Log files (*.log);;All files (*)"), None, QFileDialog.ReadOnly)
+        self.ui.logFileLineEdit.setText(logFileName)
+        self.ui.logFileLineEdit.setToolTip(logFileName)
 
     def updateLicenseTemplatesList(self):
         licenseTemplatesList = self.licenseTemplateManager.getLicenseTemplateList()
         self.ui.licenseComboBox.clear()
         self.ui.licenseComboBox.addItem(self.translatedNoneLabel)
         self.ui.licenseComboBox.addItems(licenseTemplatesList)
+
+    def updateWorkflowTemplatesList(self):
+        workflowTemplatesList = self.workflowTemplateManager.getWorkflowTemplateList()
+        self.ui.workflowComboBox.clear()
+        self.ui.workflowComboBox.addItem(self.translatedNoneLabel)
+        self.ui.workflowComboBox.addItems(workflowTemplatesList)
 
     def mainButtonClicked(self, button):
         # shortcuts
@@ -139,8 +165,10 @@ class ApplyTemplatesDialog(QDialog):
                     metaXML = QDomDocument()
                     metaXML.setContent(file)
 
-                    #apply templates (BAD version - change to applyer with standard) 
+                    #apply templates (BAD version - change to applier with standard) 
                     self.applyLicenseTemplate(metaXML)
+                    self.applyWorkflowTemplate(metaXML)
+                    self.applyLogFile(metaXML)
 
                     #save metadata file (hmm.. why not QFile?)
                     metafile = codecs.open(metaFilePath, 'w', encoding='utf-8')
@@ -153,6 +181,9 @@ class ApplyTemplatesDialog(QDialog):
                 QMessageBox.critical(self, QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Templates can't be applied: ") + str(sys.exc_info()[1]))
         else:
             self.reject()
+
+
+    #----------- Appliers
 
     def applyLicenseTemplate(self, metaXML):
         #TODO: make more safe
@@ -185,6 +216,77 @@ class ApplyTemplatesDialog(QDialog):
         textNode = self.getOrCreateTextChild(mdRestrictionCodeElement)
         textNode.setNodeValue("license")
 
+    def applyWorkflowTemplate(self, metaXML):
+        #TODO: make more safe
+        if self.ui.workflowComboBox.currentText() == self.translatedNoneLabel:
+            return
+
+        workflowTemplate = self.workflowTemplateManager.loadWorkflowTemplate(self.ui.workflowComboBox.currentText())
+
+        root = metaXML.documentElement()
+
+        mdDataQualityInfo = self.getOrIsertAfterChild(root, "dataQualityInfo", ["distributionInfo", "contentInfo", "identificationInfo"])
+        mdDQData = self.getOrCreateChild(mdDataQualityInfo, "DQ_DataQuality")
+
+        #check requirements (not need for workflow)
+        if mdDQData.firstChildElement("scope").isNull():
+            mdScope = self.getOrIsertTopChild(mdDQData, "scope")
+            mdDQScope = self.getOrCreateChild(mdScope, "DQ_Scope")
+            mdLevel = self.getOrIsertTopChild(mdDQScope, "level")
+            mdScopeCode = self.getOrCreateChild(mdLevel, "MD_ScopeCode")
+
+            mdScopeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode")
+            mdScopeCode.setAttribute("codeListValue", "dataset")
+
+            textNode = self.getOrCreateTextChild(mdScopeCode)
+            textNode.setNodeValue("dataset")
+
+        mdLineage = self.getOrCreateChild(mdDQData, "lineage")
+        mdLiLineage = self.getOrCreateChild(mdLineage, "LI_Lineage")
+        mdStatement = self.getOrIsertTopChild(mdLiLineage, "statement")
+
+        mdCharStringElement = self.getOrCreateChild(mdStatement, "gco:CharacterString")
+
+        textNode = self.getOrCreateTextChild(mdCharStringElement)
+        textNode.setNodeValue(workflowTemplate.stringRepresentation())
+
+    def applyLogFile(self, metaXML):
+        #TODO: make more safe
+        if not self.ui.logFileLineEdit.text() or self.ui.logFileLineEdit.text() == '':
+            return
+
+        logFile = codecs.open(self.ui.logFileLineEdit.text(), 'r', encoding='utf-8')
+        logFileContent = logFile.read()
+        logFile.close()
+
+        root = metaXML.documentElement()
+
+        mdDataQualityInfo = self.getOrIsertAfterChild(root, "dataQualityInfo", ["distributionInfo", "contentInfo", "identificationInfo"])
+        mdDQData = self.getOrCreateChild(mdDataQualityInfo, "DQ_DataQuality")
+
+        #check requirements (not need for log file)
+        if mdDQData.firstChildElement("scope").isNull():
+            mdScope = self.getOrIsertTopChild(mdDQData, "scope")
+            mdDQScope = self.getOrCreateChild(mdScope, "DQ_Scope")
+            mdLevel = self.getOrIsertTopChild(mdDQScope, "level")
+            mdScopeCode = self.getOrCreateChild(mdLevel, "MD_ScopeCode")
+
+            mdScopeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode")
+            mdScopeCode.setAttribute("codeListValue", "dataset")
+            textNode = self.getOrCreateTextChild(mdScopeCode)
+            textNode.setNodeValue("dataset")
+
+        mdLineage = self.getOrCreateChild(mdDQData, "lineage")
+        mdLiLineage = self.getOrCreateChild(mdLineage, "LI_Lineage")
+
+        mdProcessStep = self.getOrCreateChild(mdLiLineage, "processStep")
+        mdLIProcessStep = self.getOrCreateChild(mdProcessStep, "LI_ProcessStep")
+        mdDescription = self.getOrIsertTopChild(mdLIProcessStep, "description")
+        mdCharStringElement = self.getOrCreateChild(mdDescription, "gco:CharacterString")
+        textNode = self.getOrCreateTextChild(mdCharStringElement)
+        textNode.setNodeValue(logFileContent)
+
+    #----------- XML Helpers
 
     def getOrCreateChild(self, element, childName):
         child = element.firstChildElement(childName)
@@ -207,6 +309,13 @@ class ApplyTemplatesDialog(QDialog):
 
             #if not found, simple append
             element.appendChild(child)
+        return child
+
+    def getOrIsertTopChild(self, element, childName):
+        child = element.firstChildElement(childName)
+        if child.isNull():
+            child = element.ownerDocument().createElement(childName)
+            element.insertBefore(child, QDomNode())
         return child
 
     def getOrCreateTextChild(self, element):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- Lecense template
+ Workflow template manager
                                  A QGIS plugin
  Metadata browser/editor
                              -------------------
@@ -24,30 +24,30 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4.QtXml import *
 
-class LicenseTemplateManager:
-    LICENSE_SUBFOLDER = 'templates/license'
-    LICENSE_EXT = '.xml'
+class WorkflowTemplateManager:
+    WORKFLOW_SUBFOLDER = 'templates/workflow'
+    WORKFLOW_EXT = '.xml'
 
     def __init__(self, basePluginPath):
         self.basePluginPath = str(basePluginPath)
 
-    def getLicenseTemplatesPath(self):
-        return os.path.join(self.basePluginPath, self.LICENSE_SUBFOLDER)
+    def getWorkflowTemplatesPath(self):
+        return os.path.join(self.basePluginPath, self.WORKFLOW_SUBFOLDER)
 
     def getTemplateFilePath(self, templateName):
-        return os.path.join(self.getLicenseTemplatesPath(), str(templateName) + self.LICENSE_EXT)
+        return os.path.join(self.getWorkflowTemplatesPath(), str(templateName) + self.WORKFLOW_EXT)
 
-    def getLicenseTemplateList(self):
+    def getWorkflowTemplateList(self):
         templatesList = []
-        for filename in os.listdir(self.getLicenseTemplatesPath()):
+        for filename in os.listdir(self.getWorkflowTemplatesPath()):
             name, ext = os.path.splitext(filename)
-            if ext == self.LICENSE_EXT:
+            if ext == self.WORKFLOW_EXT:
                 templatesList.append(name)
         return templatesList
 
-    def loadLicenseTemplate(self, templateName):
+    def loadWorkflowTemplate(self, templateName):
         #TODO: more cheks on struct!
-        licenseTemplate = LicenseTemplate()
+        workflowTemplate = WorkflowTemplate()
         templateFile = QFile(self.getTemplateFilePath(templateName.toUtf8()))
 
         xmlTemplate = QDomDocument()
@@ -55,54 +55,45 @@ class LicenseTemplateManager:
 
         root = xmlTemplate.documentElement()
         nameElement = root.elementsByTagName("Name").at(0)
-        versionElement = root.elementsByTagName("Version").at(0)
         descriptionElement = root.elementsByTagName("Description").at(0)
 
-        licenseTemplate.name = nameElement.childNodes().at(0).nodeValue()
-        licenseTemplate.version = versionElement.childNodes().at(0).nodeValue()
-        licenseTemplate.description = descriptionElement.childNodes().at(0).nodeValue()
+        workflowTemplate.name = nameElement.childNodes().at(0).nodeValue()
+        workflowTemplate.description = descriptionElement.childNodes().at(0).nodeValue()
 
-        return licenseTemplate
+        return workflowTemplate
 
-    def saveLicenseTemplate(self, licenseTemplate):
+    def saveWorkflowTemplate(self, workflowTemplate):
         xmlTemplate = QDomDocument()
 
         #create root
-        root = xmlTemplate.createElement("LicenseTemplate")
+        root = xmlTemplate.createElement("WorkflowTemplate")
         xmlTemplate.appendChild(root)
 
         #set name
         element = xmlTemplate.createElement("Name")
-        textNode = xmlTemplate.createTextNode(licenseTemplate.name)
-        element.appendChild(textNode)
-        root.appendChild(element)
-
-        #set version
-        element = xmlTemplate.createElement("Version")
-        textNode = xmlTemplate.createTextNode(licenseTemplate.version)
+        textNode = xmlTemplate.createTextNode(workflowTemplate.name)
         element.appendChild(textNode)
         root.appendChild(element)
 
         #set desc
         element = xmlTemplate.createElement("Description")
-        textNode = xmlTemplate.createTextNode(licenseTemplate.description)
+        textNode = xmlTemplate.createTextNode(workflowTemplate.description)
         element.appendChild(textNode)
         root.appendChild(element)
 
-        templateFile = codecs.open(self.getTemplateFilePath(licenseTemplate.name.toUtf8()), 'w', encoding='utf-8')
+        templateFile = codecs.open(self.getTemplateFilePath(workflowTemplate.name.toUtf8()), 'w', encoding='utf-8')
         templateFile.write(unicode(xmlTemplate.toString().toUtf8(), 'utf-8'))
         templateFile.close()
 
-    def removeLicenseTemplate(self, templateName):
+    def removeWorkflowTemplate(self, templateName):
         os.remove(self.getTemplateFilePath(templateName))
 
-class LicenseTemplate:
-    def __init__(self, name=None, version=None, description=None):
+class WorkflowTemplate:
+    def __init__(self, name=None, description=None):
         self.name = name
-        self.version = version
         self.description = description
 
     def stringRepresentation(self):
-        return self.name + '::' + self.version + '::' + self.description
+        return self.name + '::' + self.description
 
 
