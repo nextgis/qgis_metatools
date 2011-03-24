@@ -32,9 +32,9 @@ import sys, shutil
 
 # Import the code for the dialogs
 from metatoolssettings import MetatoolsSettings
-from metatoolsviewer import MetatoolsViewer
-from metatoolseditor import MetatoolsEditor
-from apply_templates_dialog import ApplyTemplatesDialog
+#from metatoolsviewer import MetatoolsViewer
+#from metatoolseditor import MetatoolsEditor
+#from apply_templates_dialog import ApplyTemplatesDialog
 
 #Import plugin code
 import utils
@@ -43,16 +43,10 @@ from standard import MetaInfoStandard
 
 class MetatoolsPlugin:
     minQtVersion = '4.6.0'
-    qtReqFailed = False
 
     def __init__(self, iface):
         # Save reference to the QGIS interface
         self.iface = iface
-
-        #Check Qt version 
-        if qVersion() < self.minQtVersion:
-            self.qtReqFailed = True
-            return
 
         # Get QGIS version
         try:
@@ -86,10 +80,6 @@ class MetatoolsPlugin:
 
 
     def initGui(self):
-        if self.qtReqFailed:
-            QMessageBox.critical(self.iface.mainWindow(), QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2").arg(self.minQtVersion).arg(qVersion()))
-            return
-
         # Create editAction that will start editor window
         self.editAction = QAction(QIcon(":/plugins/metatools/icons/edit.png"), QCoreApplication.translate("Metatools", "Edit metadata"), self.iface.mainWindow())
         # connect the editAction to the doEdit method
@@ -128,10 +118,6 @@ class MetatoolsPlugin:
 
 
     def unload(self):
-        #check requirements
-        if self.qtReqFailed:
-            return
-
         # Remove the plugin menu item and icon
         self.iface.removePluginMenu("&Metatools", self.editAction)
         self.iface.removePluginMenu("&Metatools", self.applyTemplatesAction)
@@ -141,6 +127,12 @@ class MetatoolsPlugin:
 
     # Edit metadata
     def doEdit(self):
+        try:
+            from metatoolseditor import MetatoolsEditor
+        except:
+            QMessageBox.critical(self.iface.mainWindow(), QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2").arg(self.minQtVersion).arg(qVersion()))
+            return
+
         # shortcuts
         translatedMetatools = QCoreApplication.translate("Metatools", "Metatools")
         mainWindow = self.iface.mainWindow()
@@ -163,7 +155,7 @@ class MetatoolsPlugin:
 
         #TODO: check layer DS type (local, DB, service)
 
-        # get metafile path 
+        # get metafile path
         metaFilePath = utils.getMetafilePath(layer)
 
         # check metadata file exists
@@ -188,7 +180,7 @@ class MetatoolsPlugin:
             return
 
         #------------ create and show the dialog
-        #TODO: need singleton!        
+        #TODO: need singleton!
         dlg = MetatoolsEditor()
         dlg.setContent(metaFilePath)
         dlg.show()
@@ -197,12 +189,18 @@ class MetatoolsPlugin:
 
 
 
-    #### NEED REMOVE COMMON CODE!      
+    #### NEED REMOVE COMMON CODE!
 
 
 
     # View metadata
     def doView(self):
+        try:
+            from metatoolsviewer import MetatoolsViewer
+        except:
+            QMessageBox.critical(self.iface.mainWindow(), QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2").arg(self.minQtVersion).arg(qVersion()))
+            return
+
         # shortcuts
         translatedMetatools = QCoreApplication.translate("Metatools", "Metatools")
         mainWindow = self.iface.mainWindow()
@@ -225,7 +223,7 @@ class MetatoolsPlugin:
 
         #TODO: check layer DS type (local, DB, service)
 
-        # get metafile path 
+        # get metafile path
         metaFilePath = utils.getMetafilePath(layer)
 
         # check metadata file exists
@@ -247,7 +245,7 @@ class MetatoolsPlugin:
         xsltFilePath = self.pluginPath + '/xsl/iso19115.xsl'
 
         #------------ create and show the dialog
-        #TODO: need singleton!        
+        #TODO: need singleton!
         dlg = MetatoolsViewer()
         dlg.setContent(metaFilePath, xsltFilePath)
         dlg.show()
@@ -262,12 +260,18 @@ class MetatoolsPlugin:
             self.metadataDock.setContentsMargins ( 6, 6, 6, 6 )
             #self.metadataDock.setWidget( ??? ) #need remake window to control!!!
             self.iface.mainWindow().addDockWidget( Qt.RightDockWidgetArea, self.metadataDock )
-        
-        self.metadataDock.widget().setContent(???)    
+
+        self.metadataDock.widget().setContent(???)
         self.metadataDock.show()
         """
 
     def doApplyTemplates(self):
+        try:
+            from apply_templates_dialog import ApplyTemplatesDialog
+        except ImportError:
+            QMessageBox.critical(self.iface.mainWindow(), QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2").arg(self.minQtVersion).arg(qVersion()))
+            return
+
         mapLayers = self.iface.mapCanvas().layers()
 
         dlg = ApplyTemplatesDialog(self.pluginPath, mapLayers)

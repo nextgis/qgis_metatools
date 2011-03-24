@@ -19,7 +19,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-#PyQt and QGIS imports 
+#PyQt and QGIS imports
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtXml import *
@@ -137,7 +137,7 @@ class ApplyTemplatesDialog(QDialog):
                     if layer.type() != QgsMapLayer.RasterLayer:
                         continue
 
-                    #get metafile path 
+                    #get metafile path
                     metaFilePath = utils.getMetafilePath(layer)
 
                     # check metadata file exists
@@ -165,7 +165,7 @@ class ApplyTemplatesDialog(QDialog):
                     metaXML = QDomDocument()
                     metaXML.setContent(file)
 
-                    #apply templates (BAD version - change to applier with standard) 
+                    #apply templates (BAD version - change to applier with standard)
                     self.applyLicenseTemplate(metaXML)
                     self.applyWorkflowTemplate(metaXML)
                     self.applyLogFile(metaXML)

@@ -28,7 +28,6 @@ from PyQt4.QtXmlPatterns  import *
 from qgis.core import *
 from ui_viewer import Ui_MetatoolsViewer
 
-
 #debug
 class Handler(QAbstractMessageHandler):
     def handleMessage(self, msg_type, desc, identifier, loc):
