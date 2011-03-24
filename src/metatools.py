@@ -55,8 +55,8 @@ class MetatoolsPlugin:
             self.QgisVersion = unicode(QGis.qgisVersion)[ 0 ]
 
         # Get plugin folder
-        userPluginPath = QFileInfo(QgsApplication.qgisUserDbFilePath()).path() + "/python/plugins/Metatools"
-        systemPluginPath = QgsApplication.prefixPath() + "/python/plugins/Metatools"
+        userPluginPath = QFileInfo(QgsApplication.qgisUserDbFilePath()).path() + "/python/plugins/metatools"
+        systemPluginPath = QgsApplication.prefixPath() + "/python/plugins/metatools"
 
         if QFileInfo(userPluginPath).exists():
             self.pluginPath = userPluginPath
