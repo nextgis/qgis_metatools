@@ -101,18 +101,18 @@ class MetatoolsPlugin:
         QObject.connect(self.configAction, SIGNAL("triggered()"), self.doConfigure)
 
         # Add menu item
+        self.iface.addPluginToMenu("&Metatools", self.viewAction)
         self.iface.addPluginToMenu("&Metatools", self.editAction)
         self.iface.addPluginToMenu("&Metatools", self.applyTemplatesAction)
-        self.iface.addPluginToMenu("&Metatools", self.viewAction)
         self.iface.addPluginToMenu("&Metatools", self.configAction)
 
         # Add toolbar
         self.toolBar = self.iface.addToolBar(QCoreApplication.translate("Metatools", "Metatools"))
         self.toolBar.setObjectName(QCoreApplication.translate("Metatools", "Metatools"))
 
+        self.toolBar.addAction(self.viewAction)
         self.toolBar.addAction(self.editAction)
         self.toolBar.addAction(self.applyTemplatesAction)
-        self.toolBar.addAction(self.viewAction)
         self.toolBar.addAction(self.configAction)
 
 
