@@ -83,27 +83,6 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Filter file</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="filterLineEdit"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="selectFilterButton">
-           <property name="text">
-            <string>Browse</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
         <widget class="QSplitter" name="splitter_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

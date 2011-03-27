@@ -45,7 +45,6 @@ class MetatoolsEditor(QDialog):
         self.connect(self.ui.valueButtonBox, SIGNAL("clicked(QAbstractButton*)"), self.valueButtonClicked)
         self.connect(self.ui.mainButtonBox, SIGNAL("clicked(QAbstractButton*)"), self.mainButtonClicked)
 
-        self.connect(self.ui.selectFilterButton, SIGNAL("clicked()"), self.updateFilter)
         self.connect(self.ui.filterTreeView, SIGNAL("clicked(QModelIndex)"), self.filter_item_select)
         self.connect(self.ui.filterTreeView, SIGNAL("collapsed(QModelIndex)"), self.filterCollapsedExpanded)
         self.connect(self.ui.filterTreeView, SIGNAL("expanded(QModelIndex)"), self.filterCollapsedExpanded)
@@ -61,7 +60,8 @@ class MetatoolsEditor(QDialog):
 
         self.model = DomModel(self.metaXML, self)
 
-        filter = []
+        filter = self.loadFilter()
+
         self.proxyModel = FilterDomModel( filter, self )
         self.proxyModel.setDynamicSortFilter( True )
         self.proxyModel.setSourceModel(self.model)
@@ -141,30 +141,6 @@ class MetatoolsEditor(QDialog):
             self.ui.filterValueTextEdit.setPlainText(self.text.toString())
         self.ui.filterValueButtonBox.setEnabled(False)
 
-    def updateFilter( self ):
-        fileName = QFileDialog.getOpenFileName( self, self.tr( 'Select filter' ), '.', self.tr( 'Text files (*.txt *.TXT)' ) )
-
-        if fileName.isEmpty():
-            return
-
-        self.ui.filterLineEdit.setText( fileName )
-
-        # read filter from file
-        filter = []
-        f = QFile( fileName )
-        if not f.open( QIODevice.ReadOnly ):
-            QMessageBox.warning( self, self.tr( 'I/O error' ), self.tr( "Can't open file %1" ).arg( fileName ) )
-            return
-
-        stream = QTextStream( f )
-        while not stream.atEnd():
-            line = stream.readLine()
-            filter.append( line )
-        f.close()
-
-        # update model
-        self.proxyModel.setFilter( filter )
-
     def mainButtonClicked(self, button):
         #need make user request!
         if self.ui.mainButtonBox.standardButton(button) == QDialogButtonBox.Save:
@@ -178,4 +154,24 @@ class MetatoolsEditor(QDialog):
         else:
             self.reject()
 
+    def loadFilter( self ):
+        settings = QSettings( "NextGIS", "metatools" )
+        fileName = settings.value( "general/filterFile", QVariant() ).toString()
 
+        if fileName.isEmpty():
+            return []
+
+        # read filter from file
+        filter = []
+        f = QFile( fileName )
+        if not f.open( QIODevice.ReadOnly ):
+            QMessageBox.warning( self, self.tr( 'I/O error' ), self.tr( "Can't open file %1" ).arg( fileName ) )
+            return []
+
+        stream = QTextStream( f )
+        while not stream.atEnd():
+            line = stream.readLine()
+            filter.append( line )
+        f.close()
+
+        return filter

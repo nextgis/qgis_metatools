@@ -39,6 +39,8 @@ from workflow_template_manager import WorkflowTemplateManager
 from standard import MetaInfoStandard
 import utils
 
+
+
 class ApplyTemplatesDialog(QDialog):
     def __init__(self, basePluginPath, mapLayers):
         QDialog.__init__(self)

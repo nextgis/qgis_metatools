@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_editor.ui'
 #
-# Created: Sat Mar 26 15:29:21 2011
+# Created: Sun Mar 27 14:11:15 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -58,18 +58,6 @@ class Ui_MetatoolsEditor(object):
         self.tab_2.setObjectName(_fromUtf8("tab_2"))
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.tab_2)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.label = QtGui.QLabel(self.tab_2)
-        self.label.setObjectName(_fromUtf8("label"))
-        self.horizontalLayout.addWidget(self.label)
-        self.filterLineEdit = QtGui.QLineEdit(self.tab_2)
-        self.filterLineEdit.setObjectName(_fromUtf8("filterLineEdit"))
-        self.horizontalLayout.addWidget(self.filterLineEdit)
-        self.selectFilterButton = QtGui.QPushButton(self.tab_2)
-        self.selectFilterButton.setObjectName(_fromUtf8("selectFilterButton"))
-        self.horizontalLayout.addWidget(self.selectFilterButton)
-        self.verticalLayout_5.addLayout(self.horizontalLayout)
         self.splitter_2 = QtGui.QSplitter(self.tab_2)
         self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
         self.splitter_2.setOpaqueResize(True)
@@ -112,8 +100,6 @@ class Ui_MetatoolsEditor(object):
         MetatoolsEditor.setWindowTitle(QtGui.QApplication.translate("MetatoolsEditor", "Metadata editor", None, QtGui.QApplication.UnicodeUTF8))
         self.editorGroupBox.setTitle(QtGui.QApplication.translate("MetatoolsEditor", "Edit value", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("MetatoolsEditor", "Full view", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("MetatoolsEditor", "Filter file", None, QtGui.QApplication.UnicodeUTF8))
-        self.selectFilterButton.setText(QtGui.QApplication.translate("MetatoolsEditor", "Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.filterEditorGroupBox.setTitle(QtGui.QApplication.translate("MetatoolsEditor", "Edit value", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("MetatoolsEditor", "Filtered view", None, QtGui.QApplication.UnicodeUTF8))
 
