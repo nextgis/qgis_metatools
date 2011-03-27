@@ -39,7 +39,7 @@ from workflow_template_manager import WorkflowTemplateManager
 from standard import MetaInfoStandard
 import utils
 
-
+currentPath = os.path.abspath( os.path.dirname( __file__ ) )
 
 class ApplyTemplatesDialog(QDialog):
     def __init__(self, basePluginPath, mapLayers):
@@ -131,6 +131,15 @@ class ApplyTemplatesDialog(QDialog):
         translatedMetatools = QCoreApplication.translate("Metatools", "Metatools")
         mainWindow = self
 
+        # get profile from settings
+        settings = QSettings( "NextGIS", "metatools" )
+        profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
+        if profile.isEmpty():
+          QMessageBox.warning( self, self.tr( "No profile" ), self.tr( "No profile selected. Please set default profile in plugin settings" ) )
+          return
+
+        profilePath = QDir( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", profile ) )
+
         if self.ui.mainButtonBox.standardButton(button) == QDialogButtonBox.Apply:
             try:
                 for layer in self.mapLayers:
@@ -146,7 +155,7 @@ class ApplyTemplatesDialog(QDialog):
                         if result == QDialogButtonBox.Yes:
                             #TODO: get profile name from standart&settings
                             try:
-                                profilePath = os.path.join(str(self.basePluginPath), 'xml_profiles/csir_sac_profile.xml') #BAD!
+                                #profilePath = os.path.join(str(self.basePluginPath), 'xml_profiles/csir_sac_profile.xml') #BAD!
                                 shutil.copyfile(profilePath, metaFilePath)
                             except:
                                 QMessageBox.warning(mainWindow, translatedMetatools, QCoreApplication.translate("Metatools", "Metadata file can't be created: ") + str(sys.exc_info()[1]))
