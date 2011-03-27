@@ -272,7 +272,8 @@ class MetatoolsPlugin:
             QMessageBox.critical(self.iface.mainWindow(), QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2").arg(self.minQtVersion).arg(qVersion()))
             return
 
-        mapLayers = self.iface.mapCanvas().layers()
+        #mapLayers = self.iface.mapCanvas().layers()
+        mapLayers = QgsMapLayerRegistry.instance().mapLayers()
 
         dlg = ApplyTemplatesDialog(self.pluginPath, mapLayers)
         # show the dialog
