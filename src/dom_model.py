@@ -67,7 +67,7 @@ class DomItem:
         return self.rowNumber
 
 
-    #-------additional 
+    #-------additional
 
     #editable flag. Need to remove #text nodes and organize editable control
     def isEditable(self):
@@ -167,10 +167,10 @@ class DomModel(QtCore.QAbstractItemModel):
         if index.isValid():
             item = index.internalPointer()
             node = item.node()
-            item.setItemValue(value)
+            item.setItemValue(QtCore.QVariant(value).toString())
 
             self.emit(QtCore.SIGNAL('dataChanged(const QModelIndex &,const QModelIndex &)'), index, index)
-            return node
+            return True
         return False
 
     def flags(self, index):
@@ -230,3 +230,22 @@ class DomModel(QtCore.QAbstractItemModel):
             parentItem = parent.internalPointer()
 
         return parentItem.childCount()
+
+class FilterDomModel(QtGui.QSortFilterProxyModel):
+    def __init__(self, filter, parent=None):
+        QtGui.QSortFilterProxyModel.__init__(self, parent)
+        self.filter = filter
+
+    def filterAcceptsRow( self, sourceRow, sourceParent ):
+        if len( self.filter ) == 0:
+            return True
+        index = self.sourceModel().index(sourceRow, 0, sourceParent)
+        value = self.sourceModel().data(index, QtCore.Qt.DisplayRole).toString()
+        if value in self.filter:
+            return True
+        else:
+            return False
+
+    def setFilter( self, filter ):
+        self.filter = filter
+        self.invalidateFilter()

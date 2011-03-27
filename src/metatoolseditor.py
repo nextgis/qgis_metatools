@@ -19,13 +19,13 @@
  ***************************************************************************/
 """
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import SIGNAL, QFile, QVariant, QCoreApplication
-from PyQt4.QtGui import QDialogButtonBox, QDialog, QMessageBox
-from PyQt4.QtXml import QDomDocument
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtXml import *
 from qgis.core import *
 
 #Import plugin code
-from dom_model import DomModel
+from dom_model import DomModel, FilterDomModel
 from ui_editor import Ui_MetatoolsEditor
 import codecs,sys
 
@@ -45,6 +45,13 @@ class MetatoolsEditor(QDialog):
         self.connect(self.ui.valueButtonBox, SIGNAL("clicked(QAbstractButton*)"), self.valueButtonClicked)
         self.connect(self.ui.mainButtonBox, SIGNAL("clicked(QAbstractButton*)"), self.mainButtonClicked)
 
+        self.connect(self.ui.selectFilterButton, SIGNAL("clicked()"), self.updateFilter)
+        self.connect(self.ui.filterTreeView, SIGNAL("clicked(QModelIndex)"), self.filter_item_select)
+        self.connect(self.ui.filterTreeView, SIGNAL("collapsed(QModelIndex)"), self.filterCollapsedExpanded)
+        self.connect(self.ui.filterTreeView, SIGNAL("expanded(QModelIndex)"), self.filterCollapsedExpanded)
+        self.connect(self.ui.filterValueTextEdit, SIGNAL("textChanged()"), self.filterValueTextChanged)
+        self.connect(self.ui.filterValueButtonBox, SIGNAL("clicked(QAbstractButton*)"), self.filterValueButtonClicked)
+
 
     def setContent(self, metaFilePath):
         self.metaFilePath = metaFilePath
@@ -53,11 +60,21 @@ class MetatoolsEditor(QDialog):
         self.metaXML.setContent(self.file)
 
         self.model = DomModel(self.metaXML, self)
+
+        filter = []
+        self.proxyModel = FilterDomModel( filter, self )
+        self.proxyModel.setDynamicSortFilter( True )
+        self.proxyModel.setSourceModel(self.model)
+
         self.ui.treeView.setModel(self.model)
         self.ui.treeView.hideColumn(1) #hide attrs
         self.ui.treeView.resizeColumnToContents(0) #resize value column
 
-        self.ui.mainButtonBox.button(QDialogButtonBox.Save).setEnabled(False) #Disable Save button 
+        self.ui.filterTreeView.setModel(self.proxyModel)
+        self.ui.filterTreeView.hideColumn(1) #hide attrs
+        self.ui.filterTreeView.resizeColumnToContents(0) #resize value column
+
+        self.ui.mainButtonBox.button(QDialogButtonBox.Save).setEnabled(False) #Disable Save button
 
     def item_select(self, mindex):
         '''Item selected in TreeView will be displayed in edit box.'''
@@ -75,12 +92,35 @@ class MetatoolsEditor(QDialog):
         else:
             self.ui.editorGroupBox.setEnabled(False)
 
+    def filter_item_select(self, mindex):
+        '''Item selected in TreeView will be displayed in edit box.'''
+        self.text = QVariant()
+        self.mindex = self.proxyModel.index(mindex.row(), 2, mindex.parent())
+
+        self.ui.filterValueTextEdit.clear()
+        path = self.proxyModel.sourceModel().nodePath( self.proxyModel.mapToSource( self.mindex ) )
+        self.ui.filterNodePathLabel.setText(path)
+
+        editable = self.proxyModel.sourceModel().isEditable( self.proxyModel.mapToSource( self.mindex ) )
+        if(editable):
+            self.text = self.proxyModel.data(self.mindex, 0)
+            self.ui.filterValueTextEdit.setPlainText(self.text.toString())
+            self.ui.filterEditorGroupBox.setEnabled(True)
+            self.ui.filterValueButtonBox.setEnabled(False) #disable buttons
+        else:
+            self.ui.filterEditorGroupBox.setEnabled(False)
 
     def collapsedExpanded(self, mindex):
         self.ui.treeView.resizeColumnToContents(0)
 
+    def filterCollapsedExpanded(self, mindex):
+        self.ui.filterTreeView.resizeColumnToContents(0)
+
     def valueTextChanged(self):
         self.ui.valueButtonBox.setEnabled(True)
+
+    def filterValueTextChanged(self):
+        self.ui.filterValueButtonBox.setEnabled(True)
 
     def valueButtonClicked(self, button):
         if self.ui.valueButtonBox.standardButton(button) == QDialogButtonBox.Apply:
@@ -90,6 +130,40 @@ class MetatoolsEditor(QDialog):
         else:
             self.ui.valueTextEdit.setPlainText(self.text.toString())
         self.ui.valueButtonBox.setEnabled(False)
+
+    def filterValueButtonClicked(self, button):
+        if self.ui.filterValueButtonBox.standardButton(button) == QDialogButtonBox.Apply:
+            QMessageBox.warning(self, "DEBUG", self.ui.filterValueTextEdit.toPlainText())
+            self.proxyModel.setData(self.mindex, self.ui.filterValueTextEdit.toPlainText())
+            self.text = self.proxyModel.data(self.mindex, 0) #reload value!
+            self.ui.mainButtonBox.button(QDialogButtonBox.Save).setEnabled(True) #Enable Save button on first edit
+        else:
+            self.ui.filterValueTextEdit.setPlainText(self.text.toString())
+        self.ui.filterValueButtonBox.setEnabled(False)
+
+    def updateFilter( self ):
+        fileName = QFileDialog.getOpenFileName( self, self.tr( 'Select filter' ), '.', self.tr( 'Text files (*.txt *.TXT)' ) )
+
+        if fileName.isEmpty():
+            return
+
+        self.ui.filterLineEdit.setText( fileName )
+
+        # read filter from file
+        filter = []
+        f = QFile( fileName )
+        if not f.open( QIODevice.ReadOnly ):
+            QMessageBox.warning( self, self.tr( 'I/O error' ), self.tr( "Can't open file %1" ).arg( fileName ) )
+            return
+
+        stream = QTextStream( f )
+        while not stream.atEnd():
+            line = stream.readLine()
+            filter.append( line )
+        f.close()
+
+        # update model
+        self.proxyModel.setFilter( filter )
 
     def mainButtonClicked(self, button):
         #need make user request!
