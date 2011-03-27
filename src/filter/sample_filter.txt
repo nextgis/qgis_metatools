@@ -1,0 +1,10 @@
+xml
+MD_Metadata
+fileIdentifier
+gco:CharacterString
+contact
+CI_ResponsibleParty
+individualName
+identificationInfo
+MD_DataIdentification
+abstract

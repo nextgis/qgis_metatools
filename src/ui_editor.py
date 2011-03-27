@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_editor.ui'
 #
-# Created: Sun Mar 27 14:11:15 2011
+# Created: Sun Mar 27 15:09:43 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -58,7 +58,21 @@ class Ui_MetatoolsEditor(object):
         self.tab_2.setObjectName(_fromUtf8("tab_2"))
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.tab_2)
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
+        self.label = QtGui.QLabel(self.tab_2)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setTextFormat(QtCore.Qt.PlainText)
+        self.label.setObjectName(_fromUtf8("label"))
+        self.verticalLayout_5.addWidget(self.label)
         self.splitter_2 = QtGui.QSplitter(self.tab_2)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.splitter_2.sizePolicy().hasHeightForWidth())
+        self.splitter_2.setSizePolicy(sizePolicy)
         self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
         self.splitter_2.setOpaqueResize(True)
         self.splitter_2.setHandleWidth(5)
@@ -93,13 +107,14 @@ class Ui_MetatoolsEditor(object):
         self.verticalLayout.addWidget(self.mainButtonBox)
 
         self.retranslateUi(MetatoolsEditor)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MetatoolsEditor)
 
     def retranslateUi(self, MetatoolsEditor):
         MetatoolsEditor.setWindowTitle(QtGui.QApplication.translate("MetatoolsEditor", "Metadata editor", None, QtGui.QApplication.UnicodeUTF8))
         self.editorGroupBox.setTitle(QtGui.QApplication.translate("MetatoolsEditor", "Edit value", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("MetatoolsEditor", "Full view", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("MetatoolsEditor", "To set filtered view please check sample.txt in the filter directory for the filtering format and point to it at the plugin settings page.", None, QtGui.QApplication.UnicodeUTF8))
         self.filterEditorGroupBox.setTitle(QtGui.QApplication.translate("MetatoolsEditor", "Edit value", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("MetatoolsEditor", "Filtered view", None, QtGui.QApplication.UnicodeUTF8))
 
