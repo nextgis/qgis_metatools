@@ -32,9 +32,6 @@ import sys, shutil
 
 # Import the code for the dialogs
 from metatoolssettings import MetatoolsSettings
-#from metatoolsviewer import MetatoolsViewer
-#from metatoolseditor import MetatoolsEditor
-#from apply_templates_dialog import ApplyTemplatesDialog
 
 #Import plugin code
 import utils
@@ -114,8 +111,6 @@ class MetatoolsPlugin:
         self.toolBar.addAction(self.editAction)
         self.toolBar.addAction(self.applyTemplatesAction)
         self.toolBar.addAction(self.configAction)
-
-
 
     def unload(self):
         # Remove the plugin menu item and icon
@@ -272,7 +267,6 @@ class MetatoolsPlugin:
             QMessageBox.critical(self.iface.mainWindow(), QCoreApplication.translate("Metatools", "Metatools"), QCoreApplication.translate("Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2").arg(self.minQtVersion).arg(qVersion()))
             return
 
-        #mapLayers = self.iface.mapCanvas().layers()
         mapLayers = QgsMapLayerRegistry.instance().mapLayers()
 
         dlg = ApplyTemplatesDialog(self.pluginPath, mapLayers)

@@ -39,8 +39,6 @@ from workflow_template_manager import WorkflowTemplateManager
 from standard import MetaInfoStandard
 import utils
 
-
-
 class ApplyTemplatesDialog(QDialog):
     def __init__(self, basePluginPath, mapLayers):
         QDialog.__init__(self)
@@ -72,7 +70,7 @@ class ApplyTemplatesDialog(QDialog):
 
         self.ui.organizationComboBox.addItem(self.translatedNoneLabel) #temporary
 
-        for layer in mapLayers:
+        for name, layer in mapLayers.iteritems():
             if layer.type() == QgsMapLayer.RasterLayer:
                 self.ui.layerListView.addItem(layer.name())
 
