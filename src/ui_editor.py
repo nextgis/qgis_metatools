@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_editor.ui'
 #
-# Created: Sun Mar 27 15:09:43 2011
+# Created: Tue Mar 29 13:16:51 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -102,12 +102,12 @@ class Ui_MetatoolsEditor(object):
         self.verticalLayout.addWidget(self.tabWidget)
         self.mainButtonBox = QtGui.QDialogButtonBox(MetatoolsEditor)
         self.mainButtonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.mainButtonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Save)
+        self.mainButtonBox.setStandardButtons(QtGui.QDialogButtonBox.Close|QtGui.QDialogButtonBox.Save)
         self.mainButtonBox.setObjectName(_fromUtf8("mainButtonBox"))
         self.verticalLayout.addWidget(self.mainButtonBox)
 
         self.retranslateUi(MetatoolsEditor)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MetatoolsEditor)
 
     def retranslateUi(self, MetatoolsEditor):
