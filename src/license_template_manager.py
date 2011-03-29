@@ -44,7 +44,7 @@ class LicenseTemplateManager:
   def getTemplateFilePath( self, templateName ):
     return os.path.join( self.getLicenseTemplatesPath(), str( templateName ) + self.LICENSE_EXT )
 
-  def getLicenseTemplateList( self ):
+  def getTemplateList( self ):
     templatesList = []
     for filename in os.listdir( self.getLicenseTemplatesPath() ):
       name, ext = os.path.splitext( filename )

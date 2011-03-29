@@ -134,11 +134,15 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
   def updateLicenseTemplatesList( self ):
     self.licenseComboBox.clear()
-    self.licenseComboBox.addItems( self.licenseTemplateManager.getLicenseTemplateList() )
+    self.licenseComboBox.addItems( self.licenseTemplateManager.getTemplateList() )
 
   def updateWorkflowTemplatesList( self ):
     self.workflowComboBox.clear()
-    self.workflowComboBox.addItems( self.workflowTemplateManager.getWorkflowTemplateList() )
+    self.workflowComboBox.addItems( self.workflowTemplateManager.getTemplateList() )
+
+  def updateOrgsTemplatesList( self ):
+    self.organizationComboBox.clear()
+    self.organizationComboBox.addItems( self.organizationComboBox.getTemplateList() )
 
   def updateLayerList( self ):
     self.layers = []
@@ -317,6 +321,9 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     mdCharStringElement = self.getOrCreateChild( mdDescription, "gco:CharacterString" )
     textNode = self.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( logFileContent )
+
+  def applyOrganisationTemplate( self, metaXML ):
+    pass
 
   # ----------- XML Helpers -----------
 

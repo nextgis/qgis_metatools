@@ -44,7 +44,7 @@ class WorkflowTemplateManager:
   def getTemplateFilePath( self, templateName ):
     return os.path.join( self.getWorkflowTemplatesPath(), str( templateName ) + self.WORKFLOW_EXT )
 
-  def getWorkflowTemplateList( self ):
+  def getTemplateList( self ):
     templatesList = []
     for filename in os.listdir( self.getWorkflowTemplatesPath() ):
       name, ext = os.path.splitext( filename )

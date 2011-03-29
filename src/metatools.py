@@ -131,6 +131,9 @@ class MetatoolsPlugin:
     self.editAction.setEnabled( False )
 
   def unload( self ):
+    # disconnect signals
+    QObject.disconnect( self.iface, SIGNAL( "currentLayerChanged( QgsMapLayer* )" ), self.layerChanged )
+
     # remove the plugin menu items and toolbar
     self.iface.removePluginMenu( "Metatools", self.editAction )
     self.iface.removePluginMenu( "Metatools", self.applyTemplatesAction )
@@ -311,5 +314,4 @@ class MetatoolsPlugin:
                                QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
           return False
         return True
-      else:
-        return True
+    return True
