@@ -29,6 +29,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from qgis.core import *
+from qgis.gui import *
 
 import os, sys, shutil
 
@@ -51,7 +52,7 @@ class MetatoolsPlugin:
     except:
       self.QgisVersion = unicode( QGis.qgisVersion )[ 0 ]
 
-    # Get plugin folder
+    # get plugin folder
     userPluginPath = QFileInfo( QgsApplication.qgisUserDbFilePath() ).path() + "/python/plugins/metatools"
     systemPluginPath = QgsApplication.prefixPath() + "/python/plugins/metatools"
 
@@ -77,26 +78,26 @@ class MetatoolsPlugin:
   def initGui( self ):
     if int( self.QgisVersion ) < 10500:
       QMessageBox.warning( self.iface.mainWindow(), "Metatools",
-                           QCoreApplication.translate( "Metatools", "Quantum GIS version detected: %1.%2\n" ).arg( self.QgisVersion )[ 0 ] ).arg( self.QgisVersion )[ 2 ] ) +
+                           QCoreApplication.translate( "Metatools", "Quantum GIS version detected: %1.%2\n" ).arg( self.QgisVersion[ 0 ] ).arg( self.QgisVersion[ 2 ] ) +
                            QCoreApplication.translate( "Metatools", "This version of Metatools requires at least QGIS version 1.5.0\nPlugin will not be enabled." ) )
       return None
 
-    # Create editAction that will start editor window
+    # create editAction that will start metadata editor
     self.editAction = QAction( QIcon( ":/plugins/metatools/icons/edit.png" ), QCoreApplication.translate( "Metatools", "Edit metadata" ), self.iface.mainWindow() )
     self.editAction.setStatusTip( QCoreApplication.translate( "Metatools", "Edit metadata" ) )
     self.editAction.setWhatsThis( QCoreApplication.translate( "Metatools", "Edit metadata" ) )
 
-    # Create applyTemplateAction that will start templates window
+    # create applyTemplateAction that will start templates manager
     self.applyTemplatesAction = QAction( QIcon( ":/plugins/metatools/icons/templates.png" ), QCoreApplication.translate( "Metatools", "Apply templates" ), self.iface.mainWindow() )
     self.applyTemplatesAction.setStatusTip( QCoreApplication.translate( "Metatools", "Edit and apply templates" ) )
     self.applyTemplatesAction.setWhatsThis( QCoreApplication.translate( "Metatools", "Edit and apply templates" ) )
 
-    # Create viewAction that will start viewer window
+    # create viewAction that will start metadata viewer
     self.viewAction = QAction( QIcon( ":/plugins/metatools/icons/view.png" ), QCoreApplication.translate( "Metatools", "View metadata" ), self.iface.mainWindow() )
     self.viewAction.setStatusTip( QCoreApplication.translate( "Metatools", "View metadata" ) )
     self.viewAction.setWhatsThis( QCoreApplication.translate( "Metatools", "View metadata" ) )
 
-    # Create configAction that will start plugin configuration
+    # create configAction that will start plugin configuration
     self.configAction = QAction( QIcon( ":/plugins/metatools/icons/settings.png" ), QCoreApplication.translate( "Metatools", "Configure Metatools plugin" ), self.iface.mainWindow() )
     self.configAction.setStatusTip( QCoreApplication.translate( "Metatools", "Сonfigure plugin" ) )
     self.configAction.setWhatsThis( QCoreApplication.translate( "Metatools", "Configure plugin" ) )
@@ -106,13 +107,13 @@ class MetatoolsPlugin:
     QObject.connect( self.viewAction, SIGNAL( "triggered()" ), self.doView )
     QObject.connect( self.configAction, SIGNAL( "triggered()" ), self.doConfigure )
 
-    # Add menu items
+    # add menu items
     self.iface.addPluginToMenu( "Metatools", self.viewAction )
     self.iface.addPluginToMenu( "Metatools", self.editAction )
     self.iface.addPluginToMenu( "Metatools", self.applyTemplatesAction )
     self.iface.addPluginToMenu( "Metatools", self.configAction )
 
-    # Add toolbar and buttons
+    # add toolbar and buttons
     self.toolBar = self.iface.addToolBar( QCoreApplication.translate( "Metatools", "Metatools" ) )
     self.toolBar.setObjectName( QCoreApplication.translate( "Metatools", "Metatools" ) )
 
@@ -121,8 +122,16 @@ class MetatoolsPlugin:
     self.toolBar.addAction( self.applyTemplatesAction )
     self.toolBar.addAction( self.configAction )
 
+    # track layer changing
+    QObject.connect( self.iface, SIGNAL( "currentLayerChanged( QgsMapLayer* )" ), self.layerChanged )
+
+    # disable some actions when there is no active layer
+    self.layer = None
+    self.viewAction.setEnabled( False )
+    self.editAction.setEnabled( False )
+
   def unload( self ):
-    # Remove the plugin menu items and toolbar
+    # remove the plugin menu items and toolbar
     self.iface.removePluginMenu( "Metatools", self.editAction )
     self.iface.removePluginMenu( "Metatools", self.applyTemplatesAction )
     self.iface.removePluginMenu( "Metatools", self.viewAction )
@@ -130,7 +139,32 @@ class MetatoolsPlugin:
 
     del self.toolBar
 
-  # Edit metadata
+  def layerChanged( self ):
+    self.layer = self.iface.activeLayer()
+
+    # check layer type
+    if self.layer.type() == QgsMapLayer.VectorLayer and self.layer.type() != QgsMapLayer.RasterLayer:
+      self.viewAction.setEnabled( False )
+      self.editAction.setEnabled( False )
+      self.layer = None
+      self.metaFilePath = None
+      return
+
+    # check layer DS type (local, DB, service)
+    if self.layer.usesProvider() and self.layer.providerKey() != "gdal":
+      self.viewAction.setEnabled( False )
+      self.editAction.setEnabled( False )
+      self.layer = None
+      self.metaFilePath = None
+      return
+
+    # get metadata file path
+    self.metaFilePath = utils.getMetafilePath( self.layer )
+
+    # enable buttons
+    self.viewAction.setEnabled( True )
+    self.editAction.setEnabled( True )
+
   def doEdit( self ):
     try:
       from metatoolseditor import MetatoolsEditor
@@ -142,58 +176,34 @@ class MetatoolsPlugin:
                             .arg( qVersion() ) )
       return
 
-    # get active layer
-    layer = self.iface.activeLayer()
-    if not layer:
-      QMessageBox.information( self.iface.mainWindow(),
-                               QCoreApplication.translate( "Metatools", "Metatools" ),
-                               QCoreApplication.translate( "Metatools", "Choose any map layer" ) )
-      return
-
-    # check layer type
-    if layer.type() == QgsMapLayer.VectorLayer:
-      QMessageBox.warning( self.iface.mainWindow(),
-                           QCoreApplication.translate( "Metatools", "Metatools" ),
-                           QCoreApplication.translate( "Metatools", "Vector layers are not supported yet!" ) )
-      return
-
-    if layer.type() != QgsMapLayer.RasterLayer:
-      QMessageBox.critical( self.iface.mainWindow(),
-                            QCoreApplication.translate( "Metatools", "Metatools" ),
-                            QCoreApplication.translate( "Metatools", "Unknow layer type!" ) )
-      return
-
-    #TODO: check layer DS type (local, DB, service)
-
-    # get metafile path
-    metaFilePath = utils.getMetafilePath( layer )
-
     # check if metadata file exists
-    if not os.path.exists( metaFilePath ):
-      result = QMessageBox.question( self.iface.mainWindow(),
-                                     QCoreApplication.translate( "Metatools", "Metatools" ),
-                                     QCoreApplication.translate( "Metatools", "The layer does not have metadata! Create metadata file?"),
-                                     QDialogButtonBox.Yes, QDialogButtonBox.No )
-      if result == QDialogButtonBox.Yes:
-        try:
-          settings = QSettings( "NextGIS", "metatools" )
-          profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
-          if profile.isEmpty():
-            QMessageBox.warning( self, self.tr( "No profile" ), self.tr( "No profile selected. Please set default profile in plugin settings" ) )
-            return
-
-          profilePath = QDir( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) ).absolutePath()
-          shutil.copyfile( str( profilePath ), metaFilePath )
-        except:
-          QMessageBox.warning( self.iface.mainWindow(),
-                               QCoreApplication.translate( "Metatools", "Metatools" ),
-                               QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
-          return
-      else:
-        return
+    if not self.checkMetadataFile():
+      return
+    #~ if not os.path.exists( self.metaFilePath ):
+      #~ result = QMessageBox.question( self.iface.mainWindow(),
+                                     #~ QCoreApplication.translate( "Metatools", "Metatools" ),
+                                     #~ QCoreApplication.translate( "Metatools", "The layer does not have metadata! Create metadata file?"),
+                                     #~ QDialogButtonBox.Yes, QDialogButtonBox.No )
+      #~ if result == QDialogButtonBox.Yes:
+        #~ try:
+          #~ settings = QSettings( "NextGIS", "metatools" )
+          #~ profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
+          #~ if profile.isEmpty():
+            #~ QMessageBox.warning( self, self.tr( "No profile" ), self.tr( "No profile selected. Please set default profile in plugin settings" ) )
+            #~ return
+#~
+          #~ profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
+          #~ shutil.copyfile( profilePath, self.metaFilePath )
+        #~ except:
+          #~ QMessageBox.warning( self.iface.mainWindow(),
+                               #~ QCoreApplication.translate( "Metatools", "Metatools" ),
+                               #~ QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
+          #~ return
+      #~ else:
+        #~ return
 
     # check matadata standard
-    standard = MetaInfoStandard.tryDetermineStandard( metaFilePath )
+    standard = MetaInfoStandard.tryDetermineStandard( self.metaFilePath )
     if standard != MetaInfoStandard.ISO19115:
       QMessageBox.critical( self.iface.mainWindow(),
                             QCoreApplication.translate( "Metatools", "Metatools" ),
@@ -201,12 +211,9 @@ class MetatoolsPlugin:
       return
 
     dlg = MetatoolsEditor()
-    dlg.setContent( metaFilePath )
+    dlg.setContent( self.metaFilePath )
     dlg.exec_()
 
-  #### NEED REMOVE COMMON CODE!
-
-  # View metadata
   def doView(self):
     try:
       from metatoolsviewer import MetatoolsViewer
@@ -218,58 +225,34 @@ class MetatoolsPlugin:
                             .arg( qVersion() ) )
       return
 
-    # get active layer
-    layer = self.iface.activeLayer()
-    if not layer:
-      QMessageBox.information( self.iface.mainWindow(),
-                               QCoreApplication.translate( "Metatools", "Metatools" ),
-                               QCoreApplication.translate( "Metatools", "Choose any map layer" ) )
-      return
-
-    # check layer type
-    if layer.type() == QgsMapLayer.VectorLayer:
-      QMessageBox.warning( self.iface.mainWindow(),
-                           QCoreApplication.translate( "Metatools", "Metatools" ),
-                           QCoreApplication.translate( "Metatools", "Vector layers are not supported yet!" ) )
-      return
-
-    if layer.type() != QgsMapLayer.RasterLayer:
-      QMessageBox.critical( self.iface.mainWindow(),
-                            QCoreApplication.translate( "Metatools", "Metatools" ),
-                            QCoreApplication.translate( "Metatools", "Unknow layer type!" ) )
-      return
-
-    #TODO: check layer DS type (local, DB, service)
-
-    # get metafile path
-    metaFilePath = utils.getMetafilePath( layer )
-
     # check if metadata file exists
-    if not os.path.exists( metaFilePath ):
-      result = QMessageBox.question( self.iface.mainWindow(),
-                                     QCoreApplication.translate( "Metatools", "Metatools" ),
-                                     QCoreApplication.translate( "Metatools", "The layer does not have metadata! Create metadata file?" ),
-                                     QDialogButtonBox.Yes, QDialogButtonBox.No )
-      if result == QDialogButtonBox.Yes:
-        try:
-          settings = QSettings( "NextGIS", "metatools" )
-          profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
-          if profile.isEmpty():
-            QMessageBox.warning( self, self.tr( "No profile" ), self.tr( "No profile selected. Please set default profile in plugin settings" ) )
-            return
-
-          profilePath = QDir( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) ).absolutePath()
-          shutil.copyfile( str( profilePath ), metaFilePath )
-        except:
-          QMessageBox.warning( self.iface.mainWindow(),
-                               QCoreApplication.translate( "Metatools", "Metatools" ),
-                               QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
-          return
-      else:
-        return
+    if not self.checkMetadataFile():
+      return
+    #~ if not os.path.exists( self.metaFilePath ):
+      #~ result = QMessageBox.question( self.iface.mainWindow(),
+                                     #~ QCoreApplication.translate( "Metatools", "Metatools" ),
+                                     #~ QCoreApplication.translate( "Metatools", "The layer does not have metadata! Create metadata file?" ),
+                                     #~ QDialogButtonBox.Yes, QDialogButtonBox.No )
+      #~ if result == QDialogButtonBox.Yes:
+        #~ try:
+          #~ settings = QSettings( "NextGIS", "metatools" )
+          #~ profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
+          #~ if profile.isEmpty():
+            #~ QMessageBox.warning( self, self.tr( "No profile" ), self.tr( "No profile selected. Please set default profile in plugin settings" ) )
+            #~ return
+#~
+          #~ profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
+          #~ shutil.copyfile( profilePath, self.metaFilePath )
+        #~ except:
+          #~ QMessageBox.warning( self.iface.mainWindow(),
+                               #~ QCoreApplication.translate( "Metatools", "Metatools" ),
+                               #~ QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
+          #~ return
+      #~ else:
+        #~ return
 
     # check matadata standard
-    standard = MetaInfoStandard.tryDetermineStandard( metaFilePath )
+    standard = MetaInfoStandard.tryDetermineStandard( self.metaFilePath )
     if standard != MetaInfoStandard.ISO19115:
       QMessageBox.critical( self.iface.mainWindow(),
                             QCoreApplication.translate( "Metatools", "Metatools" ),
@@ -297,11 +280,36 @@ class MetatoolsPlugin:
                             .arg( qVersion() ) )
       return
 
-    mapLayers = QgsMapLayerRegistry.instance().mapLayers()
-
-    dlg = ApplyTemplatesDialog( self.pluginPath, mapLayers )
+    dlg = ApplyTemplatesDialog( self.iface )
     dlg.exec_()
 
   def doConfigure( self ):
     dlg = MetatoolsSettings()
     dlg.exec_()
+
+  def checkMetadataFile( self ):
+    # check if metadata file exists
+    if not os.path.exists( self.metaFilePath ):
+      result = QMessageBox.question( self.iface.mainWindow(),
+                                     QCoreApplication.translate( "Metatools", "Metatools" ),
+                                     QCoreApplication.translate( "Metatools", "The layer does not have metadata! Create metadata file?" ),
+                                     QDialogButtonBox.Yes, QDialogButtonBox.No )
+      if result == QDialogButtonBox.Yes:
+        try:
+          settings = QSettings( "NextGIS", "metatools" )
+          profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
+          if profile.isEmpty():
+            QMessageBox.warning( self, self.tr( "No profile" ),
+                                 self.tr( "No profile selected. Please set default profile in plugin settings" ) )
+            return False
+
+          profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
+          shutil.copyfile( profilePath, self.metaFilePath )
+        except:
+          QMessageBox.warning( self.iface.mainWindow(),
+                               QCoreApplication.translate( "Metatools", "Metatools" ),
+                               QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
+          return False
+        return True
+      else:
+        return True

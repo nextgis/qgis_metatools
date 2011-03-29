@@ -31,6 +31,7 @@ from PyQt4.QtXml import *
 from PyQt4.QtXmlPatterns  import *
 
 from qgis.core import *
+from qgis.gui import *
 
 from ui_viewer import Ui_MetatoolsViewer
 

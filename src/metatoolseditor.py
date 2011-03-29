@@ -30,6 +30,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtXml import *
 
 from qgis.core import *
+from qgis.gui import *
 
 import codecs, sys
 
@@ -41,7 +42,7 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
   def __init__( self ):
     QDialog.__init__( self )
     self.setupUi( self )
-    
+
     self.tabWidget.setCurrentIndex( 0 )
 
     # events

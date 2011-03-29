@@ -7,14 +7,35 @@
     <x>0</x>
     <y>0</y>
     <width>465</width>
-    <height>247</height>
+    <height>263</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Apply templates</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="2" rowspan="2">
+   <item row="0" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QCheckBox" name="externalFilesCheckBox">
+       <property name="text">
+        <string>Select files from disk</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSelectDataFiles">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Select files...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="1">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Templates</string>
@@ -107,16 +128,16 @@
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QPushButton" name="selectFileButton">
+       <widget class="QPushButton" name="selectLogFileButton">
         <property name="text">
-         <string>Open</string>
+         <string>Browse</string>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="2" column="0" colspan="3">
+   <item row="2" column="1">
     <widget class="QDialogButtonBox" name="mainButtonBox">
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
@@ -129,17 +150,8 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0" rowspan="2" colspan="2">
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="title">
-      <string>Layers</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QListWidget" name="layerListView"/>
-      </item>
-     </layout>
-    </widget>
+   <item row="1" column="0">
+    <widget class="QListWidget" name="layerListView"/>
    </item>
   </layout>
  </widget>

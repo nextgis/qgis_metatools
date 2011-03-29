@@ -25,6 +25,12 @@
 #
 #******************************************************************************
 
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+
+from qgis.core import *
+from qgis.gui import *
+
 import os
 
 META_EXT = '.xml'
@@ -34,3 +40,29 @@ def getMetafilePath( layer ):
   originalFileName = os.path.splitext( originalFilePath )
   metaFilePath = originalFileName[ 0 ] + META_EXT
   return metaFilePath
+
+def mdPathFromLayerPath( layerPath ):
+  originalFileName = os.path.splitext( str( layerPath ) )
+  metaFilePath = originalFileName[ 0 ] + META_EXT
+  return metaFilePath
+
+def getRasterLayerNames():
+  layermap = QgsMapLayerRegistry.instance().mapLayers()
+  layerList = QStringList()
+  for name, layer in layermap.iteritems():
+    if layer.type() == QgsMapLayer.RasterLayer:
+      if layer.usesProvider() and layer.providerKey() != 'gdal':
+        continue
+      layerList << layer.name()
+  return layerList
+
+def getRasterLayerByName( layerName ):
+  layermap = QgsMapLayerRegistry.instance().mapLayers()
+  for name, layer in layermap.iteritems():
+    if layer.type() == QgsMapLayer.RasterLayer:
+      if layer.usesProvider() and layer.providerKey() != "gdal":
+        continue
+      if layer.name() == layerName:
+        return layer
+      else:
+        return None

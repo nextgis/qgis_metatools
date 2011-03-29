@@ -31,6 +31,7 @@ from PyQt4.QtXml import *
 from PyQt4.QtXmlPatterns import *
 
 from qgis.core import *
+from qgis.gui import *
 
 import sys, os, codecs, shutil
 
@@ -47,85 +48,104 @@ import utils
 currentPath = os.path.abspath( os.path.dirname( __file__ ) )
 
 class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
-  def __init__( self, basePluginPath, mapLayers ):
+  def __init__( self, iface ):
     QDialog.__init__( self )
-    # Set up the user interface from Designer.
     self.setupUi( self )
+    self.iface = iface
 
-    #shortcuts
-    self.translatedNoneLabel = QCoreApplication.translate("Metatools", "None")
+    self.basePluginPath = currentPath
+    self.layers = []
 
-    # env vars
-    self.basePluginPath = basePluginPath
-    self.mapLayers = mapLayers
-
-    # internal vars
     self.licenseTemplateManager = LicenseTemplateManager( self.basePluginPath )
     self.workflowTemplateManager = WorkflowTemplateManager( self.basePluginPath )
 
-    # events
+    QObject.connect( self.externalFilesCheckBox, SIGNAL( "stateChanged( int )" ), self.toggleExternalFiles )
+    QObject.connect( self.layerListView, SIGNAL( "itemSelectionChanged()" ), self.updateLayerList )
+
+    QObject.connect( self.btnSelectDataFiles, SIGNAL( "clicked()" ), self.selectExternalFiles )
     QObject.connect( self.licenseManageButton, SIGNAL( "clicked()" ), self.licenseManageButtonClick )
     QObject.connect( self.organizationManageButton, SIGNAL( "clicked()" ), self.organizationManageButtonClick )
     QObject.connect( self.workflowManageButton, SIGNAL( "clicked()" ), self.workflowManageButtonClick )
-    QObject.connect( self.selectFileButton, SIGNAL( "clicked()" ), self.selectFileButtonClick )
+    QObject.connect( self.selectLogFileButton, SIGNAL( "clicked()" ), self.selectLogFileButtonClick )
     QObject.connect( self.mainButtonBox, SIGNAL( "clicked( QAbstractButton* )" ), self.mainButtonClicked )
 
-    #init gui
+    self.manageGui()
+
+  def manageGui( self ):
+    # populate layer list
+    self.layerListView.addItems( utils.getRasterLayerNames() )
+
+    # populate comboboxes with templates
     self.updateLicenseTemplatesList()
     self.updateWorkflowTemplatesList()
 
-    self.organizationComboBox.addItem( self.translatedNoneLabel ) #temporary
+  def toggleExternalFiles( self ):
+    if self.externalFilesCheckBox.isChecked():
+      self.layerListView.setEnabled( False )
+      self.btnSelectDataFiles.setEnabled( True )
+      self.layers = []
+    else:
+      self.layerListView.setEnabled( True )
+      self.btnSelectDataFiles.setEnabled( False )
+      self.updateLayerList()
 
-    for name, layer in self.mapLayers.iteritems():
-      if layer.type() == QgsMapLayer.RasterLayer:
-        self.layerListView.addItem( layer.name() )
+  def selectExternalFiles( self ):
+    files = QFileDialog.getOpenFileNames( self, self.tr( "Select files" ), ".", self.tr( "All files (*.*)" ) )
+
+    if files.isEmpty():
+      return
+
+    self.layers = files
 
   def licenseManageButtonClick( self ):
+    oldValue = self.licenseComboBox.currentText()
+
     dlg = LicenseEditorDialog( self.basePluginPath )
     dlg.exec_()
 
-    oldValue = self.licenseComboBox.currentText()
-
     self.updateLicenseTemplatesList()
 
-    # try restore old selected value
+    # try to restore previous value
     index = self.licenseComboBox.findText( oldValue )
     if index != -1:
       self.licenseComboBox.setCurrentIndex( index )
 
-  def organizationManageButtonClick( self ):
-    QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Not implemented!" ) )
-
   def workflowManageButtonClick( self ):
+    oldValue = self.workflowComboBox.currentText()
+
     dlg = WorkflowEditorDialog( self.basePluginPath )
     dlg.exec_()
 
-    oldValue = self.workflowComboBox.currentText()
-
     self.updateWorkflowTemplatesList()
 
-    #try restore old selected value
+    # try to restore previous value
     index = self.workflowComboBox.findText( oldValue )
     if index != -1:
       self.workflowComboBox.setCurrentIndex( index )
 
-  def selectFileButtonClick( self ):
-    # need to save last dir and set it in dialog
+  def organizationManageButtonClick( self ):
+    QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Not implemented!" ) )
+
+  def selectLogFileButtonClick( self ):
+    # TODO: need to save last dir and set it in dialog
     logFileName = QFileDialog.getOpenFileName( self, self.tr( "Select log file" ), ".", self.tr( "Text files (*.txt);;Log files (*.log);;All files (*)" ), None, QFileDialog.ReadOnly )
     self.logFileLineEdit.setText( logFileName )
     self.logFileLineEdit.setToolTip( logFileName )
 
   def updateLicenseTemplatesList( self ):
-    licenseTemplatesList = self.licenseTemplateManager.getLicenseTemplateList()
     self.licenseComboBox.clear()
-    self.licenseComboBox.addItem( self.translatedNoneLabel )
-    self.licenseComboBox.addItems( licenseTemplatesList )
+    self.licenseComboBox.addItems( self.licenseTemplateManager.getLicenseTemplateList() )
 
   def updateWorkflowTemplatesList( self ):
-    workflowTemplatesList = self.workflowTemplateManager.getWorkflowTemplateList()
     self.workflowComboBox.clear()
-    self.workflowComboBox.addItem( self.translatedNoneLabel )
-    self.workflowComboBox.addItems( workflowTemplatesList )
+    self.workflowComboBox.addItems( self.workflowTemplateManager.getWorkflowTemplateList() )
+
+  def updateLayerList( self ):
+    self.layers = []
+    selection = self.layerListView.selectedItems()
+    for item in selection:
+      layer = utils.getRasterLayerByName( item.text() )
+      self.layers.append( layer.source() )
 
   def mainButtonClicked( self, button ):
     # get profile from settings
@@ -135,40 +155,43 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
       QMessageBox.warning( self, self.tr( "No profile" ), self.tr( "No profile selected. Please set default profile in plugin settings" ) )
       return
 
-    profilePath = QDir( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) ).absolutePath()
+    profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
 
     if self.mainButtonBox.standardButton( button ) == QDialogButtonBox.Apply:
       try:
-        for name, layer in self.mapLayers.iteritems():
-          if layer.type() != QgsMapLayer.RasterLayer:
-            continue
+        for layer in self.layers:
+          # get metadata file path
+          metaFilePath = utils.mdPathFromLayerPath( layer )
 
-          # get metafile path
-          metaFilePath = utils.getMetafilePath( layer )
-
-          # check metadata file exists
+          # check if metadata file exists
           if not os.path.exists( metaFilePath ):
-            result = QMessageBox.question( self, self.tr( "Metatools" ),
-                                           self.tr( "The layer %1 does not have metadata! Create metadata file?")
-                                           .arg( layer.name() ),
-                                           QDialogButtonBox.Yes, QDialogButtonBox.No )
-            if result == QDialogButtonBox.Yes:
-              try:
+            try:
+              shutil.copyfile( profilePath, metaFilePath )
+            except:
+              QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Metadata file can't be created: ") + str( sys.exc_info()[ 1 ] ) )
+              continue
+          #if not os.path.exists( metaFilePath ):
+          #  result = QMessageBox.question( self, self.tr( "Metatools" ),
+          #                                 self.tr( "The layer %1 does not have metadata! Create metadata file?")
+          #                                 .arg( layer.name() ),
+          #                                 QDialogButtonBox.Yes, QDialogButtonBox.No )
+          #  if result == QDialogButtonBox.Yes:
+          #    try:
                 # TODO: get profile name from standart&settings
                 #profilePath = os.path.join( str( self.basePluginPath ), "xml_profiles/csir_sac_profile.xml" ) # BAD!
-                shutil.copyfile( str( profilePath ), metaFilePath )
-              except:
-                QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Metadata file can't be created: ") + str( sys.exc_info()[ 1 ] ) )
-                continue
-            else:
-              continue
+          #      shutil.copyfile( str( profilePath ), metaFilePath )
+          #    except:
+          #      QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Metadata file can't be created: ") + str( sys.exc_info()[ 1 ] ) )
+          #      continue
+          #  else:
+          #    continue
 
           # check metadata standard
           standard = MetaInfoStandard.tryDetermineStandard( metaFilePath )
           if standard != MetaInfoStandard.ISO19115:
-            QMessageBox.critical( self, self.tr( "Metatools" ),
-                                  self.tr( "Layer %1 has unsupported metadata standard! Only ISO19115 supported now!" )
-                                  .arg( layer.name() ) )
+            QMessageBox.warning( self, self.tr( "Metatools" ),
+                                 self.tr( "File %1 has unsupported metadata standard! Only ISO19115 supported now!" )
+                                 .arg( layer ) )
             continue
 
           # load metadata file
@@ -187,10 +210,8 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
           metafile.close()
 
         QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Templates successfully applied!" ) )
-        # don't close dialog
-        #self.accept()
       except:
-        QMessageBox.critical( self, self.tr( "Metatools" ), self.tr( "Templates can't be applied: " ) + str( sys.exc_info()[ 1 ] ) )
+        QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Templates can't be applied: " ) + str( sys.exc_info()[ 1 ] ) )
     else:
       self.reject()
 
@@ -198,7 +219,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
   def applyLicenseTemplate( self, metaXML ):
     # TODO: make more safe
-    if self.licenseComboBox.currentText() == self.translatedNoneLabel:
+    if self.licenseComboBox.currentIndex() == -1:
       return
 
     licenseTemplate = self.licenseTemplateManager.loadLicenseTemplate( self.licenseComboBox.currentText() )
@@ -229,7 +250,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
   def applyWorkflowTemplate( self, metaXML ):
     # TODO: make more safe
-    if self.workflowComboBox.currentText() == self.translatedNoneLabel:
+    if self.workflowComboBox.currentIndex() == -1:
         return
 
     workflowTemplate = self.workflowTemplateManager.loadWorkflowTemplate( self.workflowComboBox.currentText() )
@@ -263,7 +284,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
   def applyLogFile( self, metaXML ):
     # TODO: make more safe
-    if not self.logFileLineEdit.text() or self.logFileLineEdit.text() == "":
+    if self.logFileLineEdit.text().isEmpty():
       return
 
     logFile = codecs.open( self.logFileLineEdit.text(), "r", encoding="utf-8" )
@@ -297,7 +318,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     textNode = self.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( logFileContent )
 
-  #----------- XML Helpers
+  # ----------- XML Helpers -----------
 
   def getOrCreateChild( self, element, childName ):
     child = element.firstChildElement( childName )

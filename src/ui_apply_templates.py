@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_apply_templates.ui'
 #
-# Created: Tue Mar 29 13:29:56 2011
+# Created: Tue Mar 29 19:25:24 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,9 +17,19 @@ except AttributeError:
 class Ui_ApplyTemplatesDialog(object):
     def setupUi(self, ApplyTemplatesDialog):
         ApplyTemplatesDialog.setObjectName(_fromUtf8("ApplyTemplatesDialog"))
-        ApplyTemplatesDialog.resize(465, 247)
+        ApplyTemplatesDialog.resize(465, 263)
         self.gridLayout = QtGui.QGridLayout(ApplyTemplatesDialog)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.externalFilesCheckBox = QtGui.QCheckBox(ApplyTemplatesDialog)
+        self.externalFilesCheckBox.setObjectName(_fromUtf8("externalFilesCheckBox"))
+        self.horizontalLayout.addWidget(self.externalFilesCheckBox)
+        self.btnSelectDataFiles = QtGui.QPushButton(ApplyTemplatesDialog)
+        self.btnSelectDataFiles.setEnabled(False)
+        self.btnSelectDataFiles.setObjectName(_fromUtf8("btnSelectDataFiles"))
+        self.horizontalLayout.addWidget(self.btnSelectDataFiles)
+        self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 2)
         self.groupBox = QtGui.QGroupBox(ApplyTemplatesDialog)
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.gridLayout_2 = QtGui.QGridLayout(self.groupBox)
@@ -61,30 +71,27 @@ class Ui_ApplyTemplatesDialog(object):
         self.logFileLineEdit.setReadOnly(True)
         self.logFileLineEdit.setObjectName(_fromUtf8("logFileLineEdit"))
         self.gridLayout_2.addWidget(self.logFileLineEdit, 3, 1, 1, 1)
-        self.selectFileButton = QtGui.QPushButton(self.groupBox)
-        self.selectFileButton.setObjectName(_fromUtf8("selectFileButton"))
-        self.gridLayout_2.addWidget(self.selectFileButton, 3, 2, 1, 1)
-        self.gridLayout.addWidget(self.groupBox, 0, 2, 2, 1)
+        self.selectLogFileButton = QtGui.QPushButton(self.groupBox)
+        self.selectLogFileButton.setObjectName(_fromUtf8("selectLogFileButton"))
+        self.gridLayout_2.addWidget(self.selectLogFileButton, 3, 2, 1, 1)
+        self.gridLayout.addWidget(self.groupBox, 1, 1, 1, 1)
         self.mainButtonBox = QtGui.QDialogButtonBox(ApplyTemplatesDialog)
         self.mainButtonBox.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.mainButtonBox.setOrientation(QtCore.Qt.Horizontal)
         self.mainButtonBox.setStandardButtons(QtGui.QDialogButtonBox.Apply|QtGui.QDialogButtonBox.Close)
         self.mainButtonBox.setObjectName(_fromUtf8("mainButtonBox"))
-        self.gridLayout.addWidget(self.mainButtonBox, 2, 0, 1, 3)
-        self.groupBox_2 = QtGui.QGroupBox(ApplyTemplatesDialog)
-        self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
-        self.verticalLayout = QtGui.QVBoxLayout(self.groupBox_2)
-        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.layerListView = QtGui.QListWidget(self.groupBox_2)
+        self.gridLayout.addWidget(self.mainButtonBox, 2, 1, 1, 1)
+        self.layerListView = QtGui.QListWidget(ApplyTemplatesDialog)
         self.layerListView.setObjectName(_fromUtf8("layerListView"))
-        self.verticalLayout.addWidget(self.layerListView)
-        self.gridLayout.addWidget(self.groupBox_2, 0, 0, 2, 2)
+        self.gridLayout.addWidget(self.layerListView, 1, 0, 1, 1)
 
         self.retranslateUi(ApplyTemplatesDialog)
         QtCore.QMetaObject.connectSlotsByName(ApplyTemplatesDialog)
 
     def retranslateUi(self, ApplyTemplatesDialog):
         ApplyTemplatesDialog.setWindowTitle(QtGui.QApplication.translate("ApplyTemplatesDialog", "Apply templates", None, QtGui.QApplication.UnicodeUTF8))
+        self.externalFilesCheckBox.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Select files from disk", None, QtGui.QApplication.UnicodeUTF8))
+        self.btnSelectDataFiles.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Select files...", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("ApplyTemplatesDialog", "Templates", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Institution", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "License", None, QtGui.QApplication.UnicodeUTF8))
@@ -93,6 +100,5 @@ class Ui_ApplyTemplatesDialog(object):
         self.licenseManageButton.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Manage", None, QtGui.QApplication.UnicodeUTF8))
         self.workflowManageButton.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Manage", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Log file", None, QtGui.QApplication.UnicodeUTF8))
-        self.selectFileButton.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Open", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_2.setTitle(QtGui.QApplication.translate("ApplyTemplatesDialog", "Layers", None, QtGui.QApplication.UnicodeUTF8))
+        self.selectLogFileButton.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
 
