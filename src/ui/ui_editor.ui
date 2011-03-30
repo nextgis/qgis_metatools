@@ -13,143 +13,70 @@
   <property name="windowTitle">
    <string>Metadata editor</string>
   </property>
-  <property name="sizeGripEnabled">
-   <bool>true</bool>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTabWidget" name="tabWidget">
-     <property name="currentIndex">
-      <number>0</number>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="tab">
-      <attribute name="title">
-       <string>Full view</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QSplitter" name="splitter">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="opaqueResize">
-          <bool>true</bool>
-         </property>
-         <property name="handleWidth">
-          <number>5</number>
-         </property>
-         <widget class="QTreeView" name="treeView">
-          <property name="animated">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Full view</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QTreeView" name="treeFull"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Filtered view</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>To set filtered view please check sample.txt in the filter directory for the filtering format and point to it at the plugin settings page.</string>
+          </property>
+          <property name="wordWrap">
            <bool>true</bool>
           </property>
          </widget>
-         <widget class="QGroupBox" name="editorGroupBox">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="title">
-           <string>Edit value</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QLabel" name="nodePathLabel">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QTextEdit" name="valueTextEdit"/>
-           </item>
-           <item>
-            <widget class="QDialogButtonBox" name="valueButtonBox">
-             <property name="standardButtons">
-              <set>QDialogButtonBox::Apply|QDialogButtonBox::Discard</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
+        </item>
+        <item>
+         <widget class="QTreeView" name="treeFiltered"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>Filtered view</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="title">
+       <string>Edit value</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QLabel" name="label">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+        <widget class="QLabel" name="lblNodePath">
          <property name="text">
-          <string>To set filtered view please check sample.txt in the filter directory for the filtering format and point to it at the plugin settings page.</string>
-         </property>
-         <property name="textFormat">
-          <enum>Qt::PlainText</enum>
+          <string>TextLabel</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QTextEdit" name="textValue"/>
+       </item>
+       <item>
+        <widget class="QDialogButtonBox" name="editorButtonBox">
+         <property name="standardButtons">
+          <set>QDialogButtonBox::Apply|QDialogButtonBox::Discard</set>
          </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="opaqueResize">
-          <bool>true</bool>
-         </property>
-         <property name="handleWidth">
-          <number>5</number>
-         </property>
-         <widget class="QTreeView" name="filterTreeView">
-          <property name="animated">
-           <bool>true</bool>
-          </property>
-         </widget>
-         <widget class="QGroupBox" name="filterEditorGroupBox">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="title">
-           <string>Edit value</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <widget class="QLabel" name="filterNodePathLabel">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QTextEdit" name="filterValueTextEdit"/>
-           </item>
-           <item>
-            <widget class="QDialogButtonBox" name="filterValueButtonBox">
-             <property name="standardButtons">
-              <set>QDialogButtonBox::Apply|QDialogButtonBox::Discard</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
         </widget>
        </item>
       </layout>
@@ -157,7 +84,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="mainButtonBox">
+    <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -169,5 +96,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>MetatoolsEditor</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>MetatoolsEditor</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

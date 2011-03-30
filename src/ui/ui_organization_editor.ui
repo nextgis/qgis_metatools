@@ -1,86 +1,147 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>OrganizationEditorDialog</class>
- <widget class="QDialog" name="OrganizationEditorDialog">
+ <class>OrganisationsEditorDialog</class>
+ <widget class="QDialog" name="OrganisationsEditorDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>350</height>
+    <width>440</width>
+    <height>486</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Edit institution</string>
+   <string>Manage organisations</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="2">
-    <widget class="QComboBox" name="orgComboBox"/>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QComboBox" name="cmbOrganisation"/>
    </item>
-   <item row="1" column="0">
-    <widget class="QPushButton" name="addButton">
-     <property name="text">
-      <string>Add</string>
-     </property>
-    </widget>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="btnNew">
+       <property name="text">
+        <string>New</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnRemove">
+       <property name="text">
+        <string>Remove</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="1" column="1">
-    <widget class="QPushButton" name="removeButton">
-     <property name="text">
-      <string>Remove</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QGroupBox" name="orgGroupBox">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Institution</string>
+      <string>Organisation</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="nameLineEdit"/>
-      </item>
+     <layout class="QFormLayout" name="formLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="nameLabel">
+       <widget class="QLabel" name="label">
         <property name="text">
          <string>Name</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="leName"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Address</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QTextEdit" name="descTextEdit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
+       <widget class="QTextEdit" name="textAddress"/>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="descriptionLabel">
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Description</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+         <string>Telephone</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QDialogButtonBox" name="orgButtonBox">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="standardButtons">
-         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="lePhone"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Fax</string>
         </property>
        </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="leFax"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>E-Mail</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="leEmail"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Contact person</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="leContactPerson"/>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Person title</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLineEdit" name="lePersonTitle"/>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Person position</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLineEdit" name="lePersonPosition"/>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Office hours</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLineEdit" name="leOfficeHours"/>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Close|QDialogButtonBox::Save</set>
+     </property>
     </widget>
    </item>
   </layout>
@@ -88,9 +149,9 @@
  <resources/>
  <connections>
   <connection>
-   <sender>orgButtonBox</sender>
+   <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>OrganizationEditorDialog</receiver>
+   <receiver>OrganisationsEditorDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -104,9 +165,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>orgButtonBox</sender>
+   <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>OrganizationEditorDialog</receiver>
+   <receiver>OrganisationsEditorDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

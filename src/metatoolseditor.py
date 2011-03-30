@@ -44,20 +44,35 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     self.setupUi( self )
 
     self.tabWidget.setCurrentIndex( 0 )
+    self.lblNodePath.setText( "" )
 
-    # events
-    QObject.connect( self.treeView, SIGNAL( "clicked( QModelIndex )" ), self.item_select )
-    QObject.connect( self.treeView, SIGNAL( "collapsed( QModelIndex )" ), self.collapsedExpanded )
-    QObject.connect( self.treeView, SIGNAL( "expanded( QModelIndex )" ), self.collapsedExpanded )
-    QObject.connect( self.valueTextEdit, SIGNAL( "textChanged()" ), self.valueTextChanged )
-    QObject.connect( self.valueButtonBox, SIGNAL( "clicked( QAbstractButton* )" ), self.valueButtonClicked )
-    QObject.connect( self.mainButtonBox, SIGNAL( "clicked( QAbstractButton* )" ), self.mainButtonClicked )
+    self.btnSave = self.buttonBox.button( QDialogButtonBox.Save )
+    self.btnClose = self.buttonBox.button( QDialogButtonBox.Close )
 
-    QObject.connect( self.filterTreeView, SIGNAL( "clicked( QModelIndex )" ), self.filter_item_select )
-    QObject.connect( self.filterTreeView, SIGNAL( "collapsed( QModelIndex )" ), self.filterCollapsedExpanded )
-    QObject.connect( self.filterTreeView, SIGNAL( "expanded( QModelIndex )" ), self.filterCollapsedExpanded )
-    QObject.connect( self.filterValueTextEdit, SIGNAL( "textChanged()" ), self.filterValueTextChanged )
-    QObject.connect( self.filterValueButtonBox, SIGNAL( "clicked( QAbstractButton* )" ), self.filterValueButtonClicked )
+    self.btnApply = QPushButton( self.tr( "Apply" ) )
+    self.btnDiscard = QPushButton( self.tr( "Discard" ) )
+    self.editorButtonBox.clear()
+    self.editorButtonBox.addButton( self.btnApply, QDialogButtonBox.AcceptRole )
+    self.editorButtonBox.addButton( self.btnDiscard, QDialogButtonBox.RejectRole )
+
+    # full metadata view
+    QObject.connect( self.treeFull, SIGNAL( "clicked( QModelIndex )" ), self.itemSelected )
+    QObject.connect( self.treeFull, SIGNAL( "collapsed( QModelIndex )" ), self.collapsedExpanded )
+    QObject.connect( self.treeFull, SIGNAL( "expanded( QModelIndex )" ), self.collapsedExpanded )
+    # filtered metadata view
+    QObject.connect( self.treeFiltered, SIGNAL( "clicked( QModelIndex )" ), self.itemSelected )
+    QObject.connect( self.treeFiltered, SIGNAL( "collapsed( QModelIndex )" ), self.collapsedExpanded )
+    QObject.connect( self.treeFiltered, SIGNAL( "expanded( QModelIndex )" ), self.collapsedExpanded )
+
+    QObject.connect( self.textValue, SIGNAL( "textChanged()" ), self.valueModified )
+    QObject.connect( self.tabWidget, SIGNAL( "currentChanged( int )" ), self.tabChanged )
+    
+    QObject.connect( self.btnApply, SIGNAL( "clicked()" ), self.applyEdits )
+    QObject.connect( self.btnDiscard, SIGNAL( "clicked()" ), self.resetEdits )
+
+    #QObject.connect( self.buttonBox, SIGNAL( "clicked( QAbstractButton* )" ), self.mainButtonClicked )
+    QObject.disconnect( self.buttonBox, SIGNAL( "accepted()" ), self.accept )
+    QObject.connect( self.btnSave, SIGNAL( "clicked()" ), self.saveMetadata )
 
   def setContent( self, metaFilePath ):
     self.metaFilePath = metaFilePath
@@ -73,92 +88,117 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     self.proxyModel.setDynamicSortFilter( True )
     self.proxyModel.setSourceModel( self.model )
 
-    self.treeView.setModel( self.model )
-    self.treeView.hideColumn( 1 ) # hide attrs
-    self.treeView.resizeColumnToContents( 0 ) # resize value column
+    self.treeFull.setModel( self.model )
+    self.treeFull.hideColumn( 1 ) # hide attrs
+    self.treeFull.resizeColumnToContents( 0 ) # resize value column
 
-    self.filterTreeView.setModel( self.proxyModel )
-    self.filterTreeView.hideColumn( 1 ) # hide attrs
-    self.filterTreeView.resizeColumnToContents( 0 ) # resize value column
+    self.treeFiltered.setModel( self.proxyModel )
+    self.treeFiltered.hideColumn( 1 ) # hide attrs
+    self.treeFiltered.resizeColumnToContents( 0 ) # resize value column
 
-    self.mainButtonBox.button( QDialogButtonBox.Save ).setEnabled( False ) # Disable Save button
+    self.btnSave.setEnabled( False )
 
-  def item_select( self, mindex ):
-    '''Item selected in TreeView will be displayed in edit box.'''
+  def itemSelected( self, mindex ):
+    # Display item selected in TreeView in edit box.
+    self.textValue.clear()
+    
+    path = ""
+    editable = False
     self.text = QVariant()
-    self.mindex = self.model.index( mindex.row(), 2, mindex.parent() )
 
-    self.valueTextEdit.clear()
-    self.nodePathLabel.setText( self.model.nodePath( self.mindex ) )
-
-    if self.model.isEditable( self.mindex ):
+    if self.tabWidget.currentIndex() == 0:
+      # full view
+      self.mindex = self.model.index( mindex.row(), 2, mindex.parent() )
+      path = self.model.nodePath( self.mindex )
+      editable = self.model.isEditable( self.mindex )
       self.text = self.model.data( self.mindex, 0 )
-      self.valueTextEdit.setPlainText( self.text.toString() )
-      self.editorGroupBox.setEnabled( True )
-      self.valueButtonBox.setEnabled( False ) # disable buttons
     else:
-      self.editorGroupBox.setEnabled( False )
-
-  def filter_item_select( self, mindex ):
-    '''Item selected in TreeView will be displayed in edit box.'''
-    self.text = QVariant()
-    self.mindex = self.proxyModel.index( mindex.row(), 2, mindex.parent() )
-
-    self.filterValueTextEdit.clear()
-    path = self.proxyModel.sourceModel().nodePath( self.proxyModel.mapToSource( self.mindex ) )
-    self.filterNodePathLabel.setText( path )
-
-    editable = self.proxyModel.sourceModel().isEditable( self.proxyModel.mapToSource( self.mindex ) )
-    if editable:
+      # filtered view
+      self.mindex = self.proxyModel.index( mindex.row(), 2, mindex.parent() )
+      path = self.proxyModel.sourceModel().nodePath( self.proxyModel.mapToSource( self.mindex ) )
+      editable = self.proxyModel.sourceModel().isEditable( self.proxyModel.mapToSource( self.mindex ) )
       self.text = self.proxyModel.data( self.mindex, 0 )
-      self.filterValueTextEdit.setPlainText( self.text.toString() )
-      self.filterEditorGroupBox.setEnabled( True )
-      self.filterValueButtonBox.setEnabled( False ) # disable buttons
+    
+    self.lblNodePath.setText( path )
+    if editable:
+      self.textValue.setPlainText( self.text.toString() )
+      self.groupBox.setEnabled( True )
+      self.editorButtonBox.setEnabled( False )
     else:
-      self.filterEditorGroupBox.setEnabled( False )
+      self.textValue.clear()
+      self.groupBox.setEnabled( False )
 
   def collapsedExpanded( self, mindex ):
-    self.treeView.resizeColumnToContents( 0 )
-
-  def filterCollapsedExpanded( self, mindex ):
-    self.filterTreeView.resizeColumnToContents( 0 )
-
-  def valueTextChanged( self ):
-    self.valueButtonBox.setEnabled( True )
-
-  def filterValueTextChanged( self ):
-    self.filterValueButtonBox.setEnabled( True )
-
-  def valueButtonClicked( self, button ):
-    if self.valueButtonBox.standardButton( button ) == QDialogButtonBox.Apply:
-      self.model.setData( self.mindex, self.valueTextEdit.toPlainText() )
-      self.text = self.model.data( self.mindex, 0 ) # reload value!
-      self.mainButtonBox.button( QDialogButtonBox.Save ).setEnabled( True ) # Enable Save button on first edit
+    if self.tabWidget.currentIndex() == 0:
+      self.treeFull.resizeColumnToContents( 0 )
     else:
-      self.valueTextEdit.setPlainText( self.text.toString() )
-    self.valueButtonBox.setEnabled( False )
+      self.treeFiltered.resizeColumnToContents( 0 )
 
-  def filterValueButtonClicked( self, button ):
-    if self.filterValueButtonBox.standardButton( button ) == QDialogButtonBox.Apply:
+  def valueModified( self ):
+    self.editorButtonBox.setEnabled( True )
+  
+  def tabChanged(self, tab):
+    self.textValue.clear()
+    
+    path = ""
+    editable = False
+    self.text = QVariant()
+    
+    if tab == 0:
+      mindex = self.treeFull.currentIndex()
+      self.mindex = self.model.index( mindex.row(), 2, mindex.parent() )
+      path = self.model.nodePath( self.mindex )
+      editable = self.model.isEditable( self.mindex )
+      self.text = self.model.data( self.mindex, 0 )
+    else:
+      mindex = self.treeFiltered.currentIndex()
+      self.mindex = self.proxyModel.index( mindex.row(), 2, mindex.parent() )
+      path = self.proxyModel.sourceModel().nodePath( self.proxyModel.mapToSource( self.mindex ) )
+      editable = self.proxyModel.sourceModel().isEditable( self.proxyModel.mapToSource( self.mindex ) )
+      self.text = self.proxyModel.data( self.mindex, 0 )
+    
+    self.lblNodePath.setText( path )
+    if editable:
+      self.textValue.setPlainText( self.text.toString() )
+      self.groupBox.setEnabled( True )
+      self.editorButtonBox.setEnabled( False )
+    else:
+      self.textValue.clear()
+      self.groupBox.setEnabled( False )
+  
+  def applyEdits( self ):
+    if self.tabWidget.currentIndex() == 0:
+      self.model.setData( self.mindex, self.textValue.toPlainText() )
+      self.text = self.model.data( self.mindex, 0 )
+    else:
       self.proxyModel.setData( self.mindex, self.filterValueTextEdit.toPlainText() )
-      self.text = self.proxyModel.data( self.mindex, 0 ) # reload value!
-      self.mainButtonBox.button( QDialogButtonBox.Save ).setEnabled( True ) # Enable Save button on first edit
-    else:
-      self.filterValueTextEdit.setPlainText( self.text.toString() )
-    self.filterValueButtonBox.setEnabled( False )
+      self.text = self.proxyModel.data( self.mindex, 0 )
+    self.btnSave.setEnabled( True )
+    self.editorButtonBox.setEnabled( False )
+  
+  def resetEdits( self ):
+    self.textValue.setPlainText( self.text.toString() )
+    self.editorButtonBox.setEnabled( False )
+  
+  def saveMetadata( self ):
+    try:
+      metafile = codecs.open( self.metaFilePath, "w", encoding="utf-8" )
+      metafile.write( unicode( self.metaXML.toString().toUtf8(), "utf-8" ) )
+      metafile.close()
+      self.btnSave.setEnabled( False )
+    except:
+      QMessageBox.warning(self, self.tr( "Metatools" ), self.tr( "Metadata file can't be saved:\n" ) + str( sys.exc_info()[ 0 ] ) )
 
   def mainButtonClicked( self, button ):
     # need make user request!
-    if self.mainButtonBox.standardButton( button ) == QDialogButtonBox.Save:
+    if self.buttonBox.standardButton( button ) == QDialogButtonBox.Save:
       try:
         metafile = codecs.open( self.metaFilePath, "w", encoding="utf-8" )
         metafile.write( unicode( self.metaXML.toString().toUtf8(), "utf-8" ) )
         metafile.close()
-        self.mainButtonBox.button( QDialogButtonBox.Save ).setEnabled( False ) # Disable Save button
+        self.buttonBox.button( QDialogButtonBox.Save ).setEnabled( False ) # Disable Save button
       except:
         QMessageBox.critical(self, self.tr( "Metatools" ), self.tr( "Metadata file can't be saved!" ) + str( sys.exc_info()[ 0 ] ) )
-    else:
-      self.reject()
 
   def loadFilter( self ):
     settings = QSettings( "NextGIS", "metatools" )

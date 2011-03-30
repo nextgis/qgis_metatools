@@ -33,116 +33,114 @@ from PyQt4.QtXmlPatterns  import *
 from qgis.core import *
 from qgis.gui import *
 
-import sys
+import os, sys
 
 from ui_license_editor import Ui_LicenseEditorDialog
+
 from license_template_manager import LicenseTemplateManager, LicenseTemplate
 
+currentPath = os.path.abspath( os.path.dirname( __file__ ) )
+
 class LicenseEditorDialog( QDialog, Ui_LicenseEditorDialog ):
-  def __init__( self, basePluginPath ):
+  def __init__( self ):
     QDialog.__init__( self )
     self.setupUi( self )
 
-    # env vars
-    self.basePluginPath = basePluginPath
-
-    # internal vars
-    self.licenseTemplateManager = LicenseTemplateManager( self.basePluginPath )
+    self.licenseTemplateManager = LicenseTemplateManager( currentPath )
     self.licenseTemplate = LicenseTemplate()
 
-    # events
-    QObject.connect( self.addButton, SIGNAL( "clicked()" ), self.addButtonClicked )
-    QObject.connect( self.removeButton, SIGNAL( "clicked()" ), self.removeButtonClicked )
-    QObject.connect( self.nameLineEdit, SIGNAL( "textEdited(QString)" ), self.valueChanged )
-    QObject.connect( self.versionLineEdit, SIGNAL( "textEdited(QString)" ), self.valueChanged )
-    QObject.connect( self.descTextEdit, SIGNAL( "textEdited(QString)" ), self.valueChanged )
-    QObject.connect( self.licenseButtonBox, SIGNAL( "clicked(QAbstractButton*)" ), self.licenseButtonBoxClicked )
-    QObject.connect( self.licenseComboBox, SIGNAL( "currentIndexChanged(QString)" ), self.licenseComboBoxIndexChanged )
+    self.btnSave = self.buttonBox.button( QDialogButtonBox.Save )
+    self.btnClose = self.buttonBox.button( QDialogButtonBox.Close )
 
-    # set interface
+    QObject.connect( self.btnNew, SIGNAL( "clicked()" ), self.newLicense )
+    QObject.connect( self.btnRemove, SIGNAL( "clicked()" ), self.removeLicense )
+    QObject.connect( self.leName, SIGNAL( "textEdited( QString )" ), self.templateModified )
+    QObject.connect( self.leVersion, SIGNAL( "textEdited( QString )" ), self.templateModified )
+    QObject.connect( self.textDescription, SIGNAL( "textChanged()" ), self.templateModified )
+    QObject.connect( self.cmbLicense, SIGNAL( "currentIndexChanged( QString )" ), self.licenseChanged )
+
+    QObject.disconnect( self.buttonBox, SIGNAL( "accepted()" ), self.accept )
+    QObject.connect( self.btnSave, SIGNAL( "clicked()" ), self.saveTemplate )
+
+    self.manageGui()
+
+  def manageGui( self ):
+    self.btnSave.setEnabled( False )
     self.reloadTemplatesList()
 
-  # create new license template
-  def addButtonClicked( self ):
+  def reloadTemplatesList( self ):
+    self.cmbLicense.clear()
+    self.cmbLicense.addItems( self.licenseTemplateManager.getTemplateList() )
+
+  def newLicense( self ):
     self.clearFormFields()
     self.licenseTemplate = LicenseTemplate()
-    self.licenseGroupBox.setEnabled( True )
-    self.licenseButtonBox.setEnabled( False )
+    self.btnSave.setEnabled( True )
 
-  def reloadTemplatesList( self ):
-    licenseTemplatesList = self.licenseTemplateManager.getLicenseTemplateList()
-    self.licenseComboBox.clear()
-    self.licenseComboBox.addItems( licenseTemplatesList )
-
-  def removeButtonClicked( self ):
+  def removeLicense( self ):
     if self.licenseTemplate.name and self.licenseTemplate.name != "":
-      self.licenseTemplateManager.removeLicenseTemplate( self.licenseTemplate.name )
+      self.licenseTemplateManager.removeTemplate( self.licenseTemplate.name )
       self.reloadTemplatesList()
-
-  # clear all form fields
-  def clearFormFields( self ):
-    self.nameLineEdit.clear()
-    self.versionLineEdit.clear()
-    self.descTextEdit.clear()
-
-  # set license template to the form
-  def setLicenseTemplateToForm( self, template ):
-    self.nameLineEdit.setText( template.name or "" )
-    self.versionLineEdit.setText( template.version or "" )
-    self.descTextEdit.setPlainText( template.description or "" )
-
-  # get license template from form
-  def getLicenseTemplateFromForm( self ):
-    template = LicenseTemplate()
-    template.name = self.nameLineEdit.text()
-    template.version = self.versionLineEdit.text()
-    template.description = self.descTextEdit.toPlainText()
-    return template
-
-  # unlock save\cancel buttons
-  def valueChanged( self ):
-    self.licenseButtonBox.setEnabled( True )
-
-  # Save or cancel changes
-  def licenseButtonBoxClicked( self, button ):
-    if self.licenseButtonBox.standardButton( button ) == QDialogButtonBox.Save:
-      template = self.getLicenseTemplateFromForm()
-      # check template
-      if template.name is None or template.name == "":
-        QMessageBox.warning( self, self.tr( "License template editor" ), self.tr( "The name must be specified!" ) )
-        return
-      # try save template
-      try:
-        # delete old template
-        if self.licenseTemplate.name and self.licenseTemplate.name != "":
-            self.licenseTemplateManager.removeLicenseTemplate( self.licenseTemplate.name )
-        # save new version
-        self.licenseTemplateManager.saveLicenseTemplate( template )
-      except:
-        QMessageBox.warning( self, self.tr( "License template editor" ), self.tr( "Template can't be saved: ") + str( sys.exc_info()[ 1 ] ) )
-        return
-      # reload form
-      self.reloadTemplatesList()
-      # set editable item:
-      index = self.licenseComboBox.findText( template.name )
-      if index != -1:
-        self.licenseComboBox.setCurrentIndex( index )
-    else:
-      self.setLicenseTemplateToForm( self.licenseTemplate )
-    self.licenseButtonBox.setEnabled( False )
-
-  # Selected license changes
-  def licenseComboBoxIndexChanged( self, templateName ):
-    if templateName and templateName != "":
-      try:
-        self.licenseTemplate = self.licenseTemplateManager.loadLicenseTemplate( templateName )
-        self.setLicenseTemplateToForm( self.licenseTemplate )
-        self.licenseGroupBox.setEnabled( True )
-        self.licenseButtonBox.setEnabled( False )
-      except:
-        pass
-    else:
-      self.licenseTemplate = LicenseTemplate()
+    
+    if self.cmbLicense.count == 0:
       self.clearFormFields()
-      self.licenseGroupBox.setEnabled( False )
-      self.licenseButtonBox.setEnabled( False )
+
+  # enable save button when template edited
+  def templateModified( self ):
+    self.btnSave.setEnabled( True )
+
+  def licenseChanged( self ):
+    templateName = self.cmbLicense.currentText()
+    if templateName.isEmpty():
+      return
+
+    self.licenseTemplate = self.licenseTemplateManager.loadTemplate( templateName )
+    self.templateToForm( self.licenseTemplate )
+
+  def saveTemplate( self ):
+    template = self.templateFromForm()
+
+    # check template attrs
+    if template.name is None or template.name == "":
+      QMessageBox.warning( self, self.tr( "Manage licenses" ), self.tr( "The name of the license must be specified!" ) )
+      return
+
+    # try to save template
+    try:
+      # first delete old template
+      if self.licenseTemplate.name and self.licenseTemplate.name != "":
+          self.licenseTemplateManager.removeTemplate( self.licenseTemplate.name )
+      # save new version
+      self.licenseTemplateManager.saveTemplate( template )
+    except:
+      QMessageBox.warning( self, self.tr( "Manage licenses" ), self.tr( "Template can't be saved: ") + str( sys.exc_info()[ 1 ] ) )
+      return
+
+    # reload form
+    self.reloadTemplatesList()
+
+    # set combobox item
+    index = self.cmbLicense.findText( template.name )
+    if index != -1:
+      self.cmbLicense.setCurrentIndex( index )
+
+    self.btnSave.setEnabled( False )
+
+  def clearFormFields( self ):
+    self.leName.clear()
+    self.leVersion.clear()
+    self.textDescription.clear()
+
+  # populate form with template data
+  def templateToForm( self, template ):
+    self.leName.setText( template.name or "" )
+    self.leVersion.setText( template.version or "" )
+    self.textDescription.setPlainText( template.description or "" )
+
+  # create template from entered values
+  def templateFromForm( self ):
+    template = LicenseTemplate()
+    template.name = self.leName.text()
+    template.version = self.leVersion.text()
+    template.description = self.textDescription.toPlainText()
+    return template

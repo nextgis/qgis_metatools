@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>465</width>
+    <width>521</width>
     <height>263</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <item row="0" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QCheckBox" name="externalFilesCheckBox">
+      <widget class="QCheckBox" name="chkExternalFiles">
        <property name="text">
         <string>Select files from disk</string>
        </property>
@@ -34,6 +34,9 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QListWidget" name="lstLayers"/>
    </item>
    <item row="1" column="1">
     <widget class="QGroupBox" name="groupBox">
@@ -63,7 +66,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QComboBox" name="organizationComboBox">
+       <widget class="QComboBox" name="cmbOrganization">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -73,7 +76,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QComboBox" name="licenseComboBox">
+       <widget class="QComboBox" name="cmbLicense">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -83,7 +86,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QComboBox" name="workflowComboBox">
+       <widget class="QComboBox" name="cmbWorkflow">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -93,21 +96,21 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QPushButton" name="organizationManageButton">
+       <widget class="QPushButton" name="btnManageOrgs">
         <property name="text">
          <string>Manage</string>
         </property>
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QPushButton" name="licenseManageButton">
+       <widget class="QPushButton" name="btnManageLicenses">
         <property name="text">
          <string>Manage</string>
         </property>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QPushButton" name="workflowManageButton">
+       <widget class="QPushButton" name="btnManageWorkflows">
         <property name="text">
          <string>Manage</string>
         </property>
@@ -121,14 +124,14 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLineEdit" name="logFileLineEdit">
+       <widget class="QLineEdit" name="leLogFile">
         <property name="readOnly">
          <bool>true</bool>
         </property>
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QPushButton" name="selectLogFileButton">
+       <widget class="QPushButton" name="btnSelectLogFile">
         <property name="text">
          <string>Browse</string>
         </property>
@@ -137,11 +140,8 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QDialogButtonBox" name="mainButtonBox">
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
+   <item row="2" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -150,11 +150,41 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QListWidget" name="layerListView"/>
-   </item>
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>ApplyTemplatesDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>ApplyTemplatesDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

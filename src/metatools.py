@@ -144,6 +144,9 @@ class MetatoolsPlugin:
 
   def layerChanged( self ):
     self.layer = self.iface.activeLayer()
+    
+    if self.layer is None:
+      return
 
     # check layer type
     if self.layer.type() == QgsMapLayer.VectorLayer and self.layer.type() != QgsMapLayer.RasterLayer:
@@ -269,7 +272,7 @@ class MetatoolsPlugin:
     xsltFilePath = self.pluginPath + '/xsl/iso19115.xsl'
 
     dlg = MetatoolsViewer()
-    dlg.setContent( metaFilePath, xsltFilePath )
+    dlg.setContent( self.metaFilePath, xsltFilePath )
     dlg.exec_()
 
   def doApplyTemplates( self ):

@@ -52,7 +52,7 @@ class WorkflowTemplateManager:
         templatesList.append( name )
     return templatesList
 
-  def loadWorkflowTemplate( self, templateName ):
+  def loadTemplate( self, templateName ):
     # TODO: more cheks on struct!
     workflowTemplate = WorkflowTemplate()
     templateFile = QFile( self.getTemplateFilePath( templateName.toUtf8() ) )
@@ -69,7 +69,7 @@ class WorkflowTemplateManager:
 
     return workflowTemplate
 
-  def saveWorkflowTemplate( self, workflowTemplate ):
+  def saveTemplate( self, workflowTemplate ):
     xmlTemplate = QDomDocument()
 
     # create root
@@ -92,7 +92,7 @@ class WorkflowTemplateManager:
     templateFile.write( unicode( xmlTemplate.toString().toUtf8(), "utf-8" ) )
     templateFile.close()
 
-  def removeWorkflowTemplate( self, templateName ):
+  def removeTemplate( self, templateName ):
     os.remove( self.getTemplateFilePath( templateName ) )
 
 class WorkflowTemplate:

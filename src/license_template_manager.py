@@ -52,7 +52,7 @@ class LicenseTemplateManager:
         templatesList.append( name )
     return templatesList
 
-  def loadLicenseTemplate( self, templateName ):
+  def loadTemplate( self, templateName ):
     # TODO: more cheks on struct!
     licenseTemplate = LicenseTemplate()
     templateFile = QFile( self.getTemplateFilePath( templateName.toUtf8() ) )
@@ -71,7 +71,7 @@ class LicenseTemplateManager:
 
     return licenseTemplate
 
-  def saveLicenseTemplate( self, licenseTemplate ):
+  def saveTemplate( self, licenseTemplate ):
     xmlTemplate = QDomDocument()
 
     # create root
@@ -100,7 +100,7 @@ class LicenseTemplateManager:
     templateFile.write( unicode( xmlTemplate.toString().toUtf8(), "utf-8" ) )
     templateFile.close()
 
-  def removeLicenseTemplate( self, templateName ):
+  def removeTemplate( self, templateName ):
     os.remove( self.getTemplateFilePath( templateName ) )
 
 class LicenseTemplate:

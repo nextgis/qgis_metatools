@@ -6,87 +6,75 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>350</height>
+    <width>352</width>
+    <height>370</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Edit workflow</string>
+   <string>Manage workflows</string>
   </property>
-  <property name="modal">
-   <bool>true</bool>
-  </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="2">
-    <widget class="QComboBox" name="workflowComboBox"/>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QComboBox" name="cmbWorkflow"/>
    </item>
-   <item row="1" column="0">
-    <widget class="QPushButton" name="addButton">
-     <property name="text">
-      <string>Add</string>
-     </property>
-    </widget>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="btnNew">
+       <property name="text">
+        <string>New</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnRemove">
+       <property name="text">
+        <string>Remove</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="1" column="1">
-    <widget class="QPushButton" name="removeButton">
-     <property name="text">
-      <string>Remove</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QGroupBox" name="workflowGroupBox">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Workflow</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="nameLineEdit"/>
-      </item>
+     <layout class="QFormLayout" name="formLayout">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::ExpandingFieldsGrow</enum>
+      </property>
       <item row="0" column="0">
-       <widget class="QLabel" name="nameLabel">
+       <widget class="QLabel" name="label">
         <property name="text">
          <string>Name</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="leName"/>
+      </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="descriptionLabel">
+       <widget class="QLabel" name="label_3">
         <property name="text">
          <string>Description</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QTextEdit" name="descTextEdit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QDialogButtonBox" name="workflowButtonBox">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="standardButtons">
-         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
-        </property>
-       </widget>
+       <widget class="QTextEdit" name="textDescription"/>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Close|QDialogButtonBox::Save</set>
+     </property>
     </widget>
    </item>
   </layout>
@@ -94,7 +82,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>workflowButtonBox</sender>
+   <sender>buttonBox</sender>
    <signal>accepted()</signal>
    <receiver>WorkflowEditorDialog</receiver>
    <slot>accept()</slot>
@@ -110,7 +98,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>workflowButtonBox</sender>
+   <sender>buttonBox</sender>
    <signal>rejected()</signal>
    <receiver>WorkflowEditorDialog</receiver>
    <slot>reject()</slot>
