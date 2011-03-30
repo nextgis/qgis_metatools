@@ -38,7 +38,7 @@ def getPath( node ):
 class DomItem:
   def __init__( self, node, row, parent = None ):
     self.domNode = node
-    # Record the item's location within its parent.
+    # record the item's location within its parent.
     self.rowNumber = row
     self.parentItem = parent
     self.childItems = {}

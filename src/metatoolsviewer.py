@@ -35,7 +35,7 @@ from qgis.gui import *
 
 from ui_viewer import Ui_MetatoolsViewer
 
-#debug
+# need this for debug
 class Handler( QAbstractMessageHandler ):
   def handleMessage( self, msg_type, desc, identifier, loc ):
     QMessageBox.information( None, "Error", desc + " " + identifier.toString() + " " + QString( str( loc.line() ) ) )

@@ -144,7 +144,7 @@ class MetatoolsPlugin:
 
   def layerChanged( self ):
     self.layer = self.iface.activeLayer()
-    
+
     if self.layer is None:
       return
 
@@ -185,28 +185,6 @@ class MetatoolsPlugin:
     # check if metadata file exists
     if not self.checkMetadataFile():
       return
-    #~ if not os.path.exists( self.metaFilePath ):
-      #~ result = QMessageBox.question( self.iface.mainWindow(),
-                                     #~ QCoreApplication.translate( "Metatools", "Metatools" ),
-                                     #~ QCoreApplication.translate( "Metatools", "The layer does not have metadata! Create metadata file?"),
-                                     #~ QDialogButtonBox.Yes, QDialogButtonBox.No )
-      #~ if result == QDialogButtonBox.Yes:
-        #~ try:
-          #~ settings = QSettings( "NextGIS", "metatools" )
-          #~ profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
-          #~ if profile.isEmpty():
-            #~ QMessageBox.warning( self, self.tr( "No profile" ), self.tr( "No profile selected. Please set default profile in plugin settings" ) )
-            #~ return
-#~
-          #~ profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
-          #~ shutil.copyfile( profilePath, self.metaFilePath )
-        #~ except:
-          #~ QMessageBox.warning( self.iface.mainWindow(),
-                               #~ QCoreApplication.translate( "Metatools", "Metatools" ),
-                               #~ QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
-          #~ return
-      #~ else:
-        #~ return
 
     # check matadata standard
     standard = MetaInfoStandard.tryDetermineStandard( self.metaFilePath )
@@ -234,28 +212,6 @@ class MetatoolsPlugin:
     # check if metadata file exists
     if not self.checkMetadataFile():
       return
-    #~ if not os.path.exists( self.metaFilePath ):
-      #~ result = QMessageBox.question( self.iface.mainWindow(),
-                                     #~ QCoreApplication.translate( "Metatools", "Metatools" ),
-                                     #~ QCoreApplication.translate( "Metatools", "The layer does not have metadata! Create metadata file?" ),
-                                     #~ QDialogButtonBox.Yes, QDialogButtonBox.No )
-      #~ if result == QDialogButtonBox.Yes:
-        #~ try:
-          #~ settings = QSettings( "NextGIS", "metatools" )
-          #~ profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
-          #~ if profile.isEmpty():
-            #~ QMessageBox.warning( self, self.tr( "No profile" ), self.tr( "No profile selected. Please set default profile in plugin settings" ) )
-            #~ return
-#~
-          #~ profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
-          #~ shutil.copyfile( profilePath, self.metaFilePath )
-        #~ except:
-          #~ QMessageBox.warning( self.iface.mainWindow(),
-                               #~ QCoreApplication.translate( "Metatools", "Metatools" ),
-                               #~ QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
-          #~ return
-      #~ else:
-        #~ return
 
     # check matadata standard
     standard = MetaInfoStandard.tryDetermineStandard( self.metaFilePath )

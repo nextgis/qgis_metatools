@@ -53,7 +53,7 @@ class WorkflowTemplateManager:
     return templatesList
 
   def loadTemplate( self, templateName ):
-    # TODO: more cheks on struct!
+    # TODO: more cheks on struct
     workflowTemplate = WorkflowTemplate()
     templateFile = QFile( self.getTemplateFilePath( templateName.toUtf8() ) )
 

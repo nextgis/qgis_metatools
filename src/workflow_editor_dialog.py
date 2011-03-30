@@ -45,7 +45,7 @@ class WorkflowEditorDialog( QDialog, Ui_WorkflowEditorDialog ):
   def __init__( self ):
     QDialog.__init__( self )
     self.setupUi( self )
-    
+
     self.workflowTemplateManager = WorkflowTemplateManager( currentPath )
     self.workflowTemplate = WorkflowTemplate()
 
@@ -80,14 +80,14 @@ class WorkflowEditorDialog( QDialog, Ui_WorkflowEditorDialog ):
     if self.workflowTemplate.name and self.workflowTemplate.name != "":
       self.workflowTemplateManager.removeTemplate( self.workflowTemplate.name )
       self.reloadTemplatesList()
-    
+
     if self.cmbWorkflow.count == 0:
       self.clearFormFields()
 
   # enable save button when templated edited
   def templateModified( self ):
     self.btnSave.setEnabled( True )
-  
+
   def workflowChanged( self ):
     templateName = self.cmbWorkflow.currentText()
     if templateName.isEmpty():
@@ -96,15 +96,14 @@ class WorkflowEditorDialog( QDialog, Ui_WorkflowEditorDialog ):
     self.WorkflowTemplate = self.workflowTemplateManager.loadTemplate( templateName )
     self.templateToForm( self.workflowTemplate )
 
-  # Save or cancel changes
   def saveTemplate( self ):
     template = self.templateFromForm()
-    
+
     # check template attrs
     if template.name is None or template.name == "":
       QMessageBox.warning( self, self.tr( "Manage workflows" ), self.tr( "The name of the workflow must be specified!" ) )
       return
-    
+
     # try save template
     try:
       # first delete old template
@@ -115,10 +114,10 @@ class WorkflowEditorDialog( QDialog, Ui_WorkflowEditorDialog ):
     except:
       QMessageBox.warning( self, self.tr( "Manage workflows" ), self.tr( "Template can't be saved: ") + str( sys.exc_info()[ 1 ] ) )
       return
-    
+
     # reload form
     self.reloadTemplatesList()
-    
+
     # set combobox item
     index = self.cmbWorkflow.findText( template.name )
     if index != -1:

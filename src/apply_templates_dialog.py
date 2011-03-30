@@ -72,7 +72,6 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     QObject.connect( self.btnManageOrgs, SIGNAL( "clicked()" ), self.manageOrganisations )
     QObject.connect( self.btnManageWorkflows, SIGNAL( "clicked()" ), self.manageWorkflows )
     QObject.connect( self.btnSelectLogFile, SIGNAL( "clicked()" ), self.selectLogFile )
-    #QObject.connect( self.buttonBox, SIGNAL( "clicked( QAbstractButton* )" ), self.mainButtonClicked )
 
     QObject.disconnect( self.buttonBox, SIGNAL( "accepted()" ), self.accept )
     QObject.connect( self.btnApply, SIGNAL( "clicked()" ), self.applyTemplates )
@@ -86,7 +85,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     # populate comboboxes with templates
     self.updateLicenseTemplatesList()
     self.updateWorkflowTemplatesList()
-    
+
     # disable Apply button when there are no layers
     if len( self.layers ) == 0:
       self.btnApply.setEnabled( False )
@@ -163,13 +162,13 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     for item in selection:
       layer = utils.getRasterLayerByName( item.text() )
       self.layers.append( layer.source() )
-    
+
     if len( self.layers ) != 0:
       self.btnApply.setEnabled( True )
 
   def applyTemplates( self ):
     # TODO: check if there are some templates selected
-    
+
     # get profile from settings
     settings = QSettings( "NextGIS", "metatools" )
     profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
@@ -184,28 +183,13 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
         # get metadata file path
         metaFilePath = utils.mdPathFromLayerPath( layer )
 
-        # check if metadata file exists
+        # check if metadata file exists and create it if necessary
         if not os.path.exists( metaFilePath ):
           try:
             shutil.copyfile( profilePath, metaFilePath )
           except:
             QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Metadata file can't be created: ") + str( sys.exc_info()[ 1 ] ) )
             continue
-        #if not os.path.exists( metaFilePath ):
-        #  result = QMessageBox.question( self, self.tr( "Metatools" ),
-        #                                 self.tr( "The layer %1 does not have metadata! Create metadata file?")
-        #                                 .arg( layer.name() ),
-        #                                 QDialogButtonBox.Yes, QDialogButtonBox.No )
-        #  if result == QDialogButtonBox.Yes:
-        #    try:
-              # TODO: get profile name from standart&settings
-              #profilePath = os.path.join( str( self.basePluginPath ), "xml_profiles/csir_sac_profile.xml" ) # BAD!
-        #      shutil.copyfile( str( profilePath ), metaFilePath )
-        #    except:
-        #      QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Metadata file can't be created: ") + str( sys.exc_info()[ 1 ] ) )
-        #      continue
-        #  else:
-        #    continue
 
         # check metadata standard
         standard = MetaInfoStandard.tryDetermineStandard( metaFilePath )

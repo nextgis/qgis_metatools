@@ -66,7 +66,7 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
 
     QObject.connect( self.textValue, SIGNAL( "textChanged()" ), self.valueModified )
     QObject.connect( self.tabWidget, SIGNAL( "currentChanged( int )" ), self.tabChanged )
-    
+
     QObject.connect( self.btnApply, SIGNAL( "clicked()" ), self.applyEdits )
     QObject.connect( self.btnDiscard, SIGNAL( "clicked()" ), self.resetEdits )
 
@@ -101,7 +101,7 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
   def itemSelected( self, mindex ):
     # Display item selected in TreeView in edit box.
     self.textValue.clear()
-    
+
     path = ""
     editable = False
     self.text = QVariant()
@@ -118,7 +118,7 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
       path = self.proxyModel.sourceModel().nodePath( self.proxyModel.mapToSource( self.mindex ) )
       editable = self.proxyModel.sourceModel().isEditable( self.proxyModel.mapToSource( self.mindex ) )
       self.text = self.proxyModel.data( self.mindex, 0 )
-    
+
     self.lblNodePath.setText( path )
     if editable:
       self.textValue.setPlainText( self.text.toString() )
@@ -136,14 +136,14 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
 
   def valueModified( self ):
     self.editorButtonBox.setEnabled( True )
-  
+
   def tabChanged(self, tab):
     self.textValue.clear()
-    
+
     path = ""
     editable = False
     self.text = QVariant()
-    
+
     if tab == 0:
       mindex = self.treeFull.currentIndex()
       self.mindex = self.model.index( mindex.row(), 2, mindex.parent() )
@@ -156,7 +156,7 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
       path = self.proxyModel.sourceModel().nodePath( self.proxyModel.mapToSource( self.mindex ) )
       editable = self.proxyModel.sourceModel().isEditable( self.proxyModel.mapToSource( self.mindex ) )
       self.text = self.proxyModel.data( self.mindex, 0 )
-    
+
     self.lblNodePath.setText( path )
     if editable:
       self.textValue.setPlainText( self.text.toString() )
@@ -165,7 +165,7 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     else:
       self.textValue.clear()
       self.groupBox.setEnabled( False )
-  
+
   def applyEdits( self ):
     if self.tabWidget.currentIndex() == 0:
       self.model.setData( self.mindex, self.textValue.toPlainText() )
@@ -175,11 +175,11 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
       self.text = self.proxyModel.data( self.mindex, 0 )
     self.btnSave.setEnabled( True )
     self.editorButtonBox.setEnabled( False )
-  
+
   def resetEdits( self ):
     self.textValue.setPlainText( self.text.toString() )
     self.editorButtonBox.setEnabled( False )
-  
+
   def saveMetadata( self ):
     try:
       metafile = codecs.open( self.metaFilePath, "w", encoding="utf-8" )
@@ -188,17 +188,6 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
       self.btnSave.setEnabled( False )
     except:
       QMessageBox.warning(self, self.tr( "Metatools" ), self.tr( "Metadata file can't be saved:\n" ) + str( sys.exc_info()[ 0 ] ) )
-
-  def mainButtonClicked( self, button ):
-    # need make user request!
-    if self.buttonBox.standardButton( button ) == QDialogButtonBox.Save:
-      try:
-        metafile = codecs.open( self.metaFilePath, "w", encoding="utf-8" )
-        metafile.write( unicode( self.metaXML.toString().toUtf8(), "utf-8" ) )
-        metafile.close()
-        self.buttonBox.button( QDialogButtonBox.Save ).setEnabled( False ) # Disable Save button
-      except:
-        QMessageBox.critical(self, self.tr( "Metatools" ), self.tr( "Metadata file can't be saved!" ) + str( sys.exc_info()[ 0 ] ) )
 
   def loadFilter( self ):
     settings = QSettings( "NextGIS", "metatools" )
