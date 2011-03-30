@@ -39,6 +39,9 @@ from license_editor_dialog import LicenseEditorDialog
 from license_template_manager import LicenseTemplateManager
 from workflow_editor_dialog import WorkflowEditorDialog
 from workflow_template_manager import WorkflowTemplateManager
+from organization_editor_dialog import OrganizationEditorDialog
+from organization_template_manager import OrganizationTemplateManager
+
 
 from ui_apply_templates import Ui_ApplyTemplatesDialog
 
@@ -69,7 +72,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
     QObject.connect( self.btnSelectDataFiles, SIGNAL( "clicked()" ), self.selectExternalFiles )
     QObject.connect( self.btnManageLicenses, SIGNAL( "clicked()" ), self.manageLicenses )
-    QObject.connect( self.btnManageOrgs, SIGNAL( "clicked()" ), self.manageOrganisations )
+    QObject.connect( self.btnManageOrgs, SIGNAL( "clicked()" ), self.manageOrganizations )
     QObject.connect( self.btnManageWorkflows, SIGNAL( "clicked()" ), self.manageWorkflows )
     QObject.connect( self.btnSelectLogFile, SIGNAL( "clicked()" ), self.selectLogFile )
 
@@ -135,8 +138,19 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     if index != -1:
       self.cmbWorkflow.setCurrentIndex( index )
 
-  def manageOrganisations( self ):
-    QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Not implemented!" ) )
+  def manageOrganizations( self ):
+    #QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Not implemented!" ) )
+    oldValue = self.cmbOrganization.currentText()
+
+    dlg = OrganizationEditorDialog()
+    dlg.exec_()
+
+    self.updateOrgsTemplatesList()
+
+    # try to restore previous value
+    index = self.cmbOrganization.findText( oldValue )
+    if index != -1:
+      self.cmbOrganization.setCurrentIndex( index )
 
   def selectLogFile( self ):
     # TODO: need to save last dir and set it in dialog
