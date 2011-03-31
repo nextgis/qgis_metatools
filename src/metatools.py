@@ -232,16 +232,16 @@ class MetatoolsPlugin:
     dlg.exec_()
 
   def doApplyTemplates( self ):
-    from apply_templates_dialog import ApplyTemplatesDialog
-#    try:
-#      from apply_templates_dialog import ApplyTemplatesDialog
-#    except ImportError:
-#      QMessageBox.critical( self.iface.mainWindow(),
-#                            QCoreApplication.translate( "Metatools", "Metatools"),
-#                            QCoreApplication.translate( "Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2")
-#                            .arg( minQtVersion )
-#                            .arg( qVersion() ) )
-#      return
+#    from apply_templates_dialog import ApplyTemplatesDialog
+    try:
+      from apply_templates_dialog import ApplyTemplatesDialog
+    except ImportError:
+      QMessageBox.critical( self.iface.mainWindow(),
+                            QCoreApplication.translate( "Metatools", "Metatools"),
+                            QCoreApplication.translate( "Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2")
+                            .arg( minQtVersion )
+                            .arg( qVersion() ) )
+      return
 
     dlg = ApplyTemplatesDialog( self.iface )
     dlg.exec_()
@@ -268,6 +268,7 @@ class MetatoolsPlugin:
 
           profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
           shutil.copyfile( profilePath, self.metaFilePath )
+          # TODO: get image dimension and band count and populate metadata file
         except:
           QMessageBox.warning( self.iface.mainWindow(),
                                QCoreApplication.translate( "Metatools", "Metatools" ),

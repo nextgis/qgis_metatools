@@ -56,7 +56,11 @@ class OrganizationEditorDialog( QDialog, Ui_OrganizationEditorDialog ):
     QObject.connect( self.btnRemove, SIGNAL( "clicked()" ), self.removeOrganization )
 
     QObject.connect( self.leName, SIGNAL( "textEdited( QString )" ), self.templateModified )
-    QObject.connect( self.textAddress, SIGNAL( "textChanged()" ), self.templateModified )
+    QObject.connect( self.leDeliveryPoint, SIGNAL( "textEdited( QString )" ), self.templateModified )
+    QObject.connect( self.leCity, SIGNAL( "textEdited( QString )" ), self.templateModified )
+    QObject.connect( self.leAdminArea, SIGNAL( "textEdited( QString )" ), self.templateModified )
+    QObject.connect( self.lePostCode, SIGNAL( "textEdited( QString )" ), self.templateModified )
+    QObject.connect( self.leCountry, SIGNAL( "textEdited( QString )" ), self.templateModified )
     QObject.connect( self.lePhone, SIGNAL( "textEdited( QString )" ), self.templateModified )
     QObject.connect( self.leFax, SIGNAL( "textEdited( QString )" ), self.templateModified )
     QObject.connect( self.leEmail, SIGNAL( "textEdited( QString )" ), self.templateModified )
@@ -122,7 +126,11 @@ class OrganizationEditorDialog( QDialog, Ui_OrganizationEditorDialog ):
   
   def clearFormFields( self ):
     self.leName.clear()
-    self.textAddress.clear()
+    self.leDeliveryPoint.clear()
+    self.leCity.clear()
+    self.leAdminArea.clear()
+    self.lePostCode.clear()
+    self.leCountry.clear()
     self.lePhone.clear()
     self.leFax.clear()
     self.leEmail.clear()
@@ -134,7 +142,11 @@ class OrganizationEditorDialog( QDialog, Ui_OrganizationEditorDialog ):
   # populate form with template data
   def templateToForm( self, template ):
     self.leName.setText( template.name or "" )
-    self.textAddress.setPlainText( template.address or "" )
+    self.leDeliveryPoint.setText( template.deliveryPoint or "" )
+    self.leCity.setText( template.city or "" )
+    self.leAdminArea.setText( template.adminArea or "" )
+    self.lePostCode.setText( template.postalCode or "" )
+    self.leCountry.setText( template.country or "" )
     self.lePhone.setText( template.phone or "" )
     self.leFax.setText( template.fax or "" )
     self.leEmail.setText( template.email or "" )
@@ -147,7 +159,11 @@ class OrganizationEditorDialog( QDialog, Ui_OrganizationEditorDialog ):
   def templateFromForm( self ):
     template = OrganizationTemplate()
     template.name = self.leName.text()
-    template.address = self.textAddress.toPlainText()
+    template.deliveryPoint = self.leDeliveryPoint.text()
+    template.city = self.leCity.text()
+    template.adminArea = self.leAdminArea.text()
+    template.postalCode = self.lePostCode.text()
+    template.country = self.leCountry.text()
     template.phone = self.lePhone.text()
     template.fax = self.leFax.text()
     template.email = self.leEmail.text()

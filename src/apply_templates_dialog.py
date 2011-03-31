@@ -307,7 +307,35 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     mdAddress = self.getOrCreateChild( mdCIContact, "address" )
     mdCIAddress = self.getOrCreateChild( mdAddress, "CI_Address" )
     
-    # TODO: deliveryPoint, city, administrativeArea, postalCode, country
+    # deliveryPoint
+    mdDeliveryPoint = self.getOrCreateChild( mdCIAddress, "deliveryPoint" )
+    mdCharStringElement = self.getOrCreateChild( mdDeliveryPoint, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.deliveryPoint )
+    
+    # city
+    mdCity = self.getOrCreateChild( mdCIAddress, "city" )
+    mdCharStringElement = self.getOrCreateChild( mdCity, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.city )
+    
+    # administrativeArea
+    mdAdminArea = self.getOrCreateChild( mdCIAddress, "administrativeArea" )
+    mdCharStringElement = self.getOrCreateChild( mdAdminArea, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.adminArea )
+    
+    # postalCode
+    mdPostalCode = self.getOrCreateChild( mdCIAddress, "postalCode" )
+    mdCharStringElement = self.getOrCreateChild( mdPostalCode, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.postalCode )
+    
+    # country
+    mdCountry = self.getOrCreateChild( mdCIAddress, "country" )
+    mdCharStringElement = self.getOrCreateChild( mdCountry, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.country )
     
     # email
     mdEmail = self.getOrCreateChild( mdCIAddress, "electronicMailAddress" )

@@ -32,10 +32,16 @@ from PyQt4.QtXml import *
 import os, codecs
 
 class OrganizationTemplate:
-  def __init__( self, name = None, address = None, phone = None, fax = None, \
-                email = None, person = None, title = None, position = None, hours = None ):
+  def __init__( self, name = None, deliveryPoint = None, city = None, adminArea = None, \
+                postalCode = None, country = None, phone = None, fax = None, email = None, \
+                person = None, title = None, position = None, hours = None ):
     self.name = name
-    self.address = address
+    #self.address = address
+    self.deliveryPoint = deliveryPoint
+    self.city = city
+    self.adminArea = adminArea
+    self.postalCode = postalCode
+    self.county = country
     self.phone = phone
     self.fax = fax
     self.email = email
@@ -86,8 +92,19 @@ class OrganizationTemplateManager:
       return None
     org = OrganizationTemplate()
     org.name = root.attribute( "name" )
-    e = root.elementsByTagName( "addres" ).at( 0 )
-    org.address = e.childNodes().at( 0 ).nodeValue()
+    e = root.elementsByTagName( "address" ).at( 0 ).toElement()
+    # parse address
+    child = e.elementsByTagName( "deliveryPoint" ).at( 0 )
+    org.deliveryPoint = child.childNodes().at( 0 ).nodeValue()
+    child = e.elementsByTagName( "city" ).at( 0 )
+    org.city = child.childNodes().at( 0 ).nodeValue()
+    child = e.elementsByTagName( "administrativeArea" ).at( 0 )
+    org.adminArea = child.childNodes().at( 0 ).nodeValue()
+    child = e.elementsByTagName( "postalCode" ).at( 0 )
+    org.postalCode = child.childNodes().at( 0 ).nodeValue()
+    child = e.elementsByTagName( "country" ).at( 0 )
+    org.country = child.childNodes().at( 0 ).nodeValue()
+    
     e = root.elementsByTagName( "phone" ).at( 0 )
     org.phone = e.childNodes().at( 0 ).nodeValue()
     e = root.elementsByTagName( "fax" ).at( 0 )
@@ -130,8 +147,28 @@ class OrganizationTemplateManager:
     root.setAttribute( "name", org.name )
 
     elem = doc.createElement( "address" )
-    node = doc.createTextNode( org.address )
-    elem.appendChild( node )
+    # create nested elements
+    e = doc.createElement( "deliveryPoint" )
+    node = doc.createTextNode( org.deliveryPoint )
+    e.appendChild( node )
+    elem.appendChild( e )
+    e = doc.createElement( "city" )
+    node = doc.createTextNode( org.city )
+    e.appendChild( node )
+    elem.appendChild( e )
+    e = doc.createElement( "administrativeArea" )
+    node = doc.createTextNode( org.adminArea )
+    e.appendChild( node )
+    elem.appendChild( e )
+    e = doc.createElement( "postalCode" )
+    node = doc.createTextNode( org.postalCode )
+    e.appendChild( node )
+    elem.appendChild( e )
+    e = doc.createElement( "country" )
+    node = doc.createTextNode( org.country )
+    e.appendChild( node )
+    elem.appendChild( e )
+    
     root.appendChild( elem )
 
     elem = doc.createElement( "phone" )
@@ -187,8 +224,4 @@ class OrganizationTemplateManager:
       del self.organizations[ templateName ]
 
   def tempalateNames( self ):
-    #names = QStringList()
-    #for key in self.organizations.keys():
-    #  names << key
-    #return names
     return self.organizations.keys()
