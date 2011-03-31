@@ -74,12 +74,9 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     QObject.disconnect( self.buttonBox, SIGNAL( "accepted()" ), self.accept )
     QObject.connect( self.btnSave, SIGNAL( "clicked()" ), self.saveMetadata )
 
-  def setContent( self, metaFilePath, layer ):
+  def setContent( self, metaFilePath ):
     self.metaFilePath = metaFilePath
-    self.layer = layer
-    
-    self.fillRasterInfo()
-    
+
     self.file = QFile( metaFilePath )
     self.metaXML = QDomDocument()
     self.metaXML.setContent( self.file )
@@ -189,14 +186,17 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
       metafile = codecs.open( self.metaFilePath, "w", encoding="utf-8" )
       metafile.write( unicode( self.metaXML.toString().toUtf8(), "utf-8" ) )
       metafile.close()
+      # TODO: create preview image if need
       self.btnSave.setEnabled( False )
     except:
       QMessageBox.warning(self, self.tr( "Metatools" ), self.tr( "Metadata file can't be saved:\n" ) + str( sys.exc_info()[ 0 ] ) )
-  
-  def fillRasterInfo( self ):
+
+  #def fillRasterInfo( self ):
     # get image dimension, band count and populate metadata file
-    bands, extent = utils.getRasterLayerInfo( self.layer )
-    utils.writeRasterInfo( self.metaFilePath, bands, extent )
+  #  bands, extent = utils.getRasterLayerInfo( self.layer )
+  #  utils.writeRasterInfo( self.metaFilePath, bands, extent )
+
+    # TODO: write bands info (datatype, min and max values)
 
   def loadFilter( self ):
     settings = QSettings( "NextGIS", "metatools" )

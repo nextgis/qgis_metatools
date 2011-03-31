@@ -194,7 +194,7 @@ class MetatoolsPlugin:
       return
 
     dlg = MetatoolsEditor()
-    dlg.setContent( self.metaFilePath, self.layer )
+    dlg.setContent( self.metaFilePath )
     dlg.exec_()
 
   def doView(self):
@@ -261,8 +261,9 @@ class MetatoolsPlugin:
           settings = QSettings( "NextGIS", "metatools" )
           profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
           if profile.isEmpty():
-            QMessageBox.warning( self, self.tr( "No profile" ),
-                                 self.tr( "No profile selected. Please set default profile in plugin settings" ) )
+            QMessageBox.warning( self.iface.mainWindow(),,
+                                 QCoreApplication.translate( "Metatools", "Metatools" ),
+                                 QCoreApplication.translate( "Metatools", "No profile selected. Please set default profile in plugin settings" ) )
             return False
 
           profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
@@ -276,7 +277,7 @@ class MetatoolsPlugin:
                                QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
           return False
         return True
-  
+
     # get image dimension, band count and populate metadata file
     #bands, extent = utils.getRasterLayerInfo( self.layer )
     #utils.writeRasterInfo( self.metaFilePath, bands, extent )
