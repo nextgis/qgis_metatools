@@ -33,10 +33,9 @@ from qgis.gui import *
 
 import os, sys, shutil
 
-import utils
-from standard import MetaInfoStandard
-
 from metatoolssettings import MetatoolsSettings
+from standard import MetaInfoStandard
+import utils
 
 import resources
 
@@ -195,7 +194,7 @@ class MetatoolsPlugin:
       return
 
     dlg = MetatoolsEditor()
-    dlg.setContent( self.metaFilePath )
+    dlg.setContent( self.metaFilePath, self.layer )
     dlg.exec_()
 
   def doView(self):
@@ -268,11 +267,17 @@ class MetatoolsPlugin:
 
           profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
           shutil.copyfile( profilePath, self.metaFilePath )
-          # TODO: get image dimension and band count and populate metadata file
+          # get image dimension, band count and populate metadata file
+          #bands, extent = utils.getRasterLayerInfo( self.layer )
+          #utils.writeRasterInfo( self.metaFilePath, bands, extent )
         except:
           QMessageBox.warning( self.iface.mainWindow(),
                                QCoreApplication.translate( "Metatools", "Metatools" ),
                                QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
           return False
         return True
+  
+    # get image dimension, band count and populate metadata file
+    #bands, extent = utils.getRasterLayerInfo( self.layer )
+    #utils.writeRasterInfo( self.metaFilePath, bands, extent )
     return True

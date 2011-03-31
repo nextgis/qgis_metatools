@@ -27,6 +27,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4.QtXml import *
 
 from qgis.core import *
 from qgis.gui import *
@@ -66,3 +67,100 @@ def getRasterLayerByName( layerName ):
         return layer
       else:
         return None
+
+def getRasterLayerInfo( layer ):
+  bands = layer.bandCount()
+  extent = layer.extent()
+  return bands, extent
+
+# helper functions for XML processing
+
+def getOrCreateChild( element, childName ):
+  child = element.firstChildElement( childName )
+  if child.isNull():
+    child = element.ownerDocument().createElement( childName )
+    element.appendChild( child )
+  return child
+
+def getOrIsertAfterChild( element, childName, prevChildsName ):
+  child = element.firstChildElement( childName )
+  if child.isNull():
+    child = element.ownerDocument().createElement( childName )
+
+    # search previous element
+    for elementName in prevChildsName:
+      prevElement = element.firstChildElement( elementName )
+      if not prevElement.isNull():
+        element.insertAfter( child, prevElement )
+        return child
+
+    # if not found, simply append
+    element.appendChild( child )
+  return child
+
+def getOrIsertTopChild( element, childName ):
+  child = element.firstChildElement( childName )
+  if child.isNull():
+    child = element.ownerDocument().createElement( childName )
+    element.insertBefore( child, QDomNode() )
+  return child
+
+def getOrCreateTextChild( element ):
+  childTextNode = element.childNodes().at( 0 ) # bad! need full search and type checker
+  if childTextNode.isNull():
+    childTextNode = element.ownerDocument().createTextNode( "" )
+    element.appendChild( childTextNode )
+  return childTextNode
+
+def writeRasterInfo( metadataFile, bands, extent ):
+  f = QFile( metadataFile )
+  f.open( QFile.ReadOnly )
+  metaXML = QDomDocument()
+  metaXML.setContent( f )
+  f.close()
+
+  root = metaXML.documentElement()
+
+  # geographic bounding box
+  mdIdentificationInfo = getOrCreateChild( root, "identificationInfo" )
+  mdDataIdentification = getOrCreateChild( mdIdentificationInfo, "MD_DataIdentification" )
+  mdExtent = getOrCreateChild( mdDataIdentification, "extent" )
+  mdEXExtent = getOrCreateChild( mdExtent, "EX_Extent" )
+  mdGeorgaphicElement = getOrCreateChild( mdEXExtent, "geographicElement" )
+  mdGeoBbox = getOrCreateChild( mdGeorgaphicElement, "EX_GeographicBoundingBox" )
+
+  mdWestBound = getOrCreateChild( mdGeoBbox, "westBoundLongitude" )
+  mdCharStringElement = getOrCreateChild( mdWestBound, "gco:Decimal" )
+  textNode = getOrCreateTextChild( mdCharStringElement )
+  textNode.setNodeValue( str( extent.xMinimum() ) )
+
+  mdEastBound = getOrCreateChild( mdGeoBbox, "eastBoundLongitude" )
+  mdCharStringElement = getOrCreateChild( mdEastBound, "gco:Decimal" )
+  textNode = getOrCreateTextChild( mdCharStringElement )
+  textNode.setNodeValue( str( extent.xMaximum() ) )
+
+  mdSouthBound = getOrCreateChild( mdGeoBbox, "southBoundLatitude" )
+  mdCharStringElement = getOrCreateChild( mdSouthBound, "gco:Decimal" )
+  textNode = getOrCreateTextChild( mdCharStringElement )
+  textNode.setNodeValue( str( extent.yMinimum() ) )
+
+  mdNorthBound = getOrCreateChild( mdGeoBbox, "northBoundLatitude" )
+  mdCharStringElement = getOrCreateChild( mdNorthBound, "gco:Decimal" )
+  textNode = getOrCreateTextChild( mdCharStringElement )
+  textNode.setNodeValue( str( extent.yMaximum() ) )
+
+  # raster bands
+  #mdContentInfo = getOrCreateChild( root, "contentInfo" )
+  #mdImageDescription = getOrCreateChild( mdContentInfo, "MD_ImageDescription" )
+  #mdDimension = getOrCreateChild( mdImageDescription, "dimension" )
+
+  #bandInMetadata = mdDimension.elementsByTagName( "MD_Band" ).count()
+  #if bandInMetadata < bands:
+    # create additional bands
+  #  pass
+
+  f = QFile( metadataFile )
+  f.open( QFile.WriteOnly )
+  stream = QTextStream( f )
+  metaXML.save( stream, 2 )
+  f.close()

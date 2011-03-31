@@ -249,98 +249,98 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
       QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Templates can't be applied: " ) + str( sys.exc_info()[ 1 ] ) )
 
   # ----------- Appliers -----------
-  
+
   def applyInstitutionTemplate( self, metaXML ):
     # TODO: make more safe
     if self.cmbOrganization.currentIndex() == -1:
       return
-    
+
     template = self.orgsTemplateManager.organizations[ self.cmbOrganization.currentText() ]
-    
+
     root = metaXML.documentElement()
-    mdContact = self.getOrCreateChild( root, "contact" )
-    mdResponsibleParty = self.getOrCreateChild( mdContact, "CI_ResponsibleParty" )
-    
+    mdContact = utils.getOrCreateChild( root, "contact" )
+    mdResponsibleParty = utils.getOrCreateChild( mdContact, "CI_ResponsibleParty" )
+
     # individualName
-    mdIndividualName = self.getOrCreateChild( mdResponsibleParty, "individualName" )
-    mdCharStringElement = self.getOrCreateChild( mdIndividualName, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdIndividualName = utils.getOrCreateChild( mdResponsibleParty, "individualName" )
+    mdCharStringElement = utils.getOrCreateChild( mdIndividualName, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.person )
-    
+
     # organisationName
-    mdOrganisationName = self.getOrCreateChild( mdResponsibleParty, "organisationName" )
-    mdCharStringElement = self.getOrCreateChild( mdOrganisationName, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdOrganisationName = utils.getOrCreateChild( mdResponsibleParty, "organisationName" )
+    mdCharStringElement = utils.getOrCreateChild( mdOrganisationName, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.name )
-    
+
     # positionName
-    mdPositionName = self.getOrCreateChild( mdResponsibleParty, "positionName" )
-    mdCharStringElement = self.getOrCreateChild( mdPositionName, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdPositionName = utils.getOrCreateChild( mdResponsibleParty, "positionName" )
+    mdCharStringElement = utils.getOrCreateChild( mdPositionName, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.position )
-    
+
     # go deeper... fill contactInfo
-    mdContactInfo = self.getOrCreateChild( mdResponsibleParty, "contactInfo" )
-    mdCIContact = self.getOrCreateChild( mdContactInfo, "CI_Contact" )
-    
+    mdContactInfo = utils.getOrCreateChild( mdResponsibleParty, "contactInfo" )
+    mdCIContact = utils.getOrCreateChild( mdContactInfo, "CI_Contact" )
+
     # hours of service
-    mdHours = self.getOrCreateChild( mdCIContact, "hoursOfService" )
-    mdCharStringElement = self.getOrCreateChild( mdHours, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdHours = utils.getOrCreateChild( mdCIContact, "hoursOfService" )
+    mdCharStringElement = utils.getOrCreateChild( mdHours, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.hours )
-    
+
     # fill phones
-    mdPhone = self.getOrCreateChild( mdCIContact, "phone" )
-    mdCIPhone = self.getOrCreateChild( mdPhone, "CI_Telephone" )
-    
-    mdVoice = self.getOrCreateChild( mdCIPhone, "voice" )
-    mdCharStringElement = self.getOrCreateChild( mdVoice, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdPhone = utils.getOrCreateChild( mdCIContact, "phone" )
+    mdCIPhone = utils.getOrCreateChild( mdPhone, "CI_Telephone" )
+
+    mdVoice = utils.getOrCreateChild( mdCIPhone, "voice" )
+    mdCharStringElement = utils.getOrCreateChild( mdVoice, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.phone )
-    
-    mdFacsimile = self.getOrCreateChild( mdCIPhone, "facsimile" )
-    mdCharStringElement = self.getOrCreateChild( mdFacsimile, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+
+    mdFacsimile = utils.getOrCreateChild( mdCIPhone, "facsimile" )
+    mdCharStringElement = utils.getOrCreateChild( mdFacsimile, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.phone )
-    
+
     # fill address
-    mdAddress = self.getOrCreateChild( mdCIContact, "address" )
-    mdCIAddress = self.getOrCreateChild( mdAddress, "CI_Address" )
-    
+    mdAddress = utils.getOrCreateChild( mdCIContact, "address" )
+    mdCIAddress = utils.getOrCreateChild( mdAddress, "CI_Address" )
+
     # deliveryPoint
-    mdDeliveryPoint = self.getOrCreateChild( mdCIAddress, "deliveryPoint" )
-    mdCharStringElement = self.getOrCreateChild( mdDeliveryPoint, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdDeliveryPoint = utils.getOrCreateChild( mdCIAddress, "deliveryPoint" )
+    mdCharStringElement = utils.getOrCreateChild( mdDeliveryPoint, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.deliveryPoint )
-    
+
     # city
-    mdCity = self.getOrCreateChild( mdCIAddress, "city" )
-    mdCharStringElement = self.getOrCreateChild( mdCity, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdCity = utils.getOrCreateChild( mdCIAddress, "city" )
+    mdCharStringElement = utils.getOrCreateChild( mdCity, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.city )
-    
+
     # administrativeArea
-    mdAdminArea = self.getOrCreateChild( mdCIAddress, "administrativeArea" )
-    mdCharStringElement = self.getOrCreateChild( mdAdminArea, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdAdminArea = utils.getOrCreateChild( mdCIAddress, "administrativeArea" )
+    mdCharStringElement = utils.getOrCreateChild( mdAdminArea, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.adminArea )
-    
+
     # postalCode
-    mdPostalCode = self.getOrCreateChild( mdCIAddress, "postalCode" )
-    mdCharStringElement = self.getOrCreateChild( mdPostalCode, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdPostalCode = utils.getOrCreateChild( mdCIAddress, "postalCode" )
+    mdCharStringElement = utils.getOrCreateChild( mdPostalCode, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.postalCode )
-    
+
     # country
-    mdCountry = self.getOrCreateChild( mdCIAddress, "country" )
-    mdCharStringElement = self.getOrCreateChild( mdCountry, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdCountry = utils.getOrCreateChild( mdCIAddress, "country" )
+    mdCharStringElement = utils.getOrCreateChild( mdCountry, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.country )
-    
+
     # email
-    mdEmail = self.getOrCreateChild( mdCIAddress, "electronicMailAddress" )
-    mdCharStringElement = self.getOrCreateChild( mdEmail, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdEmail = utils.getOrCreateChild( mdCIAddress, "electronicMailAddress" )
+    mdCharStringElement = utils.getOrCreateChild( mdEmail, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( template.email )
 
   def applyLicenseTemplate( self, metaXML ):
@@ -352,26 +352,26 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
     root = metaXML.documentElement()
 
-    mdIdentificationInfo = self.getOrCreateChild( root, "identificationInfo" )
-    mdDataIdentification = self.getOrCreateChild( mdIdentificationInfo, "MD_DataIdentification" )
+    mdIdentificationInfo = utils.getOrCreateChild( root, "identificationInfo" )
+    mdDataIdentification = utils.getOrCreateChild( mdIdentificationInfo, "MD_DataIdentification" )
 
-    mdResourceConstraints = self.getOrIsertAfterChild( mdDataIdentification, "resourceConstraints", [ "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ] )
-    mdLegalConstraintsElement = self.getOrCreateChild( mdResourceConstraints, "MD_LegalConstraints" )
+    mdResourceConstraints = utils.getOrIsertAfterChild( mdDataIdentification, "resourceConstraints", [ "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ] )
+    mdLegalConstraintsElement = utils.getOrCreateChild( mdResourceConstraints, "MD_LegalConstraints" )
 
     # useLimitation
-    mdUseLimitationElement = self.getOrCreateChild( mdLegalConstraintsElement, "useLimitation" )
-    mdCharStringElement = self.getOrCreateChild( mdUseLimitationElement, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdUseLimitationElement = utils.getOrCreateChild( mdLegalConstraintsElement, "useLimitation" )
+    mdCharStringElement = utils.getOrCreateChild( mdUseLimitationElement, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( licenseTemplate.stringRepresentation() )
 
     # useConstraints
-    mdUseConstraintsElement = self.getOrCreateChild( mdLegalConstraintsElement, "useConstraints" )
-    mdRestrictionCodeElement = self.getOrCreateChild( mdUseConstraintsElement, "MD_RestrictionCode" )
+    mdUseConstraintsElement = utils.getOrCreateChild( mdLegalConstraintsElement, "useConstraints" )
+    mdRestrictionCodeElement = utils.getOrCreateChild( mdUseConstraintsElement, "MD_RestrictionCode" )
 
     mdRestrictionCodeElement.setAttribute( "codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" )
     mdRestrictionCodeElement.setAttribute( "codeListValue", "license" )
 
-    textNode = self.getOrCreateTextChild( mdRestrictionCodeElement )
+    textNode = utils.getOrCreateTextChild( mdRestrictionCodeElement )
     textNode.setNodeValue( "license" )
 
   def applyWorkflowTemplate( self, metaXML ):
@@ -383,29 +383,29 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
     root = metaXML.documentElement()
 
-    mdDataQualityInfo = self.getOrIsertAfterChild( root, "dataQualityInfo", [ "distributionInfo", "contentInfo", "identificationInfo" ] )
-    mdDQData = self.getOrCreateChild( mdDataQualityInfo, "DQ_DataQuality" )
+    mdDataQualityInfo = utils.getOrIsertAfterChild( root, "dataQualityInfo", [ "distributionInfo", "contentInfo", "identificationInfo" ] )
+    mdDQData = utils.getOrCreateChild( mdDataQualityInfo, "DQ_DataQuality" )
 
     # check requirements (not need for workflow)
     if mdDQData.firstChildElement( "scope" ).isNull():
-      mdScope = self.getOrIsertTopChild( mdDQData, "scope" )
-      mdDQScope = self.getOrCreateChild( mdScope, "DQ_Scope" )
-      mdLevel = self.getOrIsertTopChild( mdDQScope, "level" )
-      mdScopeCode = self.getOrCreateChild( mdLevel, "MD_ScopeCode" )
+      mdScope = utils.getOrIsertTopChild( mdDQData, "scope" )
+      mdDQScope = utils.getOrCreateChild( mdScope, "DQ_Scope" )
+      mdLevel = utils.getOrIsertTopChild( mdDQScope, "level" )
+      mdScopeCode = utils.getOrCreateChild( mdLevel, "MD_ScopeCode" )
 
       mdScopeCode.setAttribute( "codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" )
       mdScopeCode.setAttribute( "codeListValue", "dataset" )
 
-      textNode = self.getOrCreateTextChild( mdScopeCode )
+      textNode = utils.getOrCreateTextChild( mdScopeCode )
       textNode.setNodeValue( "dataset" )
 
-    mdLineage = self.getOrCreateChild( mdDQData, "lineage" )
-    mdLiLineage = self.getOrCreateChild( mdLineage, "LI_Lineage" )
-    mdStatement = self.getOrIsertTopChild( mdLiLineage, "statement" )
+    mdLineage = utils.getOrCreateChild( mdDQData, "lineage" )
+    mdLiLineage = utils.getOrCreateChild( mdLineage, "LI_Lineage" )
+    mdStatement = utils.getOrIsertTopChild( mdLiLineage, "statement" )
 
-    mdCharStringElement = self.getOrCreateChild( mdStatement, "gco:CharacterString" )
+    mdCharStringElement = utils.getOrCreateChild( mdStatement, "gco:CharacterString" )
 
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( workflowTemplate.stringRepresentation() )
 
   def applyLogFile( self, metaXML ):
@@ -419,69 +419,66 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
     root = metaXML.documentElement()
 
-    mdDataQualityInfo = self.getOrIsertAfterChild( root, "dataQualityInfo", [ "distributionInfo", "contentInfo", "identificationInfo" ] )
-    mdDQData = self.getOrCreateChild( mdDataQualityInfo, "DQ_DataQuality" )
+    mdDataQualityInfo = utils.getOrIsertAfterChild( root, "dataQualityInfo", [ "distributionInfo", "contentInfo", "identificationInfo" ] )
+    mdDQData = utils.getOrCreateChild( mdDataQualityInfo, "DQ_DataQuality" )
 
     # check requirements (not need for log file)
     if mdDQData.firstChildElement( "scope" ).isNull():
-      mdScope = self.getOrIsertTopChild( mdDQData, "scope" )
-      mdDQScope = self.getOrCreateChild( mdScope, "DQ_Scope" )
-      mdLevel = self.getOrIsertTopChild( mdDQScope, "level" )
-      mdScopeCode = self.getOrCreateChild( mdLevel, "MD_ScopeCode" )
+      mdScope = utils.getOrIsertTopChild( mdDQData, "scope" )
+      mdDQScope = utils.getOrCreateChild( mdScope, "DQ_Scope" )
+      mdLevel = utils.getOrIsertTopChild( mdDQScope, "level" )
+      mdScopeCode = utils.getOrCreateChild( mdLevel, "MD_ScopeCode" )
 
       mdScopeCode.setAttribute( "codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" )
       mdScopeCode.setAttribute( "codeListValue", "dataset" )
-      textNode = self.getOrCreateTextChild( mdScopeCode )
+      textNode = utils.getOrCreateTextChild( mdScopeCode )
       textNode.setNodeValue( "dataset" )
 
-    mdLineage = self.getOrCreateChild( mdDQData, "lineage" )
-    mdLiLineage = self.getOrCreateChild( mdLineage, "LI_Lineage" )
+    mdLineage = utils.getOrCreateChild( mdDQData, "lineage" )
+    mdLiLineage = utils.getOrCreateChild( mdLineage, "LI_Lineage" )
 
-    mdProcessStep = self.getOrCreateChild( mdLiLineage, "processStep" )
-    mdLIProcessStep = self.getOrCreateChild( mdProcessStep, "LI_ProcessStep" )
-    mdDescription = self.getOrIsertTopChild( mdLIProcessStep, "description" )
-    mdCharStringElement = self.getOrCreateChild( mdDescription, "gco:CharacterString" )
-    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    mdProcessStep = utils.getOrCreateChild( mdLiLineage, "processStep" )
+    mdLIProcessStep = utils.getOrCreateChild( mdProcessStep, "LI_ProcessStep" )
+    mdDescription = utils.getOrIsertTopChild( mdLIProcessStep, "description" )
+    mdCharStringElement = utils.getOrCreateChild( mdDescription, "gco:CharacterString" )
+    textNode = utils.getOrCreateTextChild( mdCharStringElement )
     textNode.setNodeValue( logFileContent )
-
-  def applyOrganisationTemplate( self, metaXML ):
-    pass
 
   # ----------- XML Helpers -----------
 
-  def getOrCreateChild( self, element, childName ):
-    child = element.firstChildElement( childName )
-    if child.isNull():
-      child = element.ownerDocument().createElement( childName )
-      element.appendChild( child )
-    return child
-
-  def getOrIsertAfterChild( self, element, childName, prevChildsName ):
-    child = element.firstChildElement( childName )
-    if child.isNull():
-      child = element.ownerDocument().createElement( childName )
-
-      # search previous element
-      for elementName in prevChildsName:
-        prevElement = element.firstChildElement( elementName )
-        if not prevElement.isNull():
-          element.insertAfter( child, prevElement )
-          return child
-
-      # if not found, simply append
-      element.appendChild( child )
-    return child
-
-  def getOrIsertTopChild( self, element, childName ):
-    child = element.firstChildElement( childName )
-    if child.isNull():
-      child = element.ownerDocument().createElement( childName )
-      element.insertBefore( child, QDomNode() )
-    return child
-
-  def getOrCreateTextChild( self, element ):
-    childTextNode = element.childNodes().at( 0 ) # bad! need full search and type checker
-    if childTextNode.isNull():
-      childTextNode = element.ownerDocument().createTextNode( "" )
-      element.appendChild( childTextNode )
-    return childTextNode
+  #~ def getOrCreateChild( self, element, childName ):
+    #~ child = element.firstChildElement( childName )
+    #~ if child.isNull():
+      #~ child = element.ownerDocument().createElement( childName )
+      #~ element.appendChild( child )
+    #~ return child
+#~
+  #~ def getOrIsertAfterChild( self, element, childName, prevChildsName ):
+    #~ child = element.firstChildElement( childName )
+    #~ if child.isNull():
+      #~ child = element.ownerDocument().createElement( childName )
+#~
+      #~ # search previous element
+      #~ for elementName in prevChildsName:
+        #~ prevElement = element.firstChildElement( elementName )
+        #~ if not prevElement.isNull():
+          #~ element.insertAfter( child, prevElement )
+          #~ return child
+#~
+      #~ # if not found, simply append
+      #~ element.appendChild( child )
+    #~ return child
+#~
+  #~ def getOrIsertTopChild( self, element, childName ):
+    #~ child = element.firstChildElement( childName )
+    #~ if child.isNull():
+      #~ child = element.ownerDocument().createElement( childName )
+      #~ element.insertBefore( child, QDomNode() )
+    #~ return child
+#~
+  #~ def getOrCreateTextChild( self, element ):
+    #~ childTextNode = element.childNodes().at( 0 ) # bad! need full search and type checker
+    #~ if childTextNode.isNull():
+      #~ childTextNode = element.ownerDocument().createTextNode( "" )
+      #~ element.appendChild( childTextNode )
+    #~ return childTextNode

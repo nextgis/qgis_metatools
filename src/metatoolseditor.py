@@ -35,6 +35,7 @@ from qgis.gui import *
 import codecs, sys
 
 from dom_model import DomModel, FilterDomModel
+import utils
 
 from ui_editor import Ui_MetatoolsEditor
 
@@ -70,12 +71,15 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     QObject.connect( self.btnApply, SIGNAL( "clicked()" ), self.applyEdits )
     QObject.connect( self.btnDiscard, SIGNAL( "clicked()" ), self.resetEdits )
 
-    #QObject.connect( self.buttonBox, SIGNAL( "clicked( QAbstractButton* )" ), self.mainButtonClicked )
     QObject.disconnect( self.buttonBox, SIGNAL( "accepted()" ), self.accept )
     QObject.connect( self.btnSave, SIGNAL( "clicked()" ), self.saveMetadata )
 
-  def setContent( self, metaFilePath ):
+  def setContent( self, metaFilePath, layer ):
     self.metaFilePath = metaFilePath
+    self.layer = layer
+    
+    self.fillRasterInfo()
+    
     self.file = QFile( metaFilePath )
     self.metaXML = QDomDocument()
     self.metaXML.setContent( self.file )
@@ -188,6 +192,11 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
       self.btnSave.setEnabled( False )
     except:
       QMessageBox.warning(self, self.tr( "Metatools" ), self.tr( "Metadata file can't be saved:\n" ) + str( sys.exc_info()[ 0 ] ) )
+  
+  def fillRasterInfo( self ):
+    # get image dimension, band count and populate metadata file
+    bands, extent = utils.getRasterLayerInfo( self.layer )
+    utils.writeRasterInfo( self.metaFilePath, bands, extent )
 
   def loadFilter( self ):
     settings = QSettings( "NextGIS", "metatools" )
