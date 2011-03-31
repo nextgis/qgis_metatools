@@ -137,7 +137,7 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
   def valueModified( self ):
     self.editorButtonBox.setEnabled( True )
 
-  def tabChanged(self, tab):
+  def tabChanged( self, tab ):
     self.textValue.clear()
 
     path = ""

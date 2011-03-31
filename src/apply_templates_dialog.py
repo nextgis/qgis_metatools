@@ -37,11 +37,12 @@ import sys, os, codecs, shutil
 
 from license_editor_dialog import LicenseEditorDialog
 from license_template_manager import LicenseTemplateManager
+
 from workflow_editor_dialog import WorkflowEditorDialog
 from workflow_template_manager import WorkflowTemplateManager
+
 from organization_editor_dialog import OrganizationEditorDialog
 from organization_template_manager import OrganizationTemplateManager
-
 
 from ui_apply_templates import Ui_ApplyTemplatesDialog
 
@@ -60,6 +61,8 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
     self.licenseTemplateManager = LicenseTemplateManager( currentPath )
     self.workflowTemplateManager = WorkflowTemplateManager( currentPath )
+    path = os.path.join( currentPath, "templates/institutions.xml" )
+    self.orgsTemplateManager = OrganizationTemplateManager( path )
 
     self.btnApply = QPushButton( self.tr( "Apply" ) )
     self.btnClose = QPushButton( self.tr( "Close" ) )
@@ -88,18 +91,25 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     # populate comboboxes with templates
     self.updateLicenseTemplatesList()
     self.updateWorkflowTemplatesList()
+    self.updateOrgsTemplatesList()
 
     # disable Apply button when there are no layers
     if len( self.layers ) == 0:
       self.btnApply.setEnabled( False )
 
   def toggleExternalFiles( self ):
+    self.btnApply.setEnabled( False )
     if self.chkExternalFiles.isChecked():
-      self.lstLayers.setEnabled( False )
+      #self.lstLayers.setEnabled( False )
+      self.lstLayers.clear()
+      self.lstLayers.setSelectionMode( QAbstractItemView.NoSelection )
       self.btnSelectDataFiles.setEnabled( True )
       self.layers = []
     else:
-      self.lstLayers.setEnabled( True )
+      #self.lstLayers.setEnabled( True )
+      self.lstLayers.clear()
+      self.lstLayers.setSelectionMode( QAbstractItemView.ExtendedSelection )
+      self.lstLayers.addItems( utils.getRasterLayerNames() )
       self.btnSelectDataFiles.setEnabled( False )
       self.updateLayerList()
 
@@ -110,6 +120,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
       return
 
     self.layers = files
+    self.lstLayers.addItems( files )
     self.btnApply.setEnabled( True )
 
   def manageLicenses( self ):
@@ -139,12 +150,12 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
       self.cmbWorkflow.setCurrentIndex( index )
 
   def manageOrganizations( self ):
-    #QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Not implemented!" ) )
     oldValue = self.cmbOrganization.currentText()
 
     dlg = OrganizationEditorDialog()
     dlg.exec_()
 
+    self.orgsTemplateManager.reloadTemplates()
     self.updateOrgsTemplatesList()
 
     # try to restore previous value
@@ -168,7 +179,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
   def updateOrgsTemplatesList( self ):
     self.cmbOrganization.clear()
-    #self.cmbOrganization.addItems( self.organizationTemplateManager.getTemplateList() )
+    self.cmbOrganization.addItems( self.orgsTemplateManager.tempalateNames() )
 
   def updateLayerList( self ):
     self.layers = []
@@ -219,6 +230,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
         metaXML.setContent( file )
 
         # apply templates (BAD version - change to applier with standard)
+        self.applyInstitutionTemplate( metaXML )
         self.applyLicenseTemplate( metaXML )
         self.applyWorkflowTemplate( metaXML )
         self.applyLogFile( metaXML )
@@ -229,10 +241,79 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
         metafile.close()
 
       QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Templates successfully applied!" ) )
+      # clear selection and disable Apply button
+      self.lstLayers.clearSelection()
+      self.layers = []
+      self.btnApply.setEnabled( False )
     except:
       QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Templates can't be applied: " ) + str( sys.exc_info()[ 1 ] ) )
 
   # ----------- Appliers -----------
+  
+  def applyInstitutionTemplate( self, metaXML ):
+    # TODO: make more safe
+    if self.cmbOrganization.currentIndex() == -1:
+      return
+    
+    template = self.orgsTemplateManager.organizations[ self.cmbOrganization.currentText() ]
+    
+    root = metaXML.documentElement()
+    mdContact = self.getOrCreateChild( root, "contact" )
+    mdResponsibleParty = self.getOrCreateChild( mdContact, "CI_ResponsibleParty" )
+    
+    # individualName
+    mdIndividualName = self.getOrCreateChild( mdResponsibleParty, "individualName" )
+    mdCharStringElement = self.getOrCreateChild( mdIndividualName, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.person )
+    
+    # organisationName
+    mdOrganisationName = self.getOrCreateChild( mdResponsibleParty, "organisationName" )
+    mdCharStringElement = self.getOrCreateChild( mdOrganisationName, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.name )
+    
+    # positionName
+    mdPositionName = self.getOrCreateChild( mdResponsibleParty, "positionName" )
+    mdCharStringElement = self.getOrCreateChild( mdPositionName, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.position )
+    
+    # go deeper... fill contactInfo
+    mdContactInfo = self.getOrCreateChild( mdResponsibleParty, "contactInfo" )
+    mdCIContact = self.getOrCreateChild( mdContactInfo, "CI_Contact" )
+    
+    # hours of service
+    mdHours = self.getOrCreateChild( mdCIContact, "hoursOfService" )
+    mdCharStringElement = self.getOrCreateChild( mdHours, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.hours )
+    
+    # fill phones
+    mdPhone = self.getOrCreateChild( mdCIContact, "phone" )
+    mdCIPhone = self.getOrCreateChild( mdPhone, "CI_Telephone" )
+    
+    mdVoice = self.getOrCreateChild( mdCIPhone, "voice" )
+    mdCharStringElement = self.getOrCreateChild( mdVoice, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.phone )
+    
+    mdFacsimile = self.getOrCreateChild( mdCIPhone, "facsimile" )
+    mdCharStringElement = self.getOrCreateChild( mdFacsimile, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.phone )
+    
+    # fill address
+    mdAddress = self.getOrCreateChild( mdCIContact, "address" )
+    mdCIAddress = self.getOrCreateChild( mdAddress, "CI_Address" )
+    
+    # TODO: deliveryPoint, city, administrativeArea, postalCode, country
+    
+    # email
+    mdEmail = self.getOrCreateChild( mdCIAddress, "electronicMailAddress" )
+    mdCharStringElement = self.getOrCreateChild( mdEmail, "gco:CharacterString" )
+    textNode = self.getOrCreateTextChild( mdCharStringElement )
+    textNode.setNodeValue( template.email )
 
   def applyLicenseTemplate( self, metaXML ):
     # TODO: make more safe

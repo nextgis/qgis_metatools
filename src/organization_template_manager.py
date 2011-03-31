@@ -25,108 +25,170 @@
 #
 #******************************************************************************
 
-import os, codecs
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4.QtXml import *
 
-class OrganizationTemplateManager:
-    ORG_SUBFOLDER = 'templates/organization'
-    ORG_EXT = '.xml'
-
-    def __init__(self, basePluginPath):
-        self.basePluginPath = str(basePluginPath)
-
-    def getOrganizationTemplatesPath(self):
-        return os.path.join(self.basePluginPath, self.ORG_SUBFOLDER)
-
-    def getTemplateFilePath(self, templateName):
-        return os.path.join(self.getOrganizationTemplatesPath(), str(templateName) + self.ORG_EXT)
-
-    def getTemplateList(self):
-        templatesList = []
-        for filename in os.listdir(self.getOrganizationTemplatesPath()):
-            name, ext = os.path.splitext(filename)
-            if ext == self.ORG_EXT:
-                templatesList.append(name)
-        return templatesList
-
-    def loadTemplate(self, templateName):
-        # TODO: more checks on struct!
-        organizationTemplate = OrganizationTemplate()
-        templateFile = QFile(self.getTemplateFilePath(templateName.toUtf8()))
-
-        xmlTemplate = QDomDocument()
-        xmlTemplate.setContent(templateFile)
-
-        root = xmlTemplate.documentElement()
-                
-        organizationTemplate.name = root.elementsByTagName("Name").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.email=root.elementsByTagName("Email").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.phone=root.elementsByTagName("Phone").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.fax=root.elementsByTagName("Fax").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.delivery=root.elementsByTagName("Delivery").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.city=root.elementsByTagName("City").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.adm=root.elementsByTagName("Adm").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.postal=root.elementsByTagName("Postal").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.country=root.elementsByTagName("Country").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.contactTitle=root.elementsByTagName("ContactTitle").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.contactPosition=root.elementsByTagName("ContactPosition").at(0).childNodes().at(0).nodeValue()
-        organizationTemplate.hours=root.elementsByTagName("Hours").at(0).childNodes().at(0).nodeValue()
-        
-        return organizationTemplate
-
-    def saveTemplate(self, orgTemplate):
-        # create doc and root
-        xmlTemplate = QDomDocument()
-        root = xmlTemplate.createElement("LicenseTemplate")
-        xmlTemplate.appendChild(root)
-
-        #set props
-        self.addChildWithValue(xmlTemplate, root, "Name", orgTemplate.name)
-        self.addChildWithValue(xmlTemplate, root, "Email", orgTemplate.email)
-        self.addChildWithValue(xmlTemplate, root, "Phone", orgTemplate.phone)
-        self.addChildWithValue(xmlTemplate, root, "Fax", orgTemplate.fax)
-        self.addChildWithValue(xmlTemplate, root, "Delivery", orgTemplate.delivery)
-        self.addChildWithValue(xmlTemplate, root, "City", orgTemplate.city)
-        self.addChildWithValue(xmlTemplate, root, "Adm", orgTemplate.adm)
-        self.addChildWithValue(xmlTemplate, root, "Postal", orgTemplate.postal)
-        self.addChildWithValue(xmlTemplate, root, "Country", orgTemplate.country)
-        self.addChildWithValue(xmlTemplate, root, "ContactTitle", orgTemplate.contactTitle)
-        self.addChildWithValue(xmlTemplate, root, "ContactPosition", orgTemplate.contactPosition)
-        self.addChildWithValue(xmlTemplate, root, "Hours", orgTemplate.hours)
-        
-        #save
-        templateFile = codecs.open(self.getTemplateFilePath(licenseTemplate.name.toUtf8()), 'w', encoding='utf-8')
-        templateFile.write(unicode(xmlTemplate.toString().toUtf8(), 'utf-8'))
-        templateFile.close()
-    
-    def addChildWithValue(self, doc, root, elementName, elementValue):
-        element = doc.createElement(elementName)
-        textNode = doc.createTextNode(elementValue)
-        element.appendChild(textNode)
-        root.appendChild(element)
-
-    def removeTemplate(self, templateName):
-        os.remove(self.getTemplateFilePath(templateName))
-
+import os, codecs
 
 class OrganizationTemplate:
-    def __init__(self, name=None, email=None, phone=None, fax=None, delivery=None, city=None, adm=None, postal=None, country=None, contactTitle=None, contactPosition=None, hours=None):
-        self.name = name
-        self.email=email
-        self.phone=phone
-        self.fax=fax
-        self.delivery=delivery
-        self.city=city
-        self.adm=adm
-        self.postal=postal
-        self.country=country
-        self.contactTitle=contactTitle
-        self.contactPosition=contactPosition
-        self.hours=hours
-    
-    def stringRepresentation(self):
-        return self.name
+  def __init__( self, name = None, address = None, phone = None, fax = None, \
+                email = None, person = None, title = None, position = None, hours = None ):
+    self.name = name
+    self.address = address
+    self.phone = phone
+    self.fax = fax
+    self.email = email
+    self.person = person
+    self.title = title
+    self.position = position
+    self.hours = hours
 
+class OrganizationTemplateManager:
+  def __init__( self, fileName ):
+    self.templatesFile = fileName
+    self.organizations = {}
+    self.loadTemplates()
 
+  def loadTemplates( self ):
+    doc = QDomDocument( "metatools_institution" )
+    f = QFile( self.templatesFile )
+    if not f.open( QFile.ReadOnly ):
+      print "Couldn't open the templates file:", self.templatesFile
+      return
+
+    if not doc.setContent( f ):
+      print "Couldn't parse the templates file:", self.templatesFile
+      return
+
+    f.close()
+
+    docElem = doc.documentElement()
+    if docElem.tagName() != "metatools_institution":
+      print "Incorrect root tag in file:", docElem.tagName()
+      return
+
+    # load organizations
+    orgsElement = docElem.firstChildElement( "institutions" )
+    if not orgsElement.isNull():
+      e = orgsElement.firstChildElement()
+      while not e.isNull():
+        if e.tagName() == "institution":
+          org = self.loadInstitution( e )
+          if org != None:
+            self.organizations[ e.attribute( "name" ) ] = org
+        else:
+          print "Unknown tag: ", e.tagName()
+        e = e.nextSiblingElement()
+
+  def loadInstitution( self, root ):
+    if root.attribute( "name" ).isEmpty():
+      return None
+    org = OrganizationTemplate()
+    org.name = root.attribute( "name" )
+    e = root.elementsByTagName( "addres" ).at( 0 )
+    org.address = e.childNodes().at( 0 ).nodeValue()
+    e = root.elementsByTagName( "phone" ).at( 0 )
+    org.phone = e.childNodes().at( 0 ).nodeValue()
+    e = root.elementsByTagName( "fax" ).at( 0 )
+    org.fax = e.childNodes().at( 0 ).nodeValue()
+    e = root.elementsByTagName( "email" ).at( 0 )
+    org.email = e.childNodes().at( 0 ).nodeValue()
+    e = root.elementsByTagName( "person" ).at( 0 )
+    org.person = e.childNodes().at( 0 ).nodeValue()
+    e = root.elementsByTagName( "title" ).at( 0 )
+    org.title = e.childNodes().at( 0 ).nodeValue()
+    e = root.elementsByTagName( "position" ).at( 0 )
+    org.position = e.childNodes().at( 0 ).nodeValue()
+    e = root.elementsByTagName( "hours" ).at( 0 )
+    org.hours = e.childNodes().at( 0 ).nodeValue()
+    return org
+
+  def saveTemplates( self ):
+    doc = QDomDocument( "metatools_institution" )
+    root = doc.createElement( "metatools_institution" )
+    doc.appendChild( root )
+
+    orgsElem = doc.createElement( "institutions" )
+    for name, org in self.organizations.iteritems():
+      el = self.saveInstitution( org, doc )
+      orgsElem.appendChild( el )
+
+    root.appendChild( orgsElem )
+
+    f = QFile( self.templatesFile )
+    if not f.open( QFile.WriteOnly ):
+      print "Couldn't open file for writing:", self.templatesFile
+      return
+
+    stream = QTextStream( f )
+    doc.save( stream, 2 )
+    f.close()
+
+  def saveInstitution( self, org, doc ):
+    root = doc.createElement( "institution" )
+    root.setAttribute( "name", org.name )
+
+    elem = doc.createElement( "address" )
+    node = doc.createTextNode( org.address )
+    elem.appendChild( node )
+    root.appendChild( elem )
+
+    elem = doc.createElement( "phone" )
+    node = doc.createTextNode( org.phone )
+    elem.appendChild( node )
+    root.appendChild( elem )
+
+    elem = doc.createElement( "fax" )
+    node = doc.createTextNode( org.fax )
+    elem.appendChild( node )
+    root.appendChild( elem )
+
+    elem = doc.createElement( "email" )
+    node = doc.createTextNode( org.email )
+    elem.appendChild( node )
+    root.appendChild( elem )
+
+    elem = doc.createElement( "person" )
+    node = doc.createTextNode( org.person )
+    elem.appendChild( node )
+    root.appendChild( elem )
+
+    elem = doc.createElement( "title" )
+    node = doc.createTextNode( org.title )
+    elem.appendChild( node )
+    root.appendChild( elem )
+
+    elem = doc.createElement( "position" )
+    node = doc.createTextNode( org.position )
+    elem.appendChild( node )
+    root.appendChild( elem )
+
+    elem = doc.createElement( "hours" )
+    node = doc.createTextNode( org.hours )
+    elem.appendChild( node )
+    root.appendChild( elem )
+
+    return root
+  
+  def reloadTemplates( self ):
+    self.organizations = {}
+    self.loadTemplates()
+
+  def addTemplate( self, templateName, template ):
+    # delete previous template if any
+    if self.organizations.has_key( templateName ):
+      del self.organizations[ templateName ]
+
+    self.organizations[ templateName ] = template
+
+  def removeTemplate( self, templateName ):
+    if self.organizations.has_key( templateName ):
+      del self.organizations[ templateName ]
+
+  def tempalateNames( self ):
+    #names = QStringList()
+    #for key in self.organizations.keys():
+    #  names << key
+    #return names
+    return self.organizations.keys()

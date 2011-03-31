@@ -32,29 +32,29 @@ from PyQt4.QtXml import *
 import os, codecs
 
 class LicenseTemplateManager:
-  LICENSE_SUBFOLDER = 'templates/license'
-  LICENSE_EXT = '.xml'
+  SUBFOLDER = 'templates/license'
+  EXT = '.xml'
 
   def __init__( self, basePluginPath ):
     self.basePluginPath = str( basePluginPath )
 
-  def getLicenseTemplatesPath( self ):
-    return os.path.join( self.basePluginPath, self.LICENSE_SUBFOLDER )
+  def getTemplatesPath( self ):
+    return os.path.join( self.basePluginPath, self.SUBFOLDER )
 
   def getTemplateFilePath( self, templateName ):
-    return os.path.join( self.getLicenseTemplatesPath(), str( templateName ) + self.LICENSE_EXT )
+    return os.path.join( self.getTemplatesPath(), str( templateName ) + self.EXT )
 
   def getTemplateList( self ):
     templatesList = []
-    for filename in os.listdir( self.getLicenseTemplatesPath() ):
+    for filename in os.listdir( self.getTemplatesPath() ):
       name, ext = os.path.splitext( filename )
-      if ext == self.LICENSE_EXT:
+      if ext == self.EXT:
         templatesList.append( name )
     return templatesList
 
   def loadTemplate( self, templateName ):
     # TODO: more cheks on struct!
-    licenseTemplate = LicenseTemplate()
+    template = LicenseTemplate()
     templateFile = QFile( self.getTemplateFilePath( templateName.toUtf8() ) )
 
     xmlTemplate = QDomDocument()
@@ -65,13 +65,13 @@ class LicenseTemplateManager:
     versionElement = root.elementsByTagName( "Version" ).at( 0 )
     descriptionElement = root.elementsByTagName( "Description" ).at( 0 )
 
-    licenseTemplate.name = nameElement.childNodes().at( 0 ).nodeValue()
-    licenseTemplate.version = versionElement.childNodes().at( 0 ).nodeValue()
-    licenseTemplate.description = descriptionElement.childNodes().at( 0 ).nodeValue()
+    template.name = nameElement.childNodes().at( 0 ).nodeValue()
+    template.version = versionElement.childNodes().at( 0 ).nodeValue()
+    template.description = descriptionElement.childNodes().at( 0 ).nodeValue()
 
-    return licenseTemplate
+    return template
 
-  def saveTemplate( self, licenseTemplate ):
+  def saveTemplate( self, template ):
     xmlTemplate = QDomDocument()
 
     # create root
@@ -80,23 +80,23 @@ class LicenseTemplateManager:
 
     # set name
     element = xmlTemplate.createElement( "Name" )
-    textNode = xmlTemplate.createTextNode( licenseTemplate.name )
+    textNode = xmlTemplate.createTextNode( template.name )
     element.appendChild( textNode )
     root.appendChild( element )
 
     # set version
     element = xmlTemplate.createElement( "Version" )
-    textNode = xmlTemplate.createTextNode( licenseTemplate.version )
+    textNode = xmlTemplate.createTextNode( template.version )
     element.appendChild( textNode )
     root.appendChild( element )
 
     # set desc
     element = xmlTemplate.createElement( "Description" )
-    textNode = xmlTemplate.createTextNode( licenseTemplate.description )
+    textNode = xmlTemplate.createTextNode( template.description )
     element.appendChild( textNode )
     root.appendChild( element )
 
-    templateFile = codecs.open( self.getTemplateFilePath( licenseTemplate.name.toUtf8() ), "w", encoding="utf-8" )
+    templateFile = codecs.open( self.getTemplateFilePath( template.name.toUtf8() ), "w", encoding="utf-8" )
     templateFile.write( unicode( xmlTemplate.toString().toUtf8(), "utf-8" ) )
     templateFile.close()
 

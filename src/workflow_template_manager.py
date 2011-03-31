@@ -32,29 +32,29 @@ from PyQt4.QtXml import *
 import os, codecs
 
 class WorkflowTemplateManager:
-  WORKFLOW_SUBFOLDER = "templates/workflow"
-  WORKFLOW_EXT = ".xml"
+  SUBFOLDER = "templates/workflow"
+  EXT = ".xml"
 
   def __init__( self, basePluginPath ):
     self.basePluginPath = str( basePluginPath )
 
-  def getWorkflowTemplatesPath( self ):
-    return os.path.join( self.basePluginPath, self.WORKFLOW_SUBFOLDER )
+  def getTemplatesPath( self ):
+    return os.path.join( self.basePluginPath, self.SUBFOLDER )
 
   def getTemplateFilePath( self, templateName ):
-    return os.path.join( self.getWorkflowTemplatesPath(), str( templateName ) + self.WORKFLOW_EXT )
+    return os.path.join( self.getTemplatesPath(), str( templateName ) + self.EXT )
 
   def getTemplateList( self ):
     templatesList = []
-    for filename in os.listdir( self.getWorkflowTemplatesPath() ):
+    for filename in os.listdir( self.getTemplatesPath() ):
       name, ext = os.path.splitext( filename )
-      if ext == self.WORKFLOW_EXT:
+      if ext == self.EXT:
         templatesList.append( name )
     return templatesList
 
   def loadTemplate( self, templateName ):
     # TODO: more cheks on struct
-    workflowTemplate = WorkflowTemplate()
+    template = WorkflowTemplate()
     templateFile = QFile( self.getTemplateFilePath( templateName.toUtf8() ) )
 
     xmlTemplate = QDomDocument()
@@ -64,12 +64,12 @@ class WorkflowTemplateManager:
     nameElement = root.elementsByTagName( "Name" ).at( 0 )
     descriptionElement = root.elementsByTagName( "Description" ).at( 0 )
 
-    workflowTemplate.name = nameElement.childNodes().at( 0 ).nodeValue()
-    workflowTemplate.description = descriptionElement.childNodes().at( 0 ).nodeValue()
+    template.name = nameElement.childNodes().at( 0 ).nodeValue()
+    template.description = descriptionElement.childNodes().at( 0 ).nodeValue()
 
-    return workflowTemplate
+    return template
 
-  def saveTemplate( self, workflowTemplate ):
+  def saveTemplate( self, template ):
     xmlTemplate = QDomDocument()
 
     # create root
@@ -78,17 +78,17 @@ class WorkflowTemplateManager:
 
     # set name
     element = xmlTemplate.createElement( "Name" )
-    textNode = xmlTemplate.createTextNode( workflowTemplate.name )
+    textNode = xmlTemplate.createTextNode( template.name )
     element.appendChild( textNode )
     root.appendChild( element )
 
     # set desc
     element = xmlTemplate.createElement( "Description" )
-    textNode = xmlTemplate.createTextNode( workflowTemplate.description )
+    textNode = xmlTemplate.createTextNode( template.description )
     element.appendChild( textNode )
     root.appendChild( element )
 
-    templateFile = codecs.open( self.getTemplateFilePath( workflowTemplate.name.toUtf8() ), "w", encoding="utf-8" )
+    templateFile = codecs.open( self.getTemplateFilePath( template.name.toUtf8() ), "w", encoding="utf-8" )
     templateFile.write( unicode( xmlTemplate.toString().toUtf8(), "utf-8" ) )
     templateFile.close()
 

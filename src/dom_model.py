@@ -118,7 +118,7 @@ class DomModel( QAbstractItemModel ):
 
   def nodePath( self, index ):
     if not index.isValid():
-      return QVariant()
+      return QString()
 
     item = index.internalPointer()
     return item.getNodePath()

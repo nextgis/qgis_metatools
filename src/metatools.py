@@ -232,15 +232,16 @@ class MetatoolsPlugin:
     dlg.exec_()
 
   def doApplyTemplates( self ):
-    try:
-      from apply_templates_dialog import ApplyTemplatesDialog
-    except ImportError:
-      QMessageBox.critical( self.iface.mainWindow(),
-                            QCoreApplication.translate( "Metatools", "Metatools"),
-                            QCoreApplication.translate( "Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2")
-                            .arg( minQtVersion )
-                            .arg( qVersion() ) )
-      return
+    from apply_templates_dialog import ApplyTemplatesDialog
+#    try:
+#      from apply_templates_dialog import ApplyTemplatesDialog
+#    except ImportError:
+#      QMessageBox.critical( self.iface.mainWindow(),
+#                            QCoreApplication.translate( "Metatools", "Metatools"),
+#                            QCoreApplication.translate( "Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2")
+#                            .arg( minQtVersion )
+#                            .arg( qVersion() ) )
+#      return
 
     dlg = ApplyTemplatesDialog( self.iface )
     dlg.exec_()

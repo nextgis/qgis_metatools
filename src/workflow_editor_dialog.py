@@ -81,7 +81,7 @@ class WorkflowEditorDialog( QDialog, Ui_WorkflowEditorDialog ):
       self.workflowTemplateManager.removeTemplate( self.workflowTemplate.name )
       self.reloadTemplatesList()
 
-    if self.cmbWorkflow.count == 0:
+    if self.cmbWorkflow.count() == 0:
       self.clearFormFields()
 
   # enable save button when templated edited
@@ -89,11 +89,12 @@ class WorkflowEditorDialog( QDialog, Ui_WorkflowEditorDialog ):
     self.btnSave.setEnabled( True )
 
   def workflowChanged( self ):
+    #QMessageBox.warning( self, "DEBUG", "changed" )
     templateName = self.cmbWorkflow.currentText()
     if templateName.isEmpty():
       return
 
-    self.WorkflowTemplate = self.workflowTemplateManager.loadTemplate( templateName )
+    self.workflowTemplate = self.workflowTemplateManager.loadTemplate( templateName )
     self.templateToForm( self.workflowTemplate )
 
   def saveTemplate( self ):
@@ -108,7 +109,7 @@ class WorkflowEditorDialog( QDialog, Ui_WorkflowEditorDialog ):
     try:
       # first delete old template
       if self.workflowTemplate.name and self.workflowTemplate.name != "":
-          self.workflowTemplateManager.removeTemplate( self.workflowTemplate.name )
+        self.workflowTemplateManager.removeTemplate( self.workflowTemplate.name )
       # save new version
       self.workflowTemplateManager.saveTemplate( template )
     except:
@@ -121,7 +122,7 @@ class WorkflowEditorDialog( QDialog, Ui_WorkflowEditorDialog ):
     # set combobox item
     index = self.cmbWorkflow.findText( template.name )
     if index != -1:
-      self.workflowComboBox.setCurrentIndex( index )
+      self.cmbWorkflow.setCurrentIndex( index )
 
     self.btnSave.setEnabled( False )
 

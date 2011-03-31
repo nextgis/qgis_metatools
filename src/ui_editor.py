@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_editor.ui'
 #
-# Created: Wed Mar 30 18:41:44 2011
+# Created: Thu Mar 31 11:02:41 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -51,6 +51,7 @@ class Ui_MetatoolsEditor(object):
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.groupBox)
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
         self.lblNodePath = QtGui.QLabel(self.groupBox)
+        self.lblNodePath.setWordWrap(True)
         self.lblNodePath.setObjectName(_fromUtf8("lblNodePath"))
         self.verticalLayout_4.addWidget(self.lblNodePath)
         self.textValue = QtGui.QTextEdit(self.groupBox)

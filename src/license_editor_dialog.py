@@ -82,7 +82,7 @@ class LicenseEditorDialog( QDialog, Ui_LicenseEditorDialog ):
       self.licenseTemplateManager.removeTemplate( self.licenseTemplate.name )
       self.reloadTemplatesList()
     
-    if self.cmbLicense.count == 0:
+    if self.cmbLicense.count() == 0:
       self.clearFormFields()
 
   # enable save button when template edited
