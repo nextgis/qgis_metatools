@@ -261,7 +261,7 @@ class MetatoolsPlugin:
           settings = QSettings( "NextGIS", "metatools" )
           profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
           if profile.isEmpty():
-            QMessageBox.warning( self.iface.mainWindow(),,
+            QMessageBox.warning( self.iface.mainWindow(),
                                  QCoreApplication.translate( "Metatools", "Metatools" ),
                                  QCoreApplication.translate( "Metatools", "No profile selected. Please set default profile in plugin settings" ) )
             return False
