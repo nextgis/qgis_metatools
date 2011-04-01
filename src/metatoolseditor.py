@@ -191,13 +191,6 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     except:
       QMessageBox.warning(self, self.tr( "Metatools" ), self.tr( "Metadata file can't be saved:\n" ) + str( sys.exc_info()[ 0 ] ) )
 
-  #def fillRasterInfo( self ):
-    # get image dimension, band count and populate metadata file
-  #  bands, extent = utils.getRasterLayerInfo( self.layer )
-  #  utils.writeRasterInfo( self.metaFilePath, bands, extent )
-
-    # TODO: write bands info (datatype, min and max values)
-
   def loadFilter( self ):
     settings = QSettings( "NextGIS", "metatools" )
     fileName = settings.value( "general/filterFile", QVariant() ).toString()

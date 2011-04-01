@@ -224,6 +224,10 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
                                .arg( layer ) )
           continue
 
+        # extract image specific information
+        if self.chkUpdateImageInfo.isChecked():
+          utils.writeRasterInfo( layer, metaFilePath )
+
         # load metadata file
         file = QFile( metaFilePath )
         metaXML = QDomDocument()

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>521</width>
-    <height>263</height>
+    <height>293</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -138,6 +138,13 @@
        <widget class="QPushButton" name="btnSelectLogFile">
         <property name="text">
          <string>Browse</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="3">
+       <widget class="QCheckBox" name="chkUpdateImageInfo">
+        <property name="text">
+         <string>Extract image parameters to metadata XML</string>
         </property>
        </widget>
       </item>

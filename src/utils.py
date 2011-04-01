@@ -34,6 +34,8 @@ from qgis.gui import *
 
 import os
 
+from osgeo import gdal
+
 META_EXT = '.xml'
 
 def getMetafilePath( layer ):
@@ -68,10 +70,23 @@ def getRasterLayerByName( layerName ):
       else:
         return None
 
-def getRasterLayerInfo( layer ):
-  bands = layer.bandCount()
-  extent = layer.extent()
-  return bands, extent
+def getGeneralRasterInfo( path ):
+  raster = gdal.Open( str( path ) )
+  bands = raster.RasterCount
+
+  width = raster.RasterXSize
+  height = raster.RasterYSize
+
+  gt = raster.GetGeoTransform()
+
+  raster = None
+
+  xMin = gt[ 0 ]
+  yMin = gt[ 3 ] + width * gt[ 4 ] + height * gt[ 5 ]
+  xMax = gt[ 0 ] + width * gt[ 1 ] + height * gt[ 2 ]
+  yMax = gt[ 3 ]
+
+  return bands, [ xMin, yMin, xMax, yMax ]
 
 # helper functions for XML processing
 
@@ -112,12 +127,16 @@ def getOrCreateTextChild( element ):
     element.appendChild( childTextNode )
   return childTextNode
 
-def writeRasterInfo( metadataFile, bands, extent ):
+# write raster information in metadata
+def writeRasterInfo( dataFile, metadataFile ):
   f = QFile( metadataFile )
   f.open( QFile.ReadOnly )
   metaXML = QDomDocument()
   metaXML.setContent( f )
   f.close()
+
+  # general raster info
+  bands, extent = getGeneralRasterInfo( dataFile )
 
   root = metaXML.documentElement()
 
@@ -132,22 +151,22 @@ def writeRasterInfo( metadataFile, bands, extent ):
   mdWestBound = getOrCreateChild( mdGeoBbox, "westBoundLongitude" )
   mdCharStringElement = getOrCreateChild( mdWestBound, "gco:Decimal" )
   textNode = getOrCreateTextChild( mdCharStringElement )
-  textNode.setNodeValue( str( extent.xMinimum() ) )
+  textNode.setNodeValue( str( extent[ 0 ] ) )
 
   mdEastBound = getOrCreateChild( mdGeoBbox, "eastBoundLongitude" )
   mdCharStringElement = getOrCreateChild( mdEastBound, "gco:Decimal" )
   textNode = getOrCreateTextChild( mdCharStringElement )
-  textNode.setNodeValue( str( extent.xMaximum() ) )
+  textNode.setNodeValue( str( extent[ 2 ] ) )
 
   mdSouthBound = getOrCreateChild( mdGeoBbox, "southBoundLatitude" )
   mdCharStringElement = getOrCreateChild( mdSouthBound, "gco:Decimal" )
   textNode = getOrCreateTextChild( mdCharStringElement )
-  textNode.setNodeValue( str( extent.yMinimum() ) )
+  textNode.setNodeValue( str( extent[ 1 ] ) )
 
   mdNorthBound = getOrCreateChild( mdGeoBbox, "northBoundLatitude" )
   mdCharStringElement = getOrCreateChild( mdNorthBound, "gco:Decimal" )
   textNode = getOrCreateTextChild( mdCharStringElement )
-  textNode.setNodeValue( str( extent.yMaximum() ) )
+  textNode.setNodeValue( str( extent[ 3 ] ) )
 
   # raster bands
   #mdContentInfo = getOrCreateChild( root, "contentInfo" )

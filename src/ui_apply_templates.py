@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_apply_templates.ui'
 #
-# Created: Wed Mar 30 16:35:31 2011
+# Created: Fri Apr 01 14:59:16 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_ApplyTemplatesDialog(object):
     def setupUi(self, ApplyTemplatesDialog):
         ApplyTemplatesDialog.setObjectName(_fromUtf8("ApplyTemplatesDialog"))
-        ApplyTemplatesDialog.resize(521, 263)
+        ApplyTemplatesDialog.resize(521, 293)
         self.gridLayout = QtGui.QGridLayout(ApplyTemplatesDialog)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -31,6 +31,7 @@ class Ui_ApplyTemplatesDialog(object):
         self.horizontalLayout.addWidget(self.btnSelectDataFiles)
         self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 2)
         self.lstLayers = QtGui.QListWidget(ApplyTemplatesDialog)
+        self.lstLayers.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.lstLayers.setObjectName(_fromUtf8("lstLayers"))
         self.gridLayout.addWidget(self.lstLayers, 1, 0, 1, 1)
         self.groupBox = QtGui.QGroupBox(ApplyTemplatesDialog)
@@ -77,6 +78,9 @@ class Ui_ApplyTemplatesDialog(object):
         self.btnSelectLogFile = QtGui.QPushButton(self.groupBox)
         self.btnSelectLogFile.setObjectName(_fromUtf8("btnSelectLogFile"))
         self.gridLayout_2.addWidget(self.btnSelectLogFile, 3, 2, 1, 1)
+        self.chkUpdateImageInfo = QtGui.QCheckBox(self.groupBox)
+        self.chkUpdateImageInfo.setObjectName(_fromUtf8("chkUpdateImageInfo"))
+        self.gridLayout_2.addWidget(self.chkUpdateImageInfo, 4, 0, 1, 3)
         self.gridLayout.addWidget(self.groupBox, 1, 1, 1, 1)
         self.buttonBox = QtGui.QDialogButtonBox(ApplyTemplatesDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -102,4 +106,5 @@ class Ui_ApplyTemplatesDialog(object):
         self.btnManageWorkflows.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Manage", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Log file", None, QtGui.QApplication.UnicodeUTF8))
         self.btnSelectLogFile.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
+        self.chkUpdateImageInfo.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Extract image parameters to metadata XML", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -259,7 +259,7 @@ class MetatoolsPlugin:
       if result == QDialogButtonBox.Yes:
         try:
           settings = QSettings( "NextGIS", "metatools" )
-          profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
+          profile = settings.value( "iso19115/defaultProfile", QVariant( "csir_sac_profile.xml" ) ).toString()
           if profile.isEmpty():
             QMessageBox.warning( self.iface.mainWindow(),
                                  QCoreApplication.translate( "Metatools", "Metatools" ),
@@ -268,9 +268,6 @@ class MetatoolsPlugin:
 
           profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
           shutil.copyfile( profilePath, self.metaFilePath )
-          # get image dimension, band count and populate metadata file
-          #bands, extent = utils.getRasterLayerInfo( self.layer )
-          #utils.writeRasterInfo( self.metaFilePath, bands, extent )
         except:
           QMessageBox.warning( self.iface.mainWindow(),
                                QCoreApplication.translate( "Metatools", "Metatools" ),
@@ -278,7 +275,4 @@ class MetatoolsPlugin:
           return False
         return True
 
-    # get image dimension, band count and populate metadata file
-    #bands, extent = utils.getRasterLayerInfo( self.layer )
-    #utils.writeRasterInfo( self.metaFilePath, bands, extent )
     return True
