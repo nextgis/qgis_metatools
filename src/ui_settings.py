@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_settings.ui'
 #
-# Created: Wed Mar 30 16:36:02 2011
+# Created: Fri Apr 01 16:36:11 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,9 +26,6 @@ class Ui_MetatoolsSettingsDialog(object):
         self.generalTab.setObjectName(_fromUtf8("generalTab"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.generalTab)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.autoGeneratePreviewCheckBox = QtGui.QCheckBox(self.generalTab)
-        self.autoGeneratePreviewCheckBox.setObjectName(_fromUtf8("autoGeneratePreviewCheckBox"))
-        self.verticalLayout_2.addWidget(self.autoGeneratePreviewCheckBox)
         self.groupBox = QtGui.QGroupBox(self.generalTab)
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.groupBox)
@@ -73,7 +70,6 @@ class Ui_MetatoolsSettingsDialog(object):
 
     def retranslateUi(self, MetatoolsSettingsDialog):
         MetatoolsSettingsDialog.setWindowTitle(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Metatools settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.autoGeneratePreviewCheckBox.setText(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Auto generate preview", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Filter", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Filter file", None, QtGui.QApplication.UnicodeUTF8))
         self.btnSelectFilter.setText(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))

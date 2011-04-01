@@ -34,14 +34,21 @@ from qgis.gui import *
 
 import os
 
-from osgeo import gdal
+from osgeo import gdal, gdalconst
 
 META_EXT = '.xml'
+PREVIEW_SUFFIX='_preview'
+PREVIEW_EXT = '.tiff'
 
 def getMetafilePath( layer ):
   originalFilePath = str( layer.source() )
   originalFileName = os.path.splitext( originalFilePath )
   metaFilePath = originalFileName[ 0 ] + META_EXT
+  return metaFilePath
+  
+def previewPathFromLayerPath( layerPath ):
+  originalFileName = os.path.splitext( str( layerPath ) )
+  metaFilePath = originalFileName[ 0 ] + PREVIEW_SUFFIX + PREVIEW_EXT
   return metaFilePath
 
 def mdPathFromLayerPath( layerPath ):
@@ -183,3 +190,9 @@ def writeRasterInfo( dataFile, metadataFile ):
   stream = QTextStream( f )
   metaXML.save( stream, 2 )
   f.close()
+
+def generatePreview( dataFile ):
+  raster = gdal.Open( str( dataFile ), gdalconst.GA_ReadOnly )
+  #raster.BuildOverviews("NEAREST", [16], 0)
+  raster = None
+  

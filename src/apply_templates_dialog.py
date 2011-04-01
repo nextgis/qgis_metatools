@@ -228,6 +228,10 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
         if self.chkUpdateImageInfo.isChecked():
           utils.writeRasterInfo( layer, metaFilePath )
 
+        # generate preview
+        if self.chkGeneratePreview.isChecked():
+		  utils.generatePreview( layer )
+		
         # load metadata file
         file = QFile( metaFilePath )
         metaXML = QDomDocument()

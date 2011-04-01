@@ -25,13 +25,6 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QCheckBox" name="autoGeneratePreviewCheckBox">
-         <property name="text">
-          <string>Auto generate preview</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
           <string>Filter</string>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_apply_templates.ui'
 #
-# Created: Fri Apr 01 14:59:16 2011
+# Created: Fri Apr 01 16:36:31 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -81,6 +81,9 @@ class Ui_ApplyTemplatesDialog(object):
         self.chkUpdateImageInfo = QtGui.QCheckBox(self.groupBox)
         self.chkUpdateImageInfo.setObjectName(_fromUtf8("chkUpdateImageInfo"))
         self.gridLayout_2.addWidget(self.chkUpdateImageInfo, 4, 0, 1, 3)
+        self.chkGeneratePreview = QtGui.QCheckBox(self.groupBox)
+        self.chkGeneratePreview.setObjectName(_fromUtf8("chkGeneratePreview"))
+        self.gridLayout_2.addWidget(self.chkGeneratePreview, 5, 0, 1, 3)
         self.gridLayout.addWidget(self.groupBox, 1, 1, 1, 1)
         self.buttonBox = QtGui.QDialogButtonBox(ApplyTemplatesDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -107,4 +110,5 @@ class Ui_ApplyTemplatesDialog(object):
         self.label.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Log file", None, QtGui.QApplication.UnicodeUTF8))
         self.btnSelectLogFile.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.chkUpdateImageInfo.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Extract image parameters to metadata XML", None, QtGui.QApplication.UnicodeUTF8))
+        self.chkGeneratePreview.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Generate preview image", None, QtGui.QApplication.UnicodeUTF8))
 
