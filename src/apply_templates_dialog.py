@@ -58,6 +58,8 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     self.iface = iface
 
     self.layers = []
+    
+    self.translatedNoneLabel = QCoreApplication.translate("Metatools", "None")
 
     self.licenseTemplateManager = LicenseTemplateManager( currentPath )
     self.workflowTemplateManager = WorkflowTemplateManager( currentPath )
@@ -171,14 +173,17 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
   def updateLicenseTemplatesList( self ):
     self.cmbLicense.clear()
+    self.cmbLicense.addItem(self.translatedNoneLabel)
     self.cmbLicense.addItems( self.licenseTemplateManager.getTemplateList() )
 
   def updateWorkflowTemplatesList( self ):
     self.cmbWorkflow.clear()
+    self.cmbWorkflow.addItem(self.translatedNoneLabel)
     self.cmbWorkflow.addItems( self.workflowTemplateManager.getTemplateList() )
 
   def updateOrgsTemplatesList( self ):
     self.cmbOrganization.clear()
+    self.cmbOrganization.addItem(self.translatedNoneLabel)
     self.cmbOrganization.addItems( self.orgsTemplateManager.tempalateNames() )
 
   def updateLayerList( self ):
@@ -248,19 +253,20 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
         metafile.write( unicode( metaXML.toString().toUtf8(), "utf-8" ) )
         metafile.close()
 
-      QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Done!!" ) )
+      QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Done!" ) )
       # clear selection and disable Apply button
       self.lstLayers.clearSelection()
       self.layers = []
       self.btnApply.setEnabled( False )
     except:
-      QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Templates can't be applied: " ) + str( sys.exc_info()[ 1 ] ) )
+      QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Operation can't be complited: " ) + str( sys.exc_info()[ 1 ] ) )
 
   # ----------- Appliers -----------
 
   def applyInstitutionTemplate( self, metaXML ):
     # TODO: make more safe
-    if self.cmbOrganization.currentIndex() == -1:
+    #if self.cmbOrganization.currentIndex() == -1:
+    if self.cmbOrganization.currentText() == self.translatedNoneLabel:
       return
 
     template = self.orgsTemplateManager.organizations[ self.cmbOrganization.currentText() ]
@@ -353,7 +359,8 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
   def applyLicenseTemplate( self, metaXML ):
     # TODO: make more safe
-    if self.cmbLicense.currentIndex() == -1:
+    #if self.cmbLicense.currentIndex() == -1:
+    if self.cmbLicense.currentText() == self.translatedNoneLabel:
       return
 
     licenseTemplate = self.licenseTemplateManager.loadTemplate( self.cmbLicense.currentText() )
@@ -384,7 +391,8 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
 
   def applyWorkflowTemplate( self, metaXML ):
     # TODO: make more safe
-    if self.cmbWorkflow.currentIndex() == -1:
+    #if self.cmbWorkflow.currentIndex() == -1:
+    if self.cmbWorkflow.currentText() == self.translatedNoneLabel:
         return
 
     workflowTemplate = self.workflowTemplateManager.loadTemplate( self.cmbWorkflow.currentText() )
