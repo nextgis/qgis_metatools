@@ -248,7 +248,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
         metafile.write( unicode( metaXML.toString().toUtf8(), "utf-8" ) )
         metafile.close()
 
-      QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Templates successfully applied!" ) )
+      QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Done!!" ) )
       # clear selection and disable Apply button
       self.lstLayers.clearSelection()
       self.layers = []

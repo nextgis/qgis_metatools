@@ -74,8 +74,7 @@ def getRasterLayerByName( layerName ):
         continue
       if layer.name() == layerName:
         return layer
-      else:
-        return None
+  return None
     
 def getRasterLayerByPath( layerPath ):
   layermap = QgsMapLayerRegistry.instance().mapLayers()
