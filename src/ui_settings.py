@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_settings.ui'
+# Form implementation generated from reading ui file './ui_settings.ui'
 #
-# Created: Fri Apr 01 16:36:11 2011
+# Created: Sat Apr  2 22:01:40 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_MetatoolsSettingsDialog(object):
     def setupUi(self, MetatoolsSettingsDialog):
         MetatoolsSettingsDialog.setObjectName(_fromUtf8("MetatoolsSettingsDialog"))
-        MetatoolsSettingsDialog.resize(400, 300)
+        MetatoolsSettingsDialog.resize(372, 300)
         self.verticalLayout = QtGui.QVBoxLayout(MetatoolsSettingsDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.tabWidget = QtGui.QTabWidget(MetatoolsSettingsDialog)
@@ -40,6 +40,22 @@ class Ui_MetatoolsSettingsDialog(object):
         self.btnSelectFilter.setObjectName(_fromUtf8("btnSelectFilter"))
         self.horizontalLayout.addWidget(self.btnSelectFilter)
         self.verticalLayout_2.addWidget(self.groupBox)
+        self.groupBox_2 = QtGui.QGroupBox(self.generalTab)
+        self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
+        self.formLayout_2 = QtGui.QFormLayout(self.groupBox_2)
+        self.formLayout_2.setObjectName(_fromUtf8("formLayout_2"))
+        self.label_2 = QtGui.QLabel(self.groupBox_2)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.formLayout_2.setWidget(0, QtGui.QFormLayout.LabelRole, self.label_2)
+        self.cmbImgFormat = QtGui.QComboBox(self.groupBox_2)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.cmbImgFormat.sizePolicy().hasHeightForWidth())
+        self.cmbImgFormat.setSizePolicy(sizePolicy)
+        self.cmbImgFormat.setObjectName(_fromUtf8("cmbImgFormat"))
+        self.formLayout_2.setWidget(0, QtGui.QFormLayout.FieldRole, self.cmbImgFormat)
+        self.verticalLayout_2.addWidget(self.groupBox_2)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem)
         self.tabWidget.addTab(self.generalTab, _fromUtf8(""))
@@ -73,6 +89,8 @@ class Ui_MetatoolsSettingsDialog(object):
         self.groupBox.setTitle(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Filter", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Filter file", None, QtGui.QApplication.UnicodeUTF8))
         self.btnSelectFilter.setText(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_2.setTitle(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Preview image", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Image format", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.generalTab), QtGui.QApplication.translate("MetatoolsSettingsDialog", "General", None, QtGui.QApplication.UnicodeUTF8))
         self.defaultProfileLabel.setText(QtGui.QApplication.translate("MetatoolsSettingsDialog", "Default profile", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.isoTab), QtGui.QApplication.translate("MetatoolsSettingsDialog", "ISO 19115", None, QtGui.QApplication.UnicodeUTF8))

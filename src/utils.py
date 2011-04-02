@@ -34,11 +34,11 @@ from qgis.gui import *
 
 import os
 
-from osgeo import gdal, gdalconst
+from osgeo import gdal
 
 META_EXT = '.xml'
 PREVIEW_SUFFIX='_preview'
-PREVIEW_EXT =  '.tiff'
+
 
 def getMetafilePath( layer ):
   originalFilePath = str( layer.source() )
@@ -47,8 +47,11 @@ def getMetafilePath( layer ):
   return metaFilePath
   
 def previewPathFromLayerPath( layerPath ):
+  settings = QSettings( "NextGIS", "metatools" )
+  format = settings.value( "preview/format", QVariant('jpg') ).toString()
+  
   originalFileName = os.path.splitext( str( layerPath ) )
-  metaFilePath = originalFileName[ 0 ] + PREVIEW_SUFFIX + PREVIEW_EXT
+  metaFilePath = originalFileName[ 0 ] + PREVIEW_SUFFIX + '.' + format
   return metaFilePath
 
 def mdPathFromLayerPath( layerPath ):

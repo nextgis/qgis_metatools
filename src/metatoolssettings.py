@@ -56,6 +56,10 @@ class MetatoolsSettings( QDialog, Ui_MetatoolsSettingsDialog ):
     profilesDir.setNameFilters( fileFilter )
     profiles = profilesDir.entryList()
     self.defaultProfileComboBox.addItems( profiles )
+    
+    # populate image format combobox
+    formats=['jpg', 'tiff', 'png', 'bmp']
+    self.cmbImgFormat.addItems(formats)
 
   def readSettings( self ):
     settings = QSettings( "NextGIS", "metatools" )
@@ -64,6 +68,11 @@ class MetatoolsSettings( QDialog, Ui_MetatoolsSettingsDialog ):
     # restore default profile
     profile = settings.value( "iso19115/defaultProfile", QVariant() ).toString()
     self.defaultProfileComboBox.setCurrentIndex( self.defaultProfileComboBox.findText( profile ) )
+    
+    #restore preview image format
+    format = settings.value( "preview/format", QVariant('jpg') ).toString()
+    self.cmbImgFormat.setCurrentIndex( self.cmbImgFormat.findText( format ) )
+    
 
   def updateFilter( self ):
     fileName = QFileDialog.getOpenFileName( self, self.tr( 'Select filter' ), '.', self.tr( 'Text files (*.txt *.TXT)' ) )
@@ -79,6 +88,8 @@ class MetatoolsSettings( QDialog, Ui_MetatoolsSettingsDialog ):
     settings.setValue( "general/filterFile", self.leFilterFileName.text() )
 
     settings.setValue( "iso19115/defaultProfile",  self.defaultProfileComboBox.currentText()  )
+     
+    settings.setValue(  "preview/format",  self.cmbImgFormat.currentText()  )
 
     # close dialog
     QDialog.accept( self )
