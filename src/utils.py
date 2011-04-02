@@ -38,7 +38,7 @@ from osgeo import gdal, gdalconst
 
 META_EXT = '.xml'
 PREVIEW_SUFFIX='_preview'
-PREVIEW_EXT = '.tiff'
+PREVIEW_EXT =  '.tiff'
 
 def getMetafilePath( layer ):
   originalFilePath = str( layer.source() )
@@ -76,6 +76,16 @@ def getRasterLayerByName( layerName ):
         return layer
       else:
         return None
+    
+def getRasterLayerByPath( layerPath ):
+  layermap = QgsMapLayerRegistry.instance().mapLayers()
+  for name, layer in layermap.iteritems():
+    if layer.type() == QgsMapLayer.RasterLayer:
+      if layer.usesProvider() and layer.providerKey() != "gdal":
+        continue
+      if layer.source() == layerPath:
+        return layer
+  return None
 
 def getGeneralRasterInfo( path ):
   raster = gdal.Open( str( path ) )
@@ -192,7 +202,16 @@ def writeRasterInfo( dataFile, metadataFile ):
   f.close()
 
 def generatePreview( dataFile ):
-  raster = gdal.Open( str( dataFile ), gdalconst.GA_ReadOnly )
-  #raster.BuildOverviews("NEAREST", [16], 0)
-  raster = None
+  # get raster
+  rasterLayer=getRasterLayerByPath(dataFile)
+  if not rasterLayer:
+      rasterLayer=QgsRasterLayer(dataFile, QString(), True)
   
+  #get size
+  width=512
+  height=int(rasterLayer.height()*width /rasterLayer.width())
+  preview=QPixmap(width, height)
+  
+  # generate preview
+  rasterLayer.thumbnailAsPixmap(preview)
+  preview.save(previewPathFromLayerPath(dataFile)) 
