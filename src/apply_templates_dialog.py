@@ -58,7 +58,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     self.iface = iface
 
     self.layers = []
-    
+
     self.translatedNoneLabel = QCoreApplication.translate("Metatools", "None")
 
     self.licenseTemplateManager = LicenseTemplateManager( currentPath )
@@ -206,7 +206,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
       QMessageBox.warning( self, self.tr( "No profile" ), self.tr( "No profile selected. Please set default profile in plugin settings" ) )
       return
 
-    profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
+    profilePath = unicode( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
 
     try:
       for layer in self.layers:
@@ -236,7 +236,7 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
         # generate preview
         if self.chkGeneratePreview.isChecked():
 		  utils.generatePreview( layer )
-		
+
         # load metadata file
         file = QFile( metaFilePath )
         metaXML = QDomDocument()

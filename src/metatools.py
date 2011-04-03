@@ -266,7 +266,7 @@ class MetatoolsPlugin:
                                  QCoreApplication.translate( "Metatools", "No profile selected. Please set default profile in plugin settings" ) )
             return False
 
-          profilePath = str( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
+          profilePath = unicode( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
           shutil.copyfile( profilePath, self.metaFilePath )
         except:
           QMessageBox.warning( self.iface.mainWindow(),

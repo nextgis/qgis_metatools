@@ -41,21 +41,21 @@ PREVIEW_SUFFIX='_preview'
 
 
 def getMetafilePath( layer ):
-  originalFilePath = str( layer.source() )
+  originalFilePath = unicode( layer.source() )
   originalFileName = os.path.splitext( originalFilePath )
   metaFilePath = originalFileName[ 0 ] + META_EXT
   return metaFilePath
-  
+
 def previewPathFromLayerPath( layerPath ):
   settings = QSettings( "NextGIS", "metatools" )
   format = settings.value( "preview/format", QVariant('jpg') ).toString()
-  
-  originalFileName = os.path.splitext( str( layerPath ) )
+
+  originalFileName = os.path.splitext( unicode( layerPath ) )
   metaFilePath = originalFileName[ 0 ] + PREVIEW_SUFFIX + '.' + format
   return metaFilePath
 
 def mdPathFromLayerPath( layerPath ):
-  originalFileName = os.path.splitext( str( layerPath ) )
+  originalFileName = os.path.splitext( unicode( layerPath ) )
   metaFilePath = originalFileName[ 0 ] + META_EXT
   return metaFilePath
 
@@ -78,7 +78,7 @@ def getRasterLayerByName( layerName ):
       if layer.name() == layerName:
         return layer
   return None
-    
+
 def getRasterLayerByPath( layerPath ):
   layermap = QgsMapLayerRegistry.instance().mapLayers()
   for name, layer in layermap.iteritems():
@@ -208,12 +208,12 @@ def generatePreview( dataFile ):
   rasterLayer=getRasterLayerByPath(dataFile)
   if not rasterLayer:
       rasterLayer=QgsRasterLayer(dataFile, QString(), True)
-  
+
   #get size
   width=512
   height=int(rasterLayer.height()*width /rasterLayer.width())
   preview=QPixmap(width, height)
-  
+
   # generate preview
   rasterLayer.thumbnailAsPixmap(preview)
-  preview.save(previewPathFromLayerPath(dataFile)) 
+  preview.save(previewPathFromLayerPath(dataFile))

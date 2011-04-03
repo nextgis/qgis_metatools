@@ -36,7 +36,7 @@ class WorkflowTemplateManager:
   EXT = ".xml"
 
   def __init__( self, basePluginPath ):
-    self.basePluginPath = str( basePluginPath )
+    self.basePluginPath = unicode( basePluginPath )
 
   def getTemplatesPath( self ):
     return os.path.join( self.basePluginPath, self.SUBFOLDER )
