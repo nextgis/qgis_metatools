@@ -274,5 +274,7 @@ class MetatoolsPlugin:
                                QCoreApplication.translate( "Metatools", "Metadata file can't be created: " ) + str( sys.exc_info()[ 1 ] ) )
           return False
         return True
+      else:
+        return False
 
     return True
