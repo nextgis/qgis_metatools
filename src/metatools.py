@@ -128,6 +128,9 @@ class MetatoolsPlugin:
     self.layer = None
     self.viewAction.setEnabled( False )
     self.editAction.setEnabled( False )
+	
+    # check already selected layers
+    self.layerChanged()
 
   def unload( self ):
     # disconnect signals
