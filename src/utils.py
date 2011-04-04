@@ -90,7 +90,7 @@ def getRasterLayerByPath( layerPath ):
   return None
 
 def getGeneralRasterInfo( path ):
-  raster = gdal.Open( str( path ) )
+  raster = gdal.Open(  unicode(path ) )
   bands = raster.RasterCount
 
   width = raster.RasterXSize
@@ -153,9 +153,12 @@ def writeRasterInfo( dataFile, metadataFile ):
   metaXML = QDomDocument()
   metaXML.setContent( f )
   f.close()
-
+							   
   # general raster info
   bands, extent = getGeneralRasterInfo( dataFile )
+  
+  print bands
+  print extent
 
   root = metaXML.documentElement()
 
