@@ -113,11 +113,9 @@ def getBandInfo( path, bandNumber ):
   raster = gdal.Open(  unicode(path ) )
   band = raster.GetRasterBand(bandNumber)
   
-  min = band.GetMinimum()
+  min, max = band.ComputeRasterMinMax()
   if not min:
     min=0
-	
-  max = band.GetMaximum()
   if not max:
     max=0
   
@@ -251,7 +249,7 @@ def writeRasterInfo( dataFile, metadataFile ):
     mdMinValue = getOrCreateChild( mdBand, "minValue")
     mdGcoReal = getOrCreateChild( mdMinValue, "gco:Real")
     textNode = getOrCreateTextChild( mdGcoReal )
-    textNode.setNodeValue( str( max ) )
+    textNode.setNodeValue( str( min ) )
     mdBitsPerValue = getOrCreateChild( mdBand, "bitsPerValue")
     mdGcoInt = getOrCreateChild( mdBitsPerValue, "gco:Integer")
     textNode = getOrCreateTextChild( mdGcoInt )
