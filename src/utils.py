@@ -237,11 +237,15 @@ def writeRasterInfo( dataFile, metadataFile ):
   while not (mdImageDescription.firstChildElement( "dimension" )).isNull():
     mdImageDescription.removeChild(mdImageDescription.firstChildElement( "dimension" ))
   
+  
+  mdDimension = insertAfterChild( mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"] ) #profile version
+  
   # create new demensions  
   for bandNumber in range(1,bands+1):
     min, max, dt=getBandInfo(dataFile, bandNumber)
-    mdDimension = insertAfterChild( mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"] )
-    mdBand = getOrCreateChild( mdDimension, "MD_Band")
+    #mdDimension = insertAfterChild( mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"] ) #standard version
+    #mdBand = getOrCreateChild( mdDimension, "MD_Band") #standard version
+    mdBand = createChild(mdDimension, "MD_Band") #profile version
     mdMaxValue = getOrCreateChild( mdBand, "maxValue")
     mdGcoReal = getOrCreateChild( mdMaxValue, "gco:Real")
     textNode = getOrCreateTextChild( mdGcoReal )
