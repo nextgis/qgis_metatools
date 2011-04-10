@@ -174,6 +174,7 @@ class MetatoolsPlugin:
     self.editAction.setEnabled( True )
 
   def doEdit( self ):
+    from metatoolseditor import MetatoolsEditor #tests
     try:
       from metatoolseditor import MetatoolsEditor
     except:

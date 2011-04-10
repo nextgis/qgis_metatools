@@ -60,11 +60,10 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     QObject.connect( self.treeFull, SIGNAL( "clicked( QModelIndex )" ), self.itemSelected )
     QObject.connect( self.treeFull, SIGNAL( "collapsed( QModelIndex )" ), self.collapsedExpanded )
     QObject.connect( self.treeFull, SIGNAL( "expanded( QModelIndex )" ), self.collapsedExpanded )
+    
     # filtered metadata view
-    QObject.connect( self.treeFiltered, SIGNAL( "clicked( QModelIndex )" ), self.itemSelected )
-    QObject.connect( self.treeFiltered, SIGNAL( "collapsed( QModelIndex )" ), self.collapsedExpanded )
-    QObject.connect( self.treeFiltered, SIGNAL( "expanded( QModelIndex )" ), self.collapsedExpanded )
-
+    QObject.connect( self.tbwFiltered, SIGNAL( "currentCellChanged ( int , int , int, int )" ), self.cellSelected )
+ 
     QObject.connect( self.textValue, SIGNAL( "textChanged()" ), self.valueModified )
     QObject.connect( self.tabWidget, SIGNAL( "currentChanged( int )" ), self.tabChanged )
 
@@ -76,26 +75,22 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
 
   def setContent( self, metaFilePath ):
     self.metaFilePath = metaFilePath
-
+    
+    # load main model
     self.file = QFile( metaFilePath )
     self.metaXML = QDomDocument()
     self.metaXML.setContent( self.file )
-
     self.model = DomModel( self.metaXML, self )
-
-    filter = self.loadFilter()
-
-    self.proxyModel = FilterDomModel( filter, self )
-    self.proxyModel.setDynamicSortFilter( True )
-    self.proxyModel.setSourceModel( self.model )
-
+    
+    # set full view
     self.treeFull.setModel( self.model )
     self.treeFull.hideColumn( 1 ) # hide attrs
     self.treeFull.resizeColumnToContents( 0 ) # resize value column
-
-    self.treeFiltered.setModel( self.proxyModel )
-    self.treeFiltered.hideColumn( 1 ) # hide attrs
-    self.treeFiltered.resizeColumnToContents( 0 ) # resize value column
+    
+    # load filtered list 
+    self.filteredIndexes=None # lazy init
+    # set filtered view
+    #self.fillTableWidget()
 
     self.btnSave.setEnabled( False )
 
@@ -107,18 +102,33 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     editable = False
     self.text = QVariant()
 
-    if self.tabWidget.currentIndex() == 0:
-      # full view
-      self.mindex = self.model.index( mindex.row(), 2, mindex.parent() )
-      path = self.model.nodePath( self.mindex )
-      editable = self.model.isEditable( self.mindex )
-      self.text = self.model.data( self.mindex, 0 )
+   # full view
+    self.mindex = self.model.index( mindex.row(), 2, mindex.parent() )
+    path = self.model.nodePath( self.mindex )
+    editable = self.model.isEditable( self.mindex )
+    self.text = self.model.data( self.mindex, 0 )
+    
+    self.lblNodePath.setText( path )
+    if editable:
+      self.textValue.setPlainText( self.text.toString() )
+      self.groupBox.setEnabled( True )
+      self.editorButtonBox.setEnabled( False )
     else:
-      # filtered view
-      self.mindex = self.proxyModel.index( mindex.row(), 2, mindex.parent() )
-      path = self.proxyModel.sourceModel().nodePath( self.proxyModel.mapToSource( self.mindex ) )
-      editable = self.proxyModel.sourceModel().isEditable( self.proxyModel.mapToSource( self.mindex ) )
-      self.text = self.proxyModel.data( self.mindex, 0 )
+      self.textValue.clear()
+      self.groupBox.setEnabled( False )
+      
+  def cellSelected( self, currentRow, currentColumn, previousRow, previousColumn  ):
+    # Display item selected in TableWidget in edit box.
+    self.textValue.clear()
+
+    path = ""
+    editable = False
+    self.text = QVariant()
+    
+    self.mindex = self.filteredIndexes[currentRow][1]
+    path = self.model.nodePath( self.mindex ) 
+    editable = self.model.isEditable( self.mindex )
+    self.text = self.model.data( self.mindex, 0 )
 
     self.lblNodePath.setText( path )
     if editable:
@@ -133,7 +143,7 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     if self.tabWidget.currentIndex() == 0:
       self.treeFull.resizeColumnToContents( 0 )
     else:
-      self.treeFiltered.resizeColumnToContents( 0 )
+      self.tbwFiltered.resizeColumnToContents( 0 )
 
   def valueModified( self ):
     self.editorButtonBox.setEnabled( True )
@@ -152,11 +162,21 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
       editable = self.model.isEditable( self.mindex )
       self.text = self.model.data( self.mindex, 0 )
     else:
-      mindex = self.treeFiltered.currentIndex()
-      self.mindex = self.proxyModel.index( mindex.row(), 2, mindex.parent() )
-      path = self.proxyModel.sourceModel().nodePath( self.proxyModel.mapToSource( self.mindex ) )
-      editable = self.proxyModel.sourceModel().isEditable( self.proxyModel.mapToSource( self.mindex ) )
-      self.text = self.proxyModel.data( self.mindex, 0 )
+      # lazy init
+      if not self.filteredIndexes:
+        filter = self.loadFilter()
+        self.filteredIndexes=self.searchNodes(self.model, filter)
+        self.tbwFiltered.horizontalHeader().setVisible(True) # pyuic4 bug
+        self.tbwFiltered.setRowCount(len(self.filteredIndexes))
+      # refresh table
+      self.fillTableWidget()
+      # refresh selection
+      selectedItems=self.tbwFiltered.selectedItems()
+      if len(selectedItems):
+          self.mindex = self.filteredIndexes[selectedItems[0].row()][1]
+          path = self.model.nodePath( self.mindex ) 
+          editable = self.model.isEditable( self.mindex )
+          self.text = self.model.data( self.mindex, 0 )
 
     self.lblNodePath.setText( path )
     if editable:
@@ -168,14 +188,12 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
       self.groupBox.setEnabled( False )
 
   def applyEdits( self ):
-    if self.tabWidget.currentIndex() == 0:
-      self.model.setData( self.mindex, self.textValue.toPlainText() )
-      self.text = self.model.data( self.mindex, 0 )
-    else:
-      self.proxyModel.setData( self.mindex, self.filterValueTextEdit.toPlainText() )
-      self.text = self.proxyModel.data( self.mindex, 0 )
+    self.model.setData( self.mindex, self.textValue.toPlainText() )
+    self.text = self.model.data( self.mindex, 0 )
     self.btnSave.setEnabled( True )
     self.editorButtonBox.setEnabled( False )
+    if self.tabWidget.currentIndex() != 0:
+        self.fillTableWidget()
 
   def resetEdits( self ):
     self.textValue.setPlainText( self.text.toString() )
@@ -212,3 +230,25 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     f.close()
 
     return filter
+
+  def searchNodes(self, model, filters):
+    allItemsIndexes= model.match(model.index(0,0,QModelIndex()),  Qt.DisplayRole, '*', -1, Qt.MatchWildcard | Qt.MatchRecursive)
+    searchedItems=[]
+    for itemIndex in allItemsIndexes:
+      if self.model.nodePath(itemIndex) in filters:
+        valueItemIndex=self.model.index(0,2,itemIndex.parent())
+        if not self.model.isEditable(itemIndex) and self.model.hasOneGco(itemIndex) :
+            valueItemIndex=self.model.index(0,2,itemIndex) 
+        searchedItems.append([itemIndex, valueItemIndex])
+    return searchedItems
+    
+  def fillTableWidget(self):
+      row=0
+      for nameItemIndex, valueItemIndex in self.filteredIndexes:
+          name=self.model.data(nameItemIndex, Qt.DisplayRole).toString()
+          value=self.model.data(valueItemIndex, Qt.DisplayRole).toString()
+          self.tbwFiltered.setItem(row,0,QTableWidgetItem(name))
+          self.tbwFiltered.setItem(row,1,QTableWidgetItem(value))
+          row+=1
+      
+      self.tbwFiltered.resizeColumnToContents( 0 )

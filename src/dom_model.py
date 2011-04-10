@@ -47,6 +47,10 @@ class DomItem:
     if self.domNode.nodeType() == QDomNode.ElementNode:
       self.editable = ( self.domNode.childNodes().count() == 1 and self.domNode.childNodes().at( 0 ).nodeType() == QDomNode.TextNode ) or ( not self.domNode.hasChildNodes() )
 
+    self.hasOneGco=False
+    if self.domNode.nodeType() == QDomNode.ElementNode and not self.editable:
+      self.hasOneGco=self.domNode.childNodes().count() == 1 and self.domNode.childNodes().at( 0 ).nodeType() == QDomNode.ElementNode and  self.domNode.childNodes().at( 0 ).nodeName().contains("gco:", Qt.CaseInsensitive)
+
   def node( self ):
     return self.domNode
 
@@ -99,6 +103,10 @@ class DomItem:
   def getNodePath( self ):
     return getPath( self.domNode )
 
+  def hasOneGcoElement( self ):
+    return self.hasOneGco  
+
+
 class DomModel( QAbstractItemModel ):
   def __init__( self, document, parent = None ):
     QAbstractItemModel.__init__( self, parent )
@@ -119,9 +127,15 @@ class DomModel( QAbstractItemModel ):
   def nodePath( self, index ):
     if not index.isValid():
       return QString()
-
     item = index.internalPointer()
     return item.getNodePath()
+
+  def hasOneGco( self, index ):
+    if not index.isValid():
+      return False
+    item = index.internalPointer()
+    return item.hasOneGco
+
 
   def data( self, index, role ):
     if not index.isValid():

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_editor.ui'
+# Form implementation generated from reading ui file './ui_editor.ui'
 #
-# Created: Thu Mar 31 11:02:41 2011
+# Created: Mon Apr 11 00:42:27 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -41,9 +41,26 @@ class Ui_MetatoolsEditor(object):
         self.label.setWordWrap(True)
         self.label.setObjectName(_fromUtf8("label"))
         self.verticalLayout_3.addWidget(self.label)
-        self.treeFiltered = QtGui.QTreeView(self.tab_2)
-        self.treeFiltered.setObjectName(_fromUtf8("treeFiltered"))
-        self.verticalLayout_3.addWidget(self.treeFiltered)
+        self.tbwFiltered = QtGui.QTableWidget(self.tab_2)
+        self.tbwFiltered.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.tbwFiltered.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+        self.tbwFiltered.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.tbwFiltered.setShowGrid(True)
+        self.tbwFiltered.setGridStyle(QtCore.Qt.SolidLine)
+        self.tbwFiltered.setCornerButtonEnabled(True)
+        self.tbwFiltered.setRowCount(0)
+        self.tbwFiltered.setColumnCount(2)
+        self.tbwFiltered.setObjectName(_fromUtf8("tbwFiltered"))
+        self.tbwFiltered.setColumnCount(2)
+        self.tbwFiltered.setRowCount(0)
+        item = QtGui.QTableWidgetItem()
+        self.tbwFiltered.setHorizontalHeaderItem(0, item)
+        item = QtGui.QTableWidgetItem()
+        self.tbwFiltered.setHorizontalHeaderItem(1, item)
+        self.tbwFiltered.horizontalHeader().setVisible(False)
+        self.tbwFiltered.horizontalHeader().setStretchLastSection(True)
+        self.tbwFiltered.verticalHeader().setVisible(False)
+        self.verticalLayout_3.addWidget(self.tbwFiltered)
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         self.groupBox = QtGui.QGroupBox(self.splitter)
         self.groupBox.setEnabled(False)
@@ -78,6 +95,8 @@ class Ui_MetatoolsEditor(object):
         MetatoolsEditor.setWindowTitle(QtGui.QApplication.translate("MetatoolsEditor", "Metadata editor", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("MetatoolsEditor", "Full view", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MetatoolsEditor", "To set filtered view please check sample.txt in the filter directory for the filtering format and point to it at the plugin settings page.", None, QtGui.QApplication.UnicodeUTF8))
+        self.tbwFiltered.horizontalHeaderItem(0).setText(QtGui.QApplication.translate("MetatoolsEditor", "Name", None, QtGui.QApplication.UnicodeUTF8))
+        self.tbwFiltered.horizontalHeaderItem(1).setText(QtGui.QApplication.translate("MetatoolsEditor", "Value", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("MetatoolsEditor", "Filtered view", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("MetatoolsEditor", "Edit value", None, QtGui.QApplication.UnicodeUTF8))
         self.lblNodePath.setText(QtGui.QApplication.translate("MetatoolsEditor", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
