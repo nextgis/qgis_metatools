@@ -71,14 +71,14 @@ class MetatoolsViewer( QDialog, Ui_MetatoolsViewer ):
     #else:
     #  QMessageBox.information( self, "Valid", "Invalid!" )
 
-    result = QString()
-    qry.setMessageHandler( self.handler )
-    #success = qry.evaluateTo( result )
 
-    #if success:
-    #  QMessageBox.information(self, "success", "success!")
-    #else:
-    #  QMessageBox.information(self, "success", "Unsuccess!")
-    result = qry.evaluateToString()
+	#result = qry.evaluateToString()
+	#workaround, for PyQt < 4.8
+    array = QByteArray() 
+    buf = QBuffer(array)
+    buf.open(QIODevice.WriteOnly)
+    qry.evaluateTo(buf)
+    result = QString.fromUtf8(array) 
+	
     if result:
       self.webView.setHtml( QString.fromUtf8( result ) )
