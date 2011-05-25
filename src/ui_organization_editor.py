@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_organization_editor.ui'
+# Form implementation generated from reading ui file './ui_organization_editor.ui'
 #
-# Created: Thu Mar 31 12:25:39 2011
+# Created: Wed May 25 21:08:21 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -149,7 +149,7 @@ class Ui_OrganizationEditorDialog(object):
         self.label_12.setText(QtGui.QApplication.translate("OrganizationEditorDialog", "Postal code", None, QtGui.QApplication.UnicodeUTF8))
         self.label_13.setText(QtGui.QApplication.translate("OrganizationEditorDialog", "Country", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setTitle(QtGui.QApplication.translate("OrganizationEditorDialog", "Contact person", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("OrganizationEditorDialog", "Individual mame", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_6.setText(QtGui.QApplication.translate("OrganizationEditorDialog", "Individual name", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("OrganizationEditorDialog", "Person title", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("OrganizationEditorDialog", "Person position", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("OrganizationEditorDialog", "Telephone", None, QtGui.QApplication.UnicodeUTF8))

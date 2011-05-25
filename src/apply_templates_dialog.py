@@ -44,88 +44,94 @@ from workflow_template_manager import WorkflowTemplateManager
 from organization_editor_dialog import OrganizationEditorDialog
 from organization_template_manager import OrganizationTemplateManager
 
+from datatype_editor_dialog import DatatypeEditorDialog
+from datatype_template_manager import DatatypeTemplateManager
+
 from ui_apply_templates import Ui_ApplyTemplatesDialog
 
 from standard import MetaInfoStandard
 import utils
 
-currentPath = os.path.abspath( os.path.dirname( __file__ ) )
+currentPath = os.path.abspath(os.path.dirname(__file__))
 
-class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
-  def __init__( self, iface ):
-    QDialog.__init__( self )
-    self.setupUi( self )
+class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
+  def __init__(self, iface):
+    QDialog.__init__(self)
+    self.setupUi(self)
     self.iface = iface
 
     self.layers = []
 
     self.translatedNoneLabel = QCoreApplication.translate("Metatools", "None")
 
-    self.licenseTemplateManager = LicenseTemplateManager( currentPath )
-    self.workflowTemplateManager = WorkflowTemplateManager( currentPath )
-    path = os.path.join( currentPath, "templates/institutions.xml" )
-    self.orgsTemplateManager = OrganizationTemplateManager( path )
+    self.licenseTemplateManager = LicenseTemplateManager(currentPath)
+    self.workflowTemplateManager = WorkflowTemplateManager(currentPath)
+    self.datatypeTemplateManager = DatatypeTemplateManager(currentPath)
+    path = os.path.join(currentPath, "templates/institutions.xml")
+    self.orgsTemplateManager = OrganizationTemplateManager(path)
 
-    self.btnApply = QPushButton( self.tr( "Apply" ) )
-    self.btnClose = QPushButton( self.tr( "Close" ) )
+    self.btnApply = QPushButton(self.tr("Apply"))
+    self.btnClose = QPushButton(self.tr("Close"))
     self.buttonBox.clear()
-    self.buttonBox.addButton( self.btnApply, QDialogButtonBox.AcceptRole )
-    self.buttonBox.addButton( self.btnClose, QDialogButtonBox.RejectRole )
+    self.buttonBox.addButton(self.btnApply, QDialogButtonBox.AcceptRole)
+    self.buttonBox.addButton(self.btnClose, QDialogButtonBox.RejectRole)
 
-    QObject.connect( self.chkExternalFiles, SIGNAL( "stateChanged( int )" ), self.toggleExternalFiles )
-    QObject.connect( self.lstLayers, SIGNAL( "itemSelectionChanged()" ), self.updateLayerList )
+    QObject.connect(self.chkExternalFiles, SIGNAL("stateChanged( int )"), self.toggleExternalFiles)
+    QObject.connect(self.lstLayers, SIGNAL("itemSelectionChanged()"), self.updateLayerList)
 
-    QObject.connect( self.btnSelectDataFiles, SIGNAL( "clicked()" ), self.selectExternalFiles )
-    QObject.connect( self.btnManageLicenses, SIGNAL( "clicked()" ), self.manageLicenses )
-    QObject.connect( self.btnManageOrgs, SIGNAL( "clicked()" ), self.manageOrganizations )
-    QObject.connect( self.btnManageWorkflows, SIGNAL( "clicked()" ), self.manageWorkflows )
-    QObject.connect( self.btnSelectLogFile, SIGNAL( "clicked()" ), self.selectLogFile )
+    QObject.connect(self.btnSelectDataFiles, SIGNAL("clicked()"), self.selectExternalFiles)
+    QObject.connect(self.btnManageLicenses, SIGNAL("clicked()"), self.manageLicenses)
+    QObject.connect(self.btnManageOrgs, SIGNAL("clicked()"), self.manageOrganizations)
+    QObject.connect(self.btnManageWorkflows, SIGNAL("clicked()"), self.manageWorkflows)
+    QObject.connect(self.btnManageDatatypes, SIGNAL("clicked()"), self.manageDatatypes)
+    QObject.connect(self.btnSelectLogFile, SIGNAL("clicked()"), self.selectLogFile)
 
-    QObject.disconnect( self.buttonBox, SIGNAL( "accepted()" ), self.accept )
-    QObject.connect( self.btnApply, SIGNAL( "clicked()" ), self.applyTemplates )
+    QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
+    QObject.connect(self.btnApply, SIGNAL("clicked()"), self.applyTemplates)
 
     self.manageGui()
 
-  def manageGui( self ):
+  def manageGui(self):
     # populate layer list
-    self.lstLayers.addItems( utils.getRasterLayerNames() )
+    self.lstLayers.addItems(utils.getRasterLayerNames())
 
     # populate comboboxes with templates
     self.updateLicenseTemplatesList()
     self.updateWorkflowTemplatesList()
     self.updateOrgsTemplatesList()
+    self.updateDatatypesTemplatesList()
 
     # disable Apply button when there are no layers
-    if len( self.layers ) == 0:
-      self.btnApply.setEnabled( False )
+    if len(self.layers) == 0:
+      self.btnApply.setEnabled(False)
 
-  def toggleExternalFiles( self ):
-    self.btnApply.setEnabled( False )
+  def toggleExternalFiles(self):
+    self.btnApply.setEnabled(False)
     if self.chkExternalFiles.isChecked():
       #self.lstLayers.setEnabled( False )
       self.lstLayers.clear()
-      self.lstLayers.setSelectionMode( QAbstractItemView.NoSelection )
-      self.btnSelectDataFiles.setEnabled( True )
+      self.lstLayers.setSelectionMode(QAbstractItemView.NoSelection)
+      self.btnSelectDataFiles.setEnabled(True)
       self.layers = []
     else:
       #self.lstLayers.setEnabled( True )
       self.lstLayers.clear()
-      self.lstLayers.setSelectionMode( QAbstractItemView.ExtendedSelection )
-      self.lstLayers.addItems( utils.getRasterLayerNames() )
-      self.btnSelectDataFiles.setEnabled( False )
+      self.lstLayers.setSelectionMode(QAbstractItemView.ExtendedSelection)
+      self.lstLayers.addItems(utils.getRasterLayerNames())
+      self.btnSelectDataFiles.setEnabled(False)
       self.updateLayerList()
 
-  def selectExternalFiles( self ):
-    files = QFileDialog.getOpenFileNames( self, self.tr( "Select files" ), ".", self.tr( "All files (*.*)" ) )
+  def selectExternalFiles(self):
+    files = QFileDialog.getOpenFileNames(self, self.tr("Select files"), ".", self.tr("All files (*.*)"))
 
     if files.isEmpty():
       return
 
     self.layers = files
-    self.lstLayers.addItems( files )
-    self.btnApply.setEnabled( True )
+    self.lstLayers.addItems(files)
+    self.btnApply.setEnabled(True)
 
-  def manageLicenses( self ):
+  def manageLicenses(self):
     oldValue = self.cmbLicense.currentText()
 
     dlg = LicenseEditorDialog()
@@ -134,11 +140,24 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     self.updateLicenseTemplatesList()
 
     # try to restore previous value
-    index = self.cmbLicense.findText( oldValue )
+    index = self.cmbLicense.findText(oldValue)
     if index != -1:
-      self.cmbLicense.setCurrentIndex( index )
+      self.cmbLicense.setCurrentIndex(index)
 
-  def manageWorkflows( self ):
+  def manageDatatypes(self):
+    oldValue = self.cmbDatatype.currentText()
+
+    dlg = DatatypeEditorDialog()
+    dlg.exec_()
+
+    self.updateDatatypesTemplatesList()
+
+    # try to restore previous value
+    index = self.cmbDatatype.findText(oldValue)
+    if index != -1:
+      self.cmbDatatype.setCurrentIndex(index)
+
+  def manageWorkflows(self):
     oldValue = self.cmbWorkflow.currentText()
 
     dlg = WorkflowEditorDialog()
@@ -147,11 +166,11 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     self.updateWorkflowTemplatesList()
 
     # try to restore previous value
-    index = self.cmbWorkflow.findText( oldValue )
+    index = self.cmbWorkflow.findText(oldValue)
     if index != -1:
-      self.cmbWorkflow.setCurrentIndex( index )
+      self.cmbWorkflow.setCurrentIndex(index)
 
-  def manageOrganizations( self ):
+  def manageOrganizations(self):
     oldValue = self.cmbOrganization.currentText()
 
     dlg = OrganizationEditorDialog()
@@ -161,109 +180,114 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     self.updateOrgsTemplatesList()
 
     # try to restore previous value
-    index = self.cmbOrganization.findText( oldValue )
+    index = self.cmbOrganization.findText(oldValue)
     if index != -1:
-      self.cmbOrganization.setCurrentIndex( index )
+      self.cmbOrganization.setCurrentIndex(index)
 
-  def selectLogFile( self ):
+  def selectLogFile(self):
     # TODO: need to save last dir and set it in dialog
-    logFileName = QFileDialog.getOpenFileName( self, self.tr( "Select log file" ), ".", self.tr( "Text files (*.txt);;Log files (*.log);;All files (*)" ), None, QFileDialog.ReadOnly )
-    self.leLogFile.setText( logFileName )
-    self.leLogFile.setToolTip( logFileName )
+    logFileName = QFileDialog.getOpenFileName(self, self.tr("Select log file"), ".", self.tr("Text files (*.txt);;Log files (*.log);;All files (*)"), None, QFileDialog.ReadOnly)
+    self.leLogFile.setText(logFileName)
+    self.leLogFile.setToolTip(logFileName)
 
-  def updateLicenseTemplatesList( self ):
+  def updateLicenseTemplatesList(self):
     self.cmbLicense.clear()
     self.cmbLicense.addItem(self.translatedNoneLabel)
-    self.cmbLicense.addItems( self.licenseTemplateManager.getTemplateList() )
+    self.cmbLicense.addItems(self.licenseTemplateManager.getTemplateList())
 
-  def updateWorkflowTemplatesList( self ):
+  def updateWorkflowTemplatesList(self):
     self.cmbWorkflow.clear()
     self.cmbWorkflow.addItem(self.translatedNoneLabel)
-    self.cmbWorkflow.addItems( self.workflowTemplateManager.getTemplateList() )
+    self.cmbWorkflow.addItems(self.workflowTemplateManager.getTemplateList())
 
-  def updateOrgsTemplatesList( self ):
+  def updateOrgsTemplatesList(self):
     self.cmbOrganization.clear()
     self.cmbOrganization.addItem(self.translatedNoneLabel)
-    self.cmbOrganization.addItems( self.orgsTemplateManager.tempalateNames() )
+    self.cmbOrganization.addItems(self.orgsTemplateManager.tempalateNames())
 
-  def updateLayerList( self ):
+  def updateDatatypesTemplatesList(self):
+    self.cmbDatatype.clear()
+    self.cmbDatatype.addItem(self.translatedNoneLabel)
+    self.cmbDatatype.addItems(self.datatypeTemplateManager.getTemplateList())
+
+  def updateLayerList(self):
     self.layers = []
     selection = self.lstLayers.selectedItems()
     for item in selection:
-      layer = utils.getRasterLayerByName( item.text() )
-      self.layers.append( layer.source() )
+      layer = utils.getRasterLayerByName(item.text())
+      self.layers.append(layer.source())
 
-    if len( self.layers ) != 0:
-      self.btnApply.setEnabled( True )
+    if len(self.layers) != 0:
+      self.btnApply.setEnabled(True)
 
-  def applyTemplates( self ):
+  def applyTemplates(self):
     # TODO: check if there are some templates selected
 
     # get profile from settings
-    settings = QSettings( "NextGIS", "metatools" )
-    profile = settings.value( "iso19115/defaultProfile", QVariant( "" ) ).toString()
+    settings = QSettings("NextGIS", "metatools")
+    profile = settings.value("iso19115/defaultProfile", QVariant("")).toString()
     if profile.isEmpty():
-      QMessageBox.warning( self, self.tr( "No profile" ), self.tr( "No profile selected. Please set default profile in plugin settings" ) )
+      QMessageBox.warning(self, self.tr("No profile"), self.tr("No profile selected. Please set default profile in plugin settings"))
       return
 
-    profilePath = unicode( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles", str( profile ) ) ) )
+    profilePath = unicode(QDir.toNativeSeparators(os.path.join(currentPath, "xml_profiles", str(profile))))
 
     try:
       for layer in self.layers:
         # get metadata file path
-        metaFilePath = utils.mdPathFromLayerPath( layer )
+        metaFilePath = utils.mdPathFromLayerPath(layer)
 
         # check if metadata file exists and create it if necessary
-        if not os.path.exists( metaFilePath ):
+        if not os.path.exists(metaFilePath):
           try:
-            shutil.copyfile( profilePath, metaFilePath )
+            shutil.copyfile(profilePath, metaFilePath)
           except:
-            QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Metadata file can't be created: ") + str( sys.exc_info()[ 1 ] ) )
+            QMessageBox.warning(self, self.tr("Metatools"), self.tr("Metadata file can't be created: ") + str(sys.exc_info()[ 1 ]))
             continue
 
         # check metadata standard
-        standard = MetaInfoStandard.tryDetermineStandard( metaFilePath )
+        standard = MetaInfoStandard.tryDetermineStandard(metaFilePath)
         if standard != MetaInfoStandard.ISO19115:
-          QMessageBox.warning( self, self.tr( "Metatools" ),
-                               self.tr( "File %1 has unsupported metadata standard! Only ISO19115 supported now!" )
-                               .arg( layer ) )
+          QMessageBox.warning(self, self.tr("Metatools"),
+                               self.tr("File %1 has unsupported metadata standard! Only ISO19115 supported now!")
+                               .arg(layer))
           continue
 
         # extract image specific information
         if self.chkUpdateImageInfo.isChecked():
-          utils.writeRasterInfo( layer, metaFilePath )
+          utils.writeRasterInfo(layer, metaFilePath)
 
         # generate preview
         if self.chkGeneratePreview.isChecked():
-		  utils.generatePreview( layer )
+		  utils.generatePreview(layer)
 
         # load metadata file
-        file = QFile( metaFilePath )
+        file = QFile(metaFilePath)
         metaXML = QDomDocument()
-        metaXML.setContent( file )
+        metaXML.setContent(file)
 
         # apply templates (BAD version - change to applier with standard)
-        self.applyInstitutionTemplate( metaXML )
-        self.applyLicenseTemplate( metaXML )
-        self.applyWorkflowTemplate( metaXML )
-        self.applyLogFile( metaXML )
+        self.applyInstitutionTemplate(metaXML)
+        self.applyLicenseTemplate(metaXML)
+        self.applyWorkflowTemplate(metaXML)
+        self.applyLogFile(metaXML)
 
         # save metadata file (hmm.. why not QFile?)
-        metafile = codecs.open( metaFilePath, "w", encoding="utf-8" )
-        metafile.write( unicode( metaXML.toString().toUtf8(), "utf-8" ) )
+        metafile = codecs.open(metaFilePath, "w", encoding="utf-8")
+        metafile.write(unicode(metaXML.toString().toUtf8(), "utf-8"))
         metafile.close()
 
-      QMessageBox.information( self, self.tr( "Metatools" ), self.tr( "Done!" ) )
+      QMessageBox.information(self, self.tr("Metatools"), self.tr("Done!"))
       # clear selection and disable Apply button
       self.lstLayers.clearSelection()
       self.layers = []
-      self.btnApply.setEnabled( False )
+      self.btnApply.setEnabled(False)
     except:
-      QMessageBox.warning( self, self.tr( "Metatools" ), self.tr( "Operation can't be complited: " ) + str( sys.exc_info()[ 1 ] ) )
+      QMessageBox.warning(self, self.tr("Metatools"), self.tr("Operation can't be complited: ") + str(sys.exc_info()[ 1 ]))
 
   # ----------- Appliers -----------
 
-  def applyInstitutionTemplate( self, metaXML ):
+  def applyInstitutionTemplate(self, metaXML):
     # TODO: make more safe
     #if self.cmbOrganization.currentIndex() == -1:
     if self.cmbOrganization.currentText() == self.translatedNoneLabel:
@@ -272,193 +296,193 @@ class ApplyTemplatesDialog( QDialog, Ui_ApplyTemplatesDialog ):
     template = self.orgsTemplateManager.organizations[ self.cmbOrganization.currentText() ]
 
     root = metaXML.documentElement()
-    mdContact = utils.getOrCreateChild( root, "contact" )
-    mdResponsibleParty = utils.getOrCreateChild( mdContact, "CI_ResponsibleParty" )
+    mdContact = utils.getOrCreateChild(root, "contact")
+    mdResponsibleParty = utils.getOrCreateChild(mdContact, "CI_ResponsibleParty")
 
     # individualName
-    mdIndividualName = utils.getOrCreateChild( mdResponsibleParty, "individualName" )
-    mdCharStringElement = utils.getOrCreateChild( mdIndividualName, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.person )
+    mdIndividualName = utils.getOrCreateChild(mdResponsibleParty, "individualName")
+    mdCharStringElement = utils.getOrCreateChild(mdIndividualName, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.person)
 
     # organisationName
-    mdOrganisationName = utils.getOrCreateChild( mdResponsibleParty, "organisationName" )
-    mdCharStringElement = utils.getOrCreateChild( mdOrganisationName, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.name )
+    mdOrganisationName = utils.getOrCreateChild(mdResponsibleParty, "organisationName")
+    mdCharStringElement = utils.getOrCreateChild(mdOrganisationName, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.name)
 
     # positionName
-    mdPositionName = utils.getOrCreateChild( mdResponsibleParty, "positionName" )
-    mdCharStringElement = utils.getOrCreateChild( mdPositionName, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.position )
+    mdPositionName = utils.getOrCreateChild(mdResponsibleParty, "positionName")
+    mdCharStringElement = utils.getOrCreateChild(mdPositionName, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.position)
 
     # go deeper... fill contactInfo
-    mdContactInfo = utils.getOrCreateChild( mdResponsibleParty, "contactInfo" )
-    mdCIContact = utils.getOrCreateChild( mdContactInfo, "CI_Contact" )
+    mdContactInfo = utils.getOrCreateChild(mdResponsibleParty, "contactInfo")
+    mdCIContact = utils.getOrCreateChild(mdContactInfo, "CI_Contact")
 
     # hours of service
-    mdHours = utils.getOrCreateChild( mdCIContact, "hoursOfService" )
-    mdCharStringElement = utils.getOrCreateChild( mdHours, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.hours )
+    mdHours = utils.getOrCreateChild(mdCIContact, "hoursOfService")
+    mdCharStringElement = utils.getOrCreateChild(mdHours, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.hours)
 
     # fill phones
-    mdPhone = utils.getOrCreateChild( mdCIContact, "phone" )
-    mdCIPhone = utils.getOrCreateChild( mdPhone, "CI_Telephone" )
+    mdPhone = utils.getOrCreateChild(mdCIContact, "phone")
+    mdCIPhone = utils.getOrCreateChild(mdPhone, "CI_Telephone")
 
-    mdVoice = utils.getOrCreateChild( mdCIPhone, "voice" )
-    mdCharStringElement = utils.getOrCreateChild( mdVoice, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.phone )
+    mdVoice = utils.getOrCreateChild(mdCIPhone, "voice")
+    mdCharStringElement = utils.getOrCreateChild(mdVoice, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.phone)
 
-    mdFacsimile = utils.getOrCreateChild( mdCIPhone, "facsimile" )
-    mdCharStringElement = utils.getOrCreateChild( mdFacsimile, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.phone )
+    mdFacsimile = utils.getOrCreateChild(mdCIPhone, "facsimile")
+    mdCharStringElement = utils.getOrCreateChild(mdFacsimile, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.phone)
 
     # fill address
-    mdAddress = utils.getOrCreateChild( mdCIContact, "address" )
-    mdCIAddress = utils.getOrCreateChild( mdAddress, "CI_Address" )
+    mdAddress = utils.getOrCreateChild(mdCIContact, "address")
+    mdCIAddress = utils.getOrCreateChild(mdAddress, "CI_Address")
 
     # deliveryPoint
-    mdDeliveryPoint = utils.getOrCreateChild( mdCIAddress, "deliveryPoint" )
-    mdCharStringElement = utils.getOrCreateChild( mdDeliveryPoint, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.deliveryPoint )
+    mdDeliveryPoint = utils.getOrCreateChild(mdCIAddress, "deliveryPoint")
+    mdCharStringElement = utils.getOrCreateChild(mdDeliveryPoint, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.deliveryPoint)
 
     # city
-    mdCity = utils.getOrCreateChild( mdCIAddress, "city" )
-    mdCharStringElement = utils.getOrCreateChild( mdCity, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.city )
+    mdCity = utils.getOrCreateChild(mdCIAddress, "city")
+    mdCharStringElement = utils.getOrCreateChild(mdCity, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.city)
 
     # administrativeArea
-    mdAdminArea = utils.getOrCreateChild( mdCIAddress, "administrativeArea" )
-    mdCharStringElement = utils.getOrCreateChild( mdAdminArea, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.adminArea )
+    mdAdminArea = utils.getOrCreateChild(mdCIAddress, "administrativeArea")
+    mdCharStringElement = utils.getOrCreateChild(mdAdminArea, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.adminArea)
 
     # postalCode
-    mdPostalCode = utils.getOrCreateChild( mdCIAddress, "postalCode" )
-    mdCharStringElement = utils.getOrCreateChild( mdPostalCode, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.postalCode )
+    mdPostalCode = utils.getOrCreateChild(mdCIAddress, "postalCode")
+    mdCharStringElement = utils.getOrCreateChild(mdPostalCode, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.postalCode)
 
     # country
-    mdCountry = utils.getOrCreateChild( mdCIAddress, "country" )
-    mdCharStringElement = utils.getOrCreateChild( mdCountry, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.country )
+    mdCountry = utils.getOrCreateChild(mdCIAddress, "country")
+    mdCharStringElement = utils.getOrCreateChild(mdCountry, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.country)
 
     # email
-    mdEmail = utils.getOrCreateChild( mdCIAddress, "electronicMailAddress" )
-    mdCharStringElement = utils.getOrCreateChild( mdEmail, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( template.email )
+    mdEmail = utils.getOrCreateChild(mdCIAddress, "electronicMailAddress")
+    mdCharStringElement = utils.getOrCreateChild(mdEmail, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(template.email)
 
-  def applyLicenseTemplate( self, metaXML ):
+  def applyLicenseTemplate(self, metaXML):
     # TODO: make more safe
     #if self.cmbLicense.currentIndex() == -1:
     if self.cmbLicense.currentText() == self.translatedNoneLabel:
       return
 
-    licenseTemplate = self.licenseTemplateManager.loadTemplate( self.cmbLicense.currentText() )
+    licenseTemplate = self.licenseTemplateManager.loadTemplate(self.cmbLicense.currentText())
 
     root = metaXML.documentElement()
 
-    mdIdentificationInfo = utils.getOrCreateChild( root, "identificationInfo" )
-    mdDataIdentification = utils.getOrCreateChild( mdIdentificationInfo, "MD_DataIdentification" )
+    mdIdentificationInfo = utils.getOrCreateChild(root, "identificationInfo")
+    mdDataIdentification = utils.getOrCreateChild(mdIdentificationInfo, "MD_DataIdentification")
 
-    mdResourceConstraints = utils.getOrIsertAfterChild( mdDataIdentification, "resourceConstraints", [ "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ] )
-    mdLegalConstraintsElement = utils.getOrCreateChild( mdResourceConstraints, "MD_LegalConstraints" )
+    mdResourceConstraints = utils.getOrIsertAfterChild(mdDataIdentification, "resourceConstraints", [ "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdLegalConstraintsElement = utils.getOrCreateChild(mdResourceConstraints, "MD_LegalConstraints")
 
     # useLimitation
-    mdUseLimitationElement = utils.getOrCreateChild( mdLegalConstraintsElement, "useLimitation" )
-    mdCharStringElement = utils.getOrCreateChild( mdUseLimitationElement, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( licenseTemplate.stringRepresentation() )
+    mdUseLimitationElement = utils.getOrCreateChild(mdLegalConstraintsElement, "useLimitation")
+    mdCharStringElement = utils.getOrCreateChild(mdUseLimitationElement, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(licenseTemplate.stringRepresentation())
 
     # useConstraints
-    mdUseConstraintsElement = utils.getOrCreateChild( mdLegalConstraintsElement, "useConstraints" )
-    mdRestrictionCodeElement = utils.getOrCreateChild( mdUseConstraintsElement, "MD_RestrictionCode" )
+    mdUseConstraintsElement = utils.getOrCreateChild(mdLegalConstraintsElement, "useConstraints")
+    mdRestrictionCodeElement = utils.getOrCreateChild(mdUseConstraintsElement, "MD_RestrictionCode")
 
-    mdRestrictionCodeElement.setAttribute( "codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" )
-    mdRestrictionCodeElement.setAttribute( "codeListValue", "license" )
+    mdRestrictionCodeElement.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode")
+    mdRestrictionCodeElement.setAttribute("codeListValue", "license")
 
-    textNode = utils.getOrCreateTextChild( mdRestrictionCodeElement )
-    textNode.setNodeValue( "license" )
+    textNode = utils.getOrCreateTextChild(mdRestrictionCodeElement)
+    textNode.setNodeValue("license")
 
-  def applyWorkflowTemplate( self, metaXML ):
+  def applyWorkflowTemplate(self, metaXML):
     # TODO: make more safe
     #if self.cmbWorkflow.currentIndex() == -1:
     if self.cmbWorkflow.currentText() == self.translatedNoneLabel:
         return
 
-    workflowTemplate = self.workflowTemplateManager.loadTemplate( self.cmbWorkflow.currentText() )
+    workflowTemplate = self.workflowTemplateManager.loadTemplate(self.cmbWorkflow.currentText())
 
     root = metaXML.documentElement()
 
-    mdDataQualityInfo = utils.getOrIsertAfterChild( root, "dataQualityInfo", [ "distributionInfo", "contentInfo", "identificationInfo" ] )
-    mdDQData = utils.getOrCreateChild( mdDataQualityInfo, "DQ_DataQuality" )
+    mdDataQualityInfo = utils.getOrIsertAfterChild(root, "dataQualityInfo", [ "distributionInfo", "contentInfo", "identificationInfo" ])
+    mdDQData = utils.getOrCreateChild(mdDataQualityInfo, "DQ_DataQuality")
 
     # check requirements (not need for workflow)
-    if mdDQData.firstChildElement( "scope" ).isNull():
-      mdScope = utils.getOrIsertTopChild( mdDQData, "scope" )
-      mdDQScope = utils.getOrCreateChild( mdScope, "DQ_Scope" )
-      mdLevel = utils.getOrIsertTopChild( mdDQScope, "level" )
-      mdScopeCode = utils.getOrCreateChild( mdLevel, "MD_ScopeCode" )
+    if mdDQData.firstChildElement("scope").isNull():
+      mdScope = utils.getOrIsertTopChild(mdDQData, "scope")
+      mdDQScope = utils.getOrCreateChild(mdScope, "DQ_Scope")
+      mdLevel = utils.getOrIsertTopChild(mdDQScope, "level")
+      mdScopeCode = utils.getOrCreateChild(mdLevel, "MD_ScopeCode")
 
-      mdScopeCode.setAttribute( "codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" )
-      mdScopeCode.setAttribute( "codeListValue", "dataset" )
+      mdScopeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode")
+      mdScopeCode.setAttribute("codeListValue", "dataset")
 
-      textNode = utils.getOrCreateTextChild( mdScopeCode )
-      textNode.setNodeValue( "dataset" )
+      textNode = utils.getOrCreateTextChild(mdScopeCode)
+      textNode.setNodeValue("dataset")
 
-    mdLineage = utils.getOrCreateChild( mdDQData, "lineage" )
-    mdLiLineage = utils.getOrCreateChild( mdLineage, "LI_Lineage" )
-    mdStatement = utils.getOrIsertTopChild( mdLiLineage, "statement" )
+    mdLineage = utils.getOrCreateChild(mdDQData, "lineage")
+    mdLiLineage = utils.getOrCreateChild(mdLineage, "LI_Lineage")
+    mdStatement = utils.getOrIsertTopChild(mdLiLineage, "statement")
 
-    mdCharStringElement = utils.getOrCreateChild( mdStatement, "gco:CharacterString" )
+    mdCharStringElement = utils.getOrCreateChild(mdStatement, "gco:CharacterString")
 
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( workflowTemplate.stringRepresentation() )
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(workflowTemplate.stringRepresentation())
 
-  def applyLogFile( self, metaXML ):
+  def applyLogFile(self, metaXML):
     # TODO: make more safe
     if self.leLogFile.text().isEmpty():
       return
 
-    logFile = codecs.open( self.leLogFile.text(), "r", encoding="utf-8" )
+    logFile = codecs.open(self.leLogFile.text(), "r", encoding="utf-8")
     logFileContent = logFile.read()
     logFile.close()
 
     root = metaXML.documentElement()
 
-    mdDataQualityInfo = utils.getOrIsertAfterChild( root, "dataQualityInfo", [ "distributionInfo", "contentInfo", "identificationInfo" ] )
-    mdDQData = utils.getOrCreateChild( mdDataQualityInfo, "DQ_DataQuality" )
+    mdDataQualityInfo = utils.getOrIsertAfterChild(root, "dataQualityInfo", [ "distributionInfo", "contentInfo", "identificationInfo" ])
+    mdDQData = utils.getOrCreateChild(mdDataQualityInfo, "DQ_DataQuality")
 
     # check requirements (not need for log file)
-    if mdDQData.firstChildElement( "scope" ).isNull():
-      mdScope = utils.getOrIsertTopChild( mdDQData, "scope" )
-      mdDQScope = utils.getOrCreateChild( mdScope, "DQ_Scope" )
-      mdLevel = utils.getOrIsertTopChild( mdDQScope, "level" )
-      mdScopeCode = utils.getOrCreateChild( mdLevel, "MD_ScopeCode" )
+    if mdDQData.firstChildElement("scope").isNull():
+      mdScope = utils.getOrIsertTopChild(mdDQData, "scope")
+      mdDQScope = utils.getOrCreateChild(mdScope, "DQ_Scope")
+      mdLevel = utils.getOrIsertTopChild(mdDQScope, "level")
+      mdScopeCode = utils.getOrCreateChild(mdLevel, "MD_ScopeCode")
 
-      mdScopeCode.setAttribute( "codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" )
-      mdScopeCode.setAttribute( "codeListValue", "dataset" )
-      textNode = utils.getOrCreateTextChild( mdScopeCode )
-      textNode.setNodeValue( "dataset" )
+      mdScopeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode")
+      mdScopeCode.setAttribute("codeListValue", "dataset")
+      textNode = utils.getOrCreateTextChild(mdScopeCode)
+      textNode.setNodeValue("dataset")
 
-    mdLineage = utils.getOrCreateChild( mdDQData, "lineage" )
-    mdLiLineage = utils.getOrCreateChild( mdLineage, "LI_Lineage" )
+    mdLineage = utils.getOrCreateChild(mdDQData, "lineage")
+    mdLiLineage = utils.getOrCreateChild(mdLineage, "LI_Lineage")
 
-    mdProcessStep = utils.getOrCreateChild( mdLiLineage, "processStep" )
-    mdLIProcessStep = utils.getOrCreateChild( mdProcessStep, "LI_ProcessStep" )
-    mdDescription = utils.getOrIsertTopChild( mdLIProcessStep, "description" )
-    mdCharStringElement = utils.getOrCreateChild( mdDescription, "gco:CharacterString" )
-    textNode = utils.getOrCreateTextChild( mdCharStringElement )
-    textNode.setNodeValue( logFileContent )
+    mdProcessStep = utils.getOrCreateChild(mdLiLineage, "processStep")
+    mdLIProcessStep = utils.getOrCreateChild(mdProcessStep, "LI_ProcessStep")
+    mdDescription = utils.getOrIsertTopChild(mdLIProcessStep, "description")
+    mdCharStringElement = utils.getOrCreateChild(mdDescription, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(logFileContent)
 
   # ----------- XML Helpers -----------
 

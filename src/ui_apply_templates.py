@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_apply_templates.ui'
+# Form implementation generated from reading ui file './ui_apply_templates.ui'
 #
-# Created: Fri Apr 01 16:36:31 2011
+# Created: Wed May 25 19:46:36 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_ApplyTemplatesDialog(object):
     def setupUi(self, ApplyTemplatesDialog):
         ApplyTemplatesDialog.setObjectName(_fromUtf8("ApplyTemplatesDialog"))
-        ApplyTemplatesDialog.resize(521, 293)
+        ApplyTemplatesDialog.resize(521, 297)
         self.gridLayout = QtGui.QGridLayout(ApplyTemplatesDialog)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -29,11 +29,16 @@ class Ui_ApplyTemplatesDialog(object):
         self.btnSelectDataFiles.setEnabled(False)
         self.btnSelectDataFiles.setObjectName(_fromUtf8("btnSelectDataFiles"))
         self.horizontalLayout.addWidget(self.btnSelectDataFiles)
-        self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 2)
+        self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 3)
         self.lstLayers = QtGui.QListWidget(ApplyTemplatesDialog)
         self.lstLayers.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.lstLayers.setObjectName(_fromUtf8("lstLayers"))
         self.gridLayout.addWidget(self.lstLayers, 1, 0, 1, 1)
+        self.buttonBox = QtGui.QDialogButtonBox(ApplyTemplatesDialog)
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Apply|QtGui.QDialogButtonBox.Close)
+        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
+        self.gridLayout.addWidget(self.buttonBox, 2, 0, 1, 3)
         self.groupBox = QtGui.QGroupBox(ApplyTemplatesDialog)
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.gridLayout_2 = QtGui.QGridLayout(self.groupBox)
@@ -70,26 +75,30 @@ class Ui_ApplyTemplatesDialog(object):
         self.gridLayout_2.addWidget(self.btnManageWorkflows, 2, 2, 1, 1)
         self.label = QtGui.QLabel(self.groupBox)
         self.label.setObjectName(_fromUtf8("label"))
-        self.gridLayout_2.addWidget(self.label, 3, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.label, 5, 0, 1, 1)
         self.leLogFile = QtGui.QLineEdit(self.groupBox)
         self.leLogFile.setReadOnly(True)
         self.leLogFile.setObjectName(_fromUtf8("leLogFile"))
-        self.gridLayout_2.addWidget(self.leLogFile, 3, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.leLogFile, 5, 1, 1, 1)
         self.btnSelectLogFile = QtGui.QPushButton(self.groupBox)
         self.btnSelectLogFile.setObjectName(_fromUtf8("btnSelectLogFile"))
-        self.gridLayout_2.addWidget(self.btnSelectLogFile, 3, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.btnSelectLogFile, 5, 2, 1, 1)
         self.chkUpdateImageInfo = QtGui.QCheckBox(self.groupBox)
         self.chkUpdateImageInfo.setObjectName(_fromUtf8("chkUpdateImageInfo"))
-        self.gridLayout_2.addWidget(self.chkUpdateImageInfo, 4, 0, 1, 3)
+        self.gridLayout_2.addWidget(self.chkUpdateImageInfo, 6, 0, 1, 3)
         self.chkGeneratePreview = QtGui.QCheckBox(self.groupBox)
         self.chkGeneratePreview.setObjectName(_fromUtf8("chkGeneratePreview"))
-        self.gridLayout_2.addWidget(self.chkGeneratePreview, 5, 0, 1, 3)
+        self.gridLayout_2.addWidget(self.chkGeneratePreview, 7, 0, 1, 3)
+        self.label_5 = QtGui.QLabel(self.groupBox)
+        self.label_5.setObjectName(_fromUtf8("label_5"))
+        self.gridLayout_2.addWidget(self.label_5, 3, 0, 1, 1)
+        self.cmbDatatype = QtGui.QComboBox(self.groupBox)
+        self.cmbDatatype.setObjectName(_fromUtf8("cmbDatatype"))
+        self.gridLayout_2.addWidget(self.cmbDatatype, 3, 1, 1, 1)
+        self.btnManageDatatypes = QtGui.QPushButton(self.groupBox)
+        self.btnManageDatatypes.setObjectName(_fromUtf8("btnManageDatatypes"))
+        self.gridLayout_2.addWidget(self.btnManageDatatypes, 3, 2, 1, 1)
         self.gridLayout.addWidget(self.groupBox, 1, 1, 1, 1)
-        self.buttonBox = QtGui.QDialogButtonBox(ApplyTemplatesDialog)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Apply|QtGui.QDialogButtonBox.Close)
-        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
-        self.gridLayout.addWidget(self.buttonBox, 2, 0, 1, 2)
 
         self.retranslateUi(ApplyTemplatesDialog)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), ApplyTemplatesDialog.accept)
@@ -111,4 +120,6 @@ class Ui_ApplyTemplatesDialog(object):
         self.btnSelectLogFile.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
         self.chkUpdateImageInfo.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Extract image parameters to metadata XML", None, QtGui.QApplication.UnicodeUTF8))
         self.chkGeneratePreview.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Generate preview image", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "DataType", None, QtGui.QApplication.UnicodeUTF8))
+        self.btnManageDatatypes.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Manage", None, QtGui.QApplication.UnicodeUTF8))
 
