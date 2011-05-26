@@ -72,6 +72,7 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
     QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
     QObject.connect(self.btnSave, SIGNAL("clicked()"), self.saveTemplate)
 
+
     QObject.connect(self.btnAddKeyword, SIGNAL("clicked()"), self.addKeyword)
     QObject.connect(self.btnEditKeyword, SIGNAL("clicked()"), self.editKeyword)
     QObject.connect(self.btnRemoveKeyword, SIGNAL("clicked()"), self.removeKeyword)
@@ -79,8 +80,8 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
     self.manageGui()
 
   def manageGui(self):
-    self.btnSave.setEnabled(False)
     self.reloadTemplatesList()
+    self.btnSave.setEnabled(False)
 
   def reloadTemplatesList(self):
     self.cmbDatatype.clear()
@@ -110,6 +111,7 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
 
     self.datatypeTemplate = self.datatypeTemplateManager.loadTemplate(templateName)
     self.templateToForm(self.datatypeTemplate)
+    self.btnSave.setEnabled(False)
 
   def saveTemplate(self):
     template = self.templateFromForm()
@@ -140,6 +142,11 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
 
     self.btnSave.setEnabled(False)
 
+  def reject(self):
+    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Close the window without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+      return
+    QDialog.reject(self)
+
   def clearFormFields(self):
     self.leName.clear()
     self.leSpatialAccuracy.clear()
@@ -161,7 +168,6 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
       self.cmbType.setCurrentIndex(index)
 
     for keyword in template.keywords:
-      QMessageBox.warning(self, "ops", "ops")
       self.lstKeywords.addItem(keyword)
 
     self.textThematicAccuracy.setText(template.thematicAccuracy or "")
@@ -182,7 +188,6 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
 
     template.thematicAccuracy = self.textThematicAccuracy.toPlainText()
 
-
     return template
 
 
@@ -190,9 +195,23 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
     keyword, result = QInputDialog.getText(self, self.tr("New keyword"), self.tr("Input keyword:"))
     if result and keyword:
       self.lstKeywords.addItem(keyword)
+      self.templateModified()
 
   def editKeyword(self):
-    pass
+    if self.lstKeywords.currentRow() < 0:
+      QMessageBox.information(self, self.tr("Metatools"), self.tr("Select keyword for edit"))
+      return
+    keyword, result = QInputDialog.getText(self, self.tr("New keyword"), self.tr("Input keyword:"), QLineEdit.Normal, self.lstKeywords.item(self.lstKeywords.currentRow()).text())
+
+    if result and keyword:
+      self.lstKeywords.item(self.lstKeywords.currentRow()).setText(keyword)
+      self.templateModified()
 
   def removeKeyword(self):
-    pass
+    if self.lstKeywords.currentRow() < 0:
+      QMessageBox.information(self, self.tr("Metatools"), self.tr("Select keyword for remove"))
+      return
+
+    if QMessageBox.question(None, self.tr("Metatools"), self.tr("Remove this keyword?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
+      self.lstKeywords.takeItem(self.lstKeywords.currentRow())
+      self.templateModified()

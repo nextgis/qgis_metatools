@@ -259,7 +259,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
         # generate preview
         if self.chkGeneratePreview.isChecked():
-		  utils.generatePreview(layer)
+		      utils.generatePreview(layer)
 
         # load metadata file
         file = QFile(metaFilePath)
@@ -270,6 +270,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
         self.applyInstitutionTemplate(metaXML)
         self.applyLicenseTemplate(metaXML)
         self.applyWorkflowTemplate(metaXML)
+        self.applyDatatypeTemplate(metaXML)
         self.applyLogFile(metaXML)
 
         # save metadata file (hmm.. why not QFile?)
@@ -447,6 +448,39 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
     textNode = utils.getOrCreateTextChild(mdCharStringElement)
     textNode.setNodeValue(workflowTemplate.stringRepresentation())
+
+  def applyDatatypeTemplate(self, metaXML):
+    # TODO: make more safe
+    if self.cmbDatatype.currentText() == self.translatedNoneLabel:
+      return
+
+    datatypeTemplate = self.datatypeTemplateManager.loadTemplate(self.cmbDatatype.currentText())
+
+    root = metaXML.documentElement()
+
+    mdIdentificationInfo = utils.getOrCreateChild(root, "identificationInfo")
+    mdDataIdentification = utils.getOrCreateChild(mdIdentificationInfo, "MD_DataIdentification")
+
+    return #
+
+    mdResourceConstraints = utils.getOrIsertAfterChild(mdDataIdentification, "resourceConstraints", [ "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdLegalConstraintsElement = utils.getOrCreateChild(mdResourceConstraints, "MD_LegalConstraints")
+
+    # useLimitation
+    mdUseLimitationElement = utils.getOrCreateChild(mdLegalConstraintsElement, "useLimitation")
+    mdCharStringElement = utils.getOrCreateChild(mdUseLimitationElement, "gco:CharacterString")
+    textNode = utils.getOrCreateTextChild(mdCharStringElement)
+    textNode.setNodeValue(datatypeTemplate.stringRepresentation())
+
+    # useConstraints
+    mdUseConstraintsElement = utils.getOrCreateChild(mdLegalConstraintsElement, "useConstraints")
+    mdRestrictionCodeElement = utils.getOrCreateChild(mdUseConstraintsElement, "MD_RestrictionCode")
+
+    mdRestrictionCodeElement.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode")
+    mdRestrictionCodeElement.setAttribute("codeListValue", "license")
+
+    textNode = utils.getOrCreateTextChild(mdRestrictionCodeElement)
+    textNode.setNodeValue("license")
 
   def applyLogFile(self, metaXML):
     # TODO: make more safe

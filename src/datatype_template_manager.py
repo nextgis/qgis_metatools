@@ -77,6 +77,7 @@ class DatatypeTemplateManager:
     thematicAccuracyElement = root.elementsByTagName("ThematicAccuracy").at(0)
     template.thematicAccuracy = thematicAccuracyElement.childNodes().at(0).nodeValue()
 
+    template.keywords = []
     keywordsElements = root.elementsByTagName("Keyword")
     for number in range(keywordsElements.length()):
       template.keywords.append(keywordsElements.at(number).childNodes().at(0).nodeValue())
