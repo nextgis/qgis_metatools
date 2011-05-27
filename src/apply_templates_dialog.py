@@ -408,7 +408,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     mdUseConstraintsElement = utils.getOrCreateChild(mdLegalConstraintsElement, "useConstraints")
     mdRestrictionCodeElement = utils.getOrCreateChild(mdUseConstraintsElement, "MD_RestrictionCode")
 
-    mdRestrictionCodeElement.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode")
+    mdRestrictionCodeElement.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode")
     mdRestrictionCodeElement.setAttribute("codeListValue", "license")
 
     textNode = utils.getOrCreateTextChild(mdRestrictionCodeElement)
@@ -434,7 +434,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
       mdLevel = utils.getOrIsertTopChild(mdDQScope, "level")
       mdScopeCode = utils.getOrCreateChild(mdLevel, "MD_ScopeCode")
 
-      mdScopeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode")
+      mdScopeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MD_ScopeCode")
       mdScopeCode.setAttribute("codeListValue", "dataset")
 
       textNode = utils.getOrCreateTextChild(mdScopeCode)
@@ -461,26 +461,72 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     mdIdentificationInfo = utils.getOrCreateChild(root, "identificationInfo")
     mdDataIdentification = utils.getOrCreateChild(mdIdentificationInfo, "MD_DataIdentification")
 
-    return #
+    #insert type of data
+    mdSpatialRep = utils.getOrIsertAfterChild(mdDataIdentification, "spatialRepresentationType", [ "aggregationInfo", "resourceConstraints", "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdSpatialRepTypeCode = utils.getOrCreateChild(mdSpatialRep, "MD_SpatialRepresentationTypeCode")
+    mdSpatialRepTypeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode")
+    textNode = utils.getOrCreateTextChild(mdSpatialRepTypeCode)
 
-    mdResourceConstraints = utils.getOrIsertAfterChild(mdDataIdentification, "resourceConstraints", [ "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
-    mdLegalConstraintsElement = utils.getOrCreateChild(mdResourceConstraints, "MD_LegalConstraints")
+    if datatypeTemplate.type == "vector":
+      mdSpatialRepTypeCode.setAttribute("codeListValue", "vector")
+      textNode.setNodeValue("vector")
+    else:
+      mdSpatialRepTypeCode.setAttribute("codeListValue", "grid")
+      textNode.setNodeValue("grid")
+      #adding raster type
+      mdContentInfo = utils.getOrCreateChild(root, "contentInfo")
+      mdImageDescription = utils.getOrCreateChild(mdContentInfo, "MD_ImageDescription")
+      mdContentType = utils.getOrIsertAfterChild(mdImageDescription, "contentType", ["attributeDescription"])
+      mdContentTypeCode = utils.getOrCreateChild(mdContentType, "MD_CoverageContentTypeCode")
+      mdContentTypeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode")
+      mdContentTypeCode.setAttribute("codeListValue", datatypeTemplate.type)
+      textNode = utils.getOrCreateTextChild(mdContentTypeCode)
+      textNode.setNodeValue(datatypeTemplate.type)
 
-    # useLimitation
-    mdUseLimitationElement = utils.getOrCreateChild(mdLegalConstraintsElement, "useLimitation")
-    mdCharStringElement = utils.getOrCreateChild(mdUseLimitationElement, "gco:CharacterString")
-    textNode = utils.getOrCreateTextChild(mdCharStringElement)
-    textNode.setNodeValue(datatypeTemplate.stringRepresentation())
 
-    # useConstraints
-    mdUseConstraintsElement = utils.getOrCreateChild(mdLegalConstraintsElement, "useConstraints")
-    mdRestrictionCodeElement = utils.getOrCreateChild(mdUseConstraintsElement, "MD_RestrictionCode")
+    #insert keywords
+    mdDescKeywords = utils.getOrIsertAfterChild(mdDataIdentification, "descriptiveKeywords", [ "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdKeywords = utils.getOrCreateChild(mdDescKeywords, "MD_Keywords")
+    for keyword in datatypeTemplate.keywords:
+      mdKeyword = utils.insertAfterChild(mdKeywords, "keyword", ["keyword", ])
+      mdString = utils.getOrCreateChild(mdKeyword, "gco:CharacterString")
+      textNode = utils.getOrCreateTextChild(mdString)
+      textNode.setNodeValue(keyword)
+    mdType = utils.getOrIsertAfterChild(mdKeywords, "type", ["keyword", ])
+    mdTypeCode = utils.getOrCreateChild(mdType, "MD_KeywordTypeCode")
+    mdTypeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode")
+    mdTypeCode.setAttribute("codeListValue", "theme")
+    textNode = utils.getOrCreateTextChild(mdTypeCode)
+    textNode.setNodeValue("theme")
 
-    mdRestrictionCodeElement.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode")
-    mdRestrictionCodeElement.setAttribute("codeListValue", "license")
 
-    textNode = utils.getOrCreateTextChild(mdRestrictionCodeElement)
-    textNode.setNodeValue("license")
+    #drop all spatial scale/accuracy
+    while not (mdDataIdentification.firstChildElement("spatialResolution")).isNull():
+      mdDataIdentification.removeChild(mdDataIdentification.firstChildElement("spatialResolution"))
+
+    #insert spatial scale
+    mdSpatialResolution = utils.insertAfterChild(mdDataIdentification, "spatialResolution", ["spatialRepresentationType", "aggregationInfo", "resourceConstraints", "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdResolution = utils.getOrCreateChild(mdSpatialResolution, "MD_Resolution")
+    mdEqScale = utils.getOrIsertTopChild(mdResolution, "equivalentScale")
+    mdFraction = utils.getOrCreateChild(mdEqScale, "MD_RepresentativeFraction")
+    mdDenominator = utils.getOrCreateChild(mdFraction, "denominator")
+    mdInteger = utils.getOrCreateChild(mdDenominator, "gco:Integer")
+    textNode = utils.getOrCreateTextChild(mdInteger)
+    textNode.setNodeValue(datatypeTemplate.scale)
+
+    #insert spatial accuracy
+    mdSpatialResolution = utils.insertAfterChild(mdDataIdentification, "spatialResolution", ["spatialResolution", "spatialRepresentationType", "aggregationInfo", "resourceConstraints", "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdResolution = utils.getOrCreateChild(mdSpatialResolution, "MD_Resolution")
+    mdDistance = utils.getOrCreateChild(mdResolution, "distance")
+    mdGcoDistance = utils.getOrCreateChild(mdDistance, "gco:Distance")
+    textNode = utils.getOrCreateTextChild(mdGcoDistance)
+    textNode.setNodeValue(datatypeTemplate.accuracy)
+    mdGcoDistance.setAttribute("uom", "M")
+
+    #insert thematic accurancy??????
+
+    return
+
 
   def applyLogFile(self, metaXML):
     # TODO: make more safe

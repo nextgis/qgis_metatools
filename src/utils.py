@@ -37,25 +37,25 @@ import os
 from osgeo import gdal
 
 META_EXT = '.xml'
-PREVIEW_SUFFIX='_preview'
+PREVIEW_SUFFIX = '_preview'
 
 
-def getMetafilePath( layer ):
-  originalFilePath = unicode( layer.source() )
-  originalFileName = os.path.splitext( originalFilePath )
+def getMetafilePath(layer):
+  originalFilePath = unicode(layer.source())
+  originalFileName = os.path.splitext(originalFilePath)
   metaFilePath = originalFileName[ 0 ] + META_EXT
   return metaFilePath
 
-def previewPathFromLayerPath( layerPath ):
-  settings = QSettings( "NextGIS", "metatools" )
-  format = settings.value( "preview/format", QVariant('jpg') ).toString()
+def previewPathFromLayerPath(layerPath):
+  settings = QSettings("NextGIS", "metatools")
+  format = settings.value("preview/format", QVariant('jpg')).toString()
 
-  originalFileName = os.path.splitext( unicode( layerPath ) )
+  originalFileName = os.path.splitext(unicode(layerPath))
   metaFilePath = originalFileName[ 0 ] + PREVIEW_SUFFIX + '.' + format
   return metaFilePath
 
-def mdPathFromLayerPath( layerPath ):
-  originalFileName = os.path.splitext( unicode( layerPath ) )
+def mdPathFromLayerPath(layerPath):
+  originalFileName = os.path.splitext(unicode(layerPath))
   metaFilePath = originalFileName[ 0 ] + META_EXT
   return metaFilePath
 
@@ -69,7 +69,7 @@ def getRasterLayerNames():
       layerList << layer.name()
   return layerList
 
-def getRasterLayerByName( layerName ):
+def getRasterLayerByName(layerName):
   layermap = QgsMapLayerRegistry.instance().mapLayers()
   for name, layer in layermap.iteritems():
     if layer.type() == QgsMapLayer.RasterLayer:
@@ -79,7 +79,7 @@ def getRasterLayerByName( layerName ):
         return layer
   return None
 
-def getRasterLayerByPath( layerPath ):
+def getRasterLayerByPath(layerPath):
   layermap = QgsMapLayerRegistry.instance().mapLayers()
   for name, layer in layermap.iteritems():
     if layer.type() == QgsMapLayer.RasterLayer:
@@ -90,9 +90,9 @@ def getRasterLayerByPath( layerPath ):
   return None
 
 # helper functions for raster metadata
-  
-def getGeneralRasterInfo( path ):
-  raster = gdal.Open(  unicode(path ) )
+
+def getGeneralRasterInfo(path):
+  raster = gdal.Open(unicode(path))
   bands = raster.RasterCount
 
   width = raster.RasterXSize
@@ -108,173 +108,173 @@ def getGeneralRasterInfo( path ):
   yMax = gt[ 3 ]
 
   return bands, [ xMin, yMin, xMax, yMax ]
-  
-def getBandInfo( path, bandNumber ):
-  raster = gdal.Open(  unicode(path ) )
+
+def getBandInfo(path, bandNumber):
+  raster = gdal.Open(unicode(path))
   band = raster.GetRasterBand(bandNumber)
-  
+
   min, max = band.ComputeRasterMinMax()
   if not min:
-    min=0
+    min = 0
   if not max:
-    max=0
-  
-  dataType=band.DataType
-  bytes_in_types = {0: -1, 1:8, 2:16, 3:16, 4: 32, 5: 32, 6: 32, 7:64, 8:16, 9:32, 10:32, 11: 64}
+    max = 0
+
+  dataType = band.DataType
+  bytes_in_types = {0:-1, 1:8, 2:16, 3:16, 4: 32, 5: 32, 6: 32, 7:64, 8:16, 9:32, 10:32, 11: 64}
   dataType = bytes_in_types[dataType]
-  
+
   #QMessageBox.information(QWidget(), "Metatools", "Min: "+str(min)+" Max: "+str(max)+" Dt: "+str(band.DataType) + " Byte: "+str(dataType)) #debug
-  
+
   band = None
-  raster = None 
-  
+  raster = None
+
   return min, max, dataType
-  
+
 
 # helper functions for XML processing
-def createChild( element, childName ):
-  child = element.ownerDocument().createElement( childName )
-  element.appendChild( child )
+def createChild(element, childName):
+  child = element.ownerDocument().createElement(childName)
+  element.appendChild(child)
   return child
 
-def getOrCreateChild( element, childName ):
-  child = element.firstChildElement( childName )
+def getOrCreateChild(element, childName):
+  child = element.firstChildElement(childName)
   if child.isNull():
-    child = element.ownerDocument().createElement( childName )
-    element.appendChild( child )
+    child = element.ownerDocument().createElement(childName)
+    element.appendChild(child)
   return child
 
-def insertAfterChild( element, childName, prevChildsName ):
-  child = element.ownerDocument().createElement( childName )
+def insertAfterChild(element, childName, prevChildsName):
+  child = element.ownerDocument().createElement(childName)
 
   # search previous element
   for elementName in prevChildsName:
-    prevElement = element.firstChildElement( elementName )
+    prevElement = element.lastChildElement (elementName)
     if not prevElement.isNull():
-      element.insertAfter( child, prevElement )
+      element.insertAfter(child, prevElement)
       return child
 
   # if not found, simply append
-  element.appendChild( child )
-  return child  
+  element.appendChild(child)
+  return child
 
-def getOrIsertAfterChild( element, childName, prevChildsName ):
-  child = element.firstChildElement( childName )
+def getOrIsertAfterChild(element, childName, prevChildsName):
+  child = element.firstChildElement(childName)
   if child.isNull():
-    child = element.ownerDocument().createElement( childName )
+    child = element.ownerDocument().createElement(childName)
 
     # search previous element
     for elementName in prevChildsName:
-      prevElement = element.firstChildElement( elementName )
+      prevElement = element.lastChildElement (elementName)
       if not prevElement.isNull():
-        element.insertAfter( child, prevElement )
+        element.insertAfter(child, prevElement)
         return child
 
     # if not found, simply append
-    element.appendChild( child )
+    element.appendChild(child)
   return child
 
-def getOrIsertTopChild( element, childName ):
-  child = element.firstChildElement( childName )
+def getOrIsertTopChild(element, childName):
+  child = element.firstChildElement(childName)
   if child.isNull():
-    child = element.ownerDocument().createElement( childName )
-    element.insertBefore( child, QDomNode() )
+    child = element.ownerDocument().createElement(childName)
+    element.insertBefore(child, QDomNode())
   return child
 
-def getOrCreateTextChild( element ):
-  childTextNode = element.childNodes().at( 0 ) # bad! need full search and type checker
+def getOrCreateTextChild(element):
+  childTextNode = element.childNodes().at(0) # bad! need full search and type checker
   if childTextNode.isNull():
-    childTextNode = element.ownerDocument().createTextNode( "" )
-    element.appendChild( childTextNode )
+    childTextNode = element.ownerDocument().createTextNode("")
+    element.appendChild(childTextNode)
   return childTextNode
 
 # write raster information in metadata
-def writeRasterInfo( dataFile, metadataFile ):
-  f = QFile( metadataFile )
-  f.open( QFile.ReadOnly )
+def writeRasterInfo(dataFile, metadataFile):
+  f = QFile(metadataFile)
+  f.open(QFile.ReadOnly)
   metaXML = QDomDocument()
-  metaXML.setContent( f )
+  metaXML.setContent(f)
   f.close()
-							   
+
   # general raster info
-  bands, extent = getGeneralRasterInfo( dataFile )
+  bands, extent = getGeneralRasterInfo(dataFile)
 
   root = metaXML.documentElement()
 
   # geographic bounding box
-  mdIdentificationInfo = getOrCreateChild( root, "identificationInfo" )
-  mdDataIdentification = getOrCreateChild( mdIdentificationInfo, "MD_DataIdentification" )
-  mdExtent = getOrCreateChild( mdDataIdentification, "extent")
-  mdEXExtent = getOrCreateChild( mdExtent, "EX_Extent" )
-  mdGeorgaphicElement = getOrCreateChild( mdEXExtent, "geographicElement" )
-  mdGeoBbox = getOrCreateChild( mdGeorgaphicElement, "EX_GeographicBoundingBox" )
+  mdIdentificationInfo = getOrCreateChild(root, "identificationInfo")
+  mdDataIdentification = getOrCreateChild(mdIdentificationInfo, "MD_DataIdentification")
+  mdExtent = getOrCreateChild(mdDataIdentification, "extent")
+  mdEXExtent = getOrCreateChild(mdExtent, "EX_Extent")
+  mdGeorgaphicElement = getOrCreateChild(mdEXExtent, "geographicElement")
+  mdGeoBbox = getOrCreateChild(mdGeorgaphicElement, "EX_GeographicBoundingBox")
 
-  mdWestBound = getOrCreateChild( mdGeoBbox, "westBoundLongitude" )
-  mdCharStringElement = getOrCreateChild( mdWestBound, "gco:Decimal" )
-  textNode = getOrCreateTextChild( mdCharStringElement )
-  textNode.setNodeValue( str( extent[ 0 ] ) )
+  mdWestBound = getOrCreateChild(mdGeoBbox, "westBoundLongitude")
+  mdCharStringElement = getOrCreateChild(mdWestBound, "gco:Decimal")
+  textNode = getOrCreateTextChild(mdCharStringElement)
+  textNode.setNodeValue(str(extent[ 0 ]))
 
-  mdEastBound = getOrCreateChild( mdGeoBbox, "eastBoundLongitude" )
-  mdCharStringElement = getOrCreateChild( mdEastBound, "gco:Decimal" )
-  textNode = getOrCreateTextChild( mdCharStringElement )
-  textNode.setNodeValue( str( extent[ 2 ] ) )
+  mdEastBound = getOrCreateChild(mdGeoBbox, "eastBoundLongitude")
+  mdCharStringElement = getOrCreateChild(mdEastBound, "gco:Decimal")
+  textNode = getOrCreateTextChild(mdCharStringElement)
+  textNode.setNodeValue(str(extent[ 2 ]))
 
-  mdSouthBound = getOrCreateChild( mdGeoBbox, "southBoundLatitude" )
-  mdCharStringElement = getOrCreateChild( mdSouthBound, "gco:Decimal" )
-  textNode = getOrCreateTextChild( mdCharStringElement )
-  textNode.setNodeValue( str( extent[ 1 ] ) )
+  mdSouthBound = getOrCreateChild(mdGeoBbox, "southBoundLatitude")
+  mdCharStringElement = getOrCreateChild(mdSouthBound, "gco:Decimal")
+  textNode = getOrCreateTextChild(mdCharStringElement)
+  textNode.setNodeValue(str(extent[ 1 ]))
 
-  mdNorthBound = getOrCreateChild( mdGeoBbox, "northBoundLatitude" )
-  mdCharStringElement = getOrCreateChild( mdNorthBound, "gco:Decimal" )
-  textNode = getOrCreateTextChild( mdCharStringElement )
-  textNode.setNodeValue( str( extent[ 3 ] ) )
+  mdNorthBound = getOrCreateChild(mdGeoBbox, "northBoundLatitude")
+  mdCharStringElement = getOrCreateChild(mdNorthBound, "gco:Decimal")
+  textNode = getOrCreateTextChild(mdCharStringElement)
+  textNode.setNodeValue(str(extent[ 3 ]))
 
   # raster bands
-  mdContentInfo = getOrCreateChild( root, "contentInfo" )
-  mdImageDescription = getOrCreateChild( mdContentInfo, "MD_ImageDescription" )
+  mdContentInfo = getOrCreateChild(root, "contentInfo")
+  mdImageDescription = getOrCreateChild(mdContentInfo, "MD_ImageDescription")
 
   # drop all demensions
-  while not (mdImageDescription.firstChildElement( "dimension" )).isNull():
-    mdImageDescription.removeChild(mdImageDescription.firstChildElement( "dimension" ))
-  
-  
-  mdDimension = insertAfterChild( mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"] ) #profile version
-  
+  while not (mdImageDescription.firstChildElement("dimension")).isNull():
+    mdImageDescription.removeChild(mdImageDescription.firstChildElement("dimension"))
+
+
+  mdDimension = insertAfterChild(mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"]) #profile version
+
   # create new demensions  
-  for bandNumber in range(1,bands+1):
-    min, max, dt=getBandInfo(dataFile, bandNumber)
+  for bandNumber in range(1, bands + 1):
+    min, max, dt = getBandInfo(dataFile, bandNumber)
     #mdDimension = insertAfterChild( mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"] ) #standard version
     #mdBand = getOrCreateChild( mdDimension, "MD_Band") #standard version
     mdBand = createChild(mdDimension, "MD_Band") #profile version
-    mdMaxValue = getOrCreateChild( mdBand, "maxValue")
-    mdGcoReal = getOrCreateChild( mdMaxValue, "gco:Real")
-    textNode = getOrCreateTextChild( mdGcoReal )
-    textNode.setNodeValue( str( max ) )
-    mdMinValue = getOrCreateChild( mdBand, "minValue")
-    mdGcoReal = getOrCreateChild( mdMinValue, "gco:Real")
-    textNode = getOrCreateTextChild( mdGcoReal )
-    textNode.setNodeValue( str( min ) )
-    mdBitsPerValue = getOrCreateChild( mdBand, "bitsPerValue")
-    mdGcoInt = getOrCreateChild( mdBitsPerValue, "gco:Integer")
-    textNode = getOrCreateTextChild( mdGcoInt )
-    textNode.setNodeValue( str( dt ) )
+    mdMaxValue = getOrCreateChild(mdBand, "maxValue")
+    mdGcoReal = getOrCreateChild(mdMaxValue, "gco:Real")
+    textNode = getOrCreateTextChild(mdGcoReal)
+    textNode.setNodeValue(str(max))
+    mdMinValue = getOrCreateChild(mdBand, "minValue")
+    mdGcoReal = getOrCreateChild(mdMinValue, "gco:Real")
+    textNode = getOrCreateTextChild(mdGcoReal)
+    textNode.setNodeValue(str(min))
+    mdBitsPerValue = getOrCreateChild(mdBand, "bitsPerValue")
+    mdGcoInt = getOrCreateChild(mdBitsPerValue, "gco:Integer")
+    textNode = getOrCreateTextChild(mdGcoInt)
+    textNode.setNodeValue(str(dt))
 
-  f = QFile( metadataFile )
-  f.open( QFile.WriteOnly )
-  stream = QTextStream( f )
-  metaXML.save( stream, 2 )
+  f = QFile(metadataFile)
+  f.open(QFile.WriteOnly)
+  stream = QTextStream(f)
+  metaXML.save(stream, 2)
   f.close()
 
-def generatePreview( dataFile ):
+def generatePreview(dataFile):
   # get raster
-  rasterLayer=getRasterLayerByPath(dataFile)
+  rasterLayer = getRasterLayerByPath(dataFile)
   if not rasterLayer:
-      rasterLayer=QgsRasterLayer(dataFile, QString(), True)
+      rasterLayer = QgsRasterLayer(dataFile, QString(), True)
 
   #get size
-  width=512
-  height=int(rasterLayer.height()*width /rasterLayer.width())
-  preview=QPixmap(width, height)
+  width = 512
+  height = int(rasterLayer.height()*width / rasterLayer.width())
+  preview = QPixmap(width, height)
 
   # generate preview
   rasterLayer.thumbnailAsPixmap(preview)
