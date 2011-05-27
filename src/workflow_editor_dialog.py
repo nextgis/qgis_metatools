@@ -146,3 +146,7 @@ class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
     template.description = self.textDescription.toPlainText()
     return template
 
+  def reject(self):
+    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Close the window without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+      return
+    QDialog.reject(self)

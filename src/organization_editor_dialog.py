@@ -173,3 +173,8 @@ class OrganizationEditorDialog(QDialog, Ui_OrganizationEditorDialog):
     template.position = self.lePersonPosition.text()
     template.hours = self.leOfficeHours.text()
     return template
+
+  def reject(self):
+    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Close the window without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+      return
+    QDialog.reject(self)
