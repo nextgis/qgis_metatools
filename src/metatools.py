@@ -147,19 +147,8 @@ class MetatoolsPlugin:
   def layerChanged(self):
     self.layer = self.iface.activeLayer()
 
-    if self.layer is None:
-      return
-
     # check layer type
-    if self.layer.type() == QgsMapLayer.VectorLayer and self.layer.type() != QgsMapLayer.RasterLayer:
-      self.viewAction.setEnabled(False)
-      self.editAction.setEnabled(False)
-      self.layer = None
-      self.metaFilePath = None
-      return
-
-    # check layer DS type (local, DB, service)
-    if self.layer.usesProvider() and self.layer.providerKey() != "gdal":
+    if not self.IsLayerSupport(self.layer):
       self.viewAction.setEnabled(False)
       self.editAction.setEnabled(False)
       self.layer = None
@@ -282,3 +271,32 @@ class MetatoolsPlugin:
         return False
 
     return True
+
+  def IsLayerSupport(self, layer):
+    # Null layers are not supported :)
+    if layer is None:
+      return False
+
+    # Only vector and raster layers are supported now
+    if layer.type() != QgsMapLayer.VectorLayer and layer.type() != QgsMapLayer.RasterLayer:
+      return False
+
+    # Check raster layers  
+    if layer.type() == QgsMapLayer.RasterLayer:
+      # Only gdal-based raster are supported now!
+      if layer.usesProvider() and layer.providerKey() != "gdal":
+        return False
+      # Only file based rasters are supported now
+      if not os.path.exists(unicode(layer.source())):
+        return False
+
+    #Check vector layers
+    if layer.type() == QgsMapLayer.VectorLayer:
+      if layer.providerType() != "ogr":
+        return False
+      if layer.storageType() != "ESRI Shapefile" and layer.storageType() != "MapInfo File":
+        return False
+
+    return True
+
+
