@@ -39,104 +39,108 @@ from workflow_template_manager import WorkflowTemplateManager, WorkflowTemplate
 
 from ui_workflow_editor import Ui_WorkflowEditorDialog
 
-currentPath = os.path.abspath( os.path.dirname( __file__ ) )
+currentPath = os.path.abspath(os.path.dirname(__file__))
 
-class WorkflowEditorDialog( QDialog, Ui_WorkflowEditorDialog ):
-  def __init__( self ):
-    QDialog.__init__( self )
-    self.setupUi( self )
+class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
+  def __init__(self):
+    QDialog.__init__(self)
+    self.setupUi(self)
 
-    self.workflowTemplateManager = WorkflowTemplateManager( currentPath )
+    self.workflowTemplateManager = WorkflowTemplateManager(currentPath)
     self.workflowTemplate = WorkflowTemplate()
 
-    self.btnSave = self.buttonBox.button( QDialogButtonBox.Save )
-    self.btnClose = self.buttonBox.button( QDialogButtonBox.Close )
+    self.btnSave = self.buttonBox.button(QDialogButtonBox.Save)
+    self.btnClose = self.buttonBox.button(QDialogButtonBox.Close)
 
-    QObject.connect( self.btnNew, SIGNAL( "clicked()" ), self.newWorkflow )
-    QObject.connect( self.btnRemove, SIGNAL( "clicked()" ), self.removeWorkflow )
-    QObject.connect( self.leName, SIGNAL( "textEdited( QString )" ), self.templateModified )
-    QObject.connect( self.textDescription, SIGNAL( "textChanged()" ), self.templateModified )
-    QObject.connect( self.cmbWorkflow, SIGNAL( "currentIndexChanged( QString )" ), self.workflowChanged )
+    QObject.connect(self.btnNew, SIGNAL("clicked()"), self.newWorkflow)
+    QObject.connect(self.btnRemove, SIGNAL("clicked()"), self.removeWorkflow)
+    QObject.connect(self.leName, SIGNAL("textEdited( QString )"), self.templateModified)
+    QObject.connect(self.textDescription, SIGNAL("textChanged()"), self.templateModified)
+    QObject.connect(self.cmbWorkflow, SIGNAL("currentIndexChanged( QString )"), self.workflowChanged)
 
-    QObject.disconnect( self.buttonBox, SIGNAL( "accepted()" ), self.accept )
-    QObject.connect( self.btnSave, SIGNAL( "clicked()" ), self.saveTemplate )
+    QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
+    QObject.connect(self.btnSave, SIGNAL("clicked()"), self.saveTemplate)
 
     self.manageGui()
 
-  def manageGui( self ):
-    self.btnSave.setEnabled( False )
+  def manageGui(self):
+    self.btnSave.setEnabled(False)
     self.reloadTemplatesList()
 
-  def reloadTemplatesList( self ):
+  def reloadTemplatesList(self):
     self.cmbWorkflow.clear()
-    self.cmbWorkflow.addItems( self.workflowTemplateManager.getTemplateList() )
+    self.cmbWorkflow.addItems(self.workflowTemplateManager.getTemplateList())
 
-  def newWorkflow( self ):
+  def newWorkflow(self):
     self.clearFormFields()
     self.workflowTemplate = WorkflowTemplate()
-    self.btnSave.setEnabled( True )
+    self.btnSave.setEnabled(True)
 
-  def removeWorkflow( self ):
+  def removeWorkflow(self):
     if self.workflowTemplate.name and self.workflowTemplate.name != "":
-      self.workflowTemplateManager.removeTemplate( self.workflowTemplate.name )
+      self.workflowTemplateManager.removeTemplate(self.workflowTemplate.name)
       self.reloadTemplatesList()
 
     if self.cmbWorkflow.count() == 0:
       self.clearFormFields()
 
   # enable save button when templated edited
-  def templateModified( self ):
-    self.btnSave.setEnabled( True )
+  def templateModified(self):
+    self.btnSave.setEnabled(True)
 
-  def workflowChanged( self ):
+  def workflowChanged(self):
     #QMessageBox.warning( self, "DEBUG", "changed" )
     templateName = self.cmbWorkflow.currentText()
     if templateName.isEmpty():
       return
 
-    self.workflowTemplate = self.workflowTemplateManager.loadTemplate( templateName )
-    self.templateToForm( self.workflowTemplate )
+    self.workflowTemplate = self.workflowTemplateManager.loadTemplate(templateName)
+    self.templateToForm(self.workflowTemplate)
 
-  def saveTemplate( self ):
+    self.btnSave.setEnabled(False)
+
+
+
+  def saveTemplate(self):
     template = self.templateFromForm()
 
     # check template attrs
     if template.name is None or template.name == "":
-      QMessageBox.warning( self, self.tr( "Manage workflows" ), self.tr( "The name of the workflow must be specified!" ) )
+      QMessageBox.warning(self, self.tr("Manage workflows"), self.tr("The name of the workflow must be specified!"))
       return
 
     # try save template
     try:
       # first delete old template
       if self.workflowTemplate.name and self.workflowTemplate.name != "":
-        self.workflowTemplateManager.removeTemplate( self.workflowTemplate.name )
+        self.workflowTemplateManager.removeTemplate(self.workflowTemplate.name)
       # save new version
-      self.workflowTemplateManager.saveTemplate( template )
+      self.workflowTemplateManager.saveTemplate(template)
     except:
-      QMessageBox.warning( self, self.tr( "Manage workflows" ), self.tr( "Template can't be saved: ") + str( sys.exc_info()[ 1 ] ) )
+      QMessageBox.warning(self, self.tr("Manage workflows"), self.tr("Template can't be saved: ") + str(sys.exc_info()[ 1 ]))
       return
 
     # reload form
     self.reloadTemplatesList()
 
     # set combobox item
-    index = self.cmbWorkflow.findText( template.name )
+    index = self.cmbWorkflow.findText(template.name)
     if index != -1:
-      self.cmbWorkflow.setCurrentIndex( index )
+      self.cmbWorkflow.setCurrentIndex(index)
 
-    self.btnSave.setEnabled( False )
+    self.btnSave.setEnabled(False)
 
-  def clearFormFields( self ):
+  def clearFormFields(self):
     self.leName.clear()
     self.textDescription.clear()
 
   # populate form with template data
-  def templateToForm( self, template ):
-    self.leName.setText( template.name or "" )
-    self.textDescription.setPlainText( template.description or "" )
+  def templateToForm(self, template):
+    self.leName.setText(template.name or "")
+    self.textDescription.setPlainText(template.description or "")
 
   # create template from entered values
-  def templateFromForm( self ):
+  def templateFromForm(self):
     template = WorkflowTemplate()
     template.name = self.leName.text()
     template.description = self.textDescription.toPlainText()
