@@ -59,15 +59,21 @@ def mdPathFromLayerPath(layerPath):
   metaFilePath = originalFileName[ 0 ] + META_EXT
   return metaFilePath
 
-def getRasterLayerNames():
+def getSupportedLayerNames():
   layermap = QgsMapLayerRegistry.instance().mapLayers()
   layerList = QStringList()
   for name, layer in layermap.iteritems():
-    if layer.type() == QgsMapLayer.RasterLayer:
-      if layer.usesProvider() and layer.providerKey() != 'gdal':
-        continue
+    if IsLayerSupport(layer):
       layerList << layer.name()
   return layerList
+  
+def getSupportedLayers():
+  layermap = QgsMapLayerRegistry.instance().mapLayers()
+  layers = []
+  for name, layer in layermap.iteritems():
+    if IsLayerSupport(layer):
+      layers.append( (layer.name(), layer.source()) )
+  return layers
 
 def getRasterLayerByName(layerName):
   layermap = QgsMapLayerRegistry.instance().mapLayers()
@@ -92,7 +98,7 @@ def getRasterLayerByPath(layerPath):
 # helper functions for raster metadata
 
 def getGeneralRasterInfo(path):
-  raster = gdal.Open(unicode(path))
+  raster = gdal.Open(unicode(path).encode("utf8"))
   bands = raster.RasterCount
 
   width = raster.RasterXSize
@@ -110,7 +116,7 @@ def getGeneralRasterInfo(path):
   return bands, [ xMin, yMin, xMax, yMax ]
 
 def getBandInfo(path, bandNumber):
-  raster = gdal.Open(unicode(path))
+  raster = gdal.Open(unicode(path).encode("utf8"))
   band = raster.GetRasterBand(bandNumber)
 
   min, max = band.ComputeRasterMinMax()
@@ -195,10 +201,10 @@ def writeRasterInfo(dataFile, metadataFile):
   metaXML = QDomDocument()
   metaXML.setContent(f)
   f.close()
-
+                      
   # general raster info
   bands, extent = getGeneralRasterInfo(dataFile)
-
+  
   root = metaXML.documentElement()
 
   # geographic bounding box
@@ -279,3 +285,31 @@ def generatePreview(dataFile):
   # generate preview
   rasterLayer.thumbnailAsPixmap(preview)
   preview.save(previewPathFromLayerPath(dataFile))
+
+  
+def IsLayerSupport(layer):
+    # Null layers are not supported :)
+    if layer is None:
+      return False
+
+    # Only vector and raster layers are supported now
+    if layer.type() != QgsMapLayer.VectorLayer and layer.type() != QgsMapLayer.RasterLayer:
+      return False
+
+    # Check raster layers  
+    if layer.type() == QgsMapLayer.RasterLayer:
+      # Only gdal-based raster are supported now!
+      if layer.usesProvider() and layer.providerKey() != "gdal":
+        return False
+      # Only file based rasters are supported now
+      if not os.path.exists(unicode(layer.source())):
+        return False
+
+    #Check vector layers
+    if layer.type() == QgsMapLayer.VectorLayer:
+      if layer.providerType() != "ogr":
+        return False
+      if layer.storageType() != "ESRI Shapefile" and layer.storageType() != "MapInfo File":
+        return False
+
+    return True

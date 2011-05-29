@@ -93,8 +93,8 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
   def manageGui(self):
     # populate layer list
-    self.lstLayers.addItems(utils.getRasterLayerNames())
-
+    self.fillLstLayers()
+    
     # populate comboboxes with templates
     self.updateLicenseTemplatesList()
     self.updateWorkflowTemplatesList()
@@ -104,6 +104,15 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     # disable Apply button when there are no layers
     if len(self.layers) == 0:
       self.btnApply.setEnabled(False)
+
+  def fillLstLayers(self):
+    self.lstLayers.clear()
+    layers=utils.getSupportedLayers()
+    for (name, source) in layers:
+        item = QListWidgetItem(name, self.lstLayers)
+        item.setData(Qt.UserRole, source)
+        item.setData(Qt.ToolTipRole, source)
+        
 
   def toggleExternalFiles(self):
     self.btnApply.setEnabled(False)
@@ -115,9 +124,8 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
       self.layers = []
     else:
       #self.lstLayers.setEnabled( True )
-      self.lstLayers.clear()
+      self.fillLstLayers()
       self.lstLayers.setSelectionMode(QAbstractItemView.ExtendedSelection)
-      self.lstLayers.addItems(utils.getRasterLayerNames())
       self.btnSelectDataFiles.setEnabled(False)
       self.updateLayerList()
 
@@ -214,8 +222,8 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     self.layers = []
     selection = self.lstLayers.selectedItems()
     for item in selection:
-      layer = utils.getRasterLayerByName(item.text())
-      self.layers.append(layer.source())
+      layerSource=item.data(Qt.UserRole)
+      self.layers.append(layerSource.toString())
 
     if len(self.layers) != 0:
       self.btnApply.setEnabled(True)
@@ -249,18 +257,20 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
         standard = MetaInfoStandard.tryDetermineStandard(metaFilePath)
         if standard != MetaInfoStandard.ISO19115:
           QMessageBox.warning(self, self.tr("Metatools"),
-                               self.tr("File %1 has unsupported metadata standard! Only ISO19115 supported now!")
-                               .arg(layer))
+                                   self.tr("File %1 has unsupported metadata standard! Only ISO19115 supported now!")
+                                   .arg(layer))
           continue
 
-        # extract image specific information
-        if self.chkUpdateImageInfo.isChecked():
-          utils.writeRasterInfo(layer, metaFilePath)
-
-        # generate preview
-        if self.chkGeneratePreview.isChecked():
+        
+        if os.path.splitext(unicode(layer))[1].lower() not in (".shp", ".mif", ".tab"):
+            # extract image specific information
+            if self.chkUpdateImageInfo.isChecked():
+              utils.writeRasterInfo(layer, metaFilePath)
+            
+            # generate preview
+            if self.chkGeneratePreview.isChecked():
 		      utils.generatePreview(layer)
-
+        
         # load metadata file
         file = QFile(metaFilePath)
         metaXML = QDomDocument()
