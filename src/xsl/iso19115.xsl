@@ -107,13 +107,20 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
       </xsl:call-template>
 </table>
  
-
-  <xsl:apply-templates select="./gmd:contact"/>
+<xsl:apply-templates select="./gmd:contact"/>
 </div> 
 
-		<!-- Identification block -->
-  		<xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification"/>
-  		<xsl:apply-templates select="./gmd:distributionInfo/gmd:MD_Distribution"/>
+<!-- Identification block -->
+<xsl:apply-templates select="./gmd:identificationInfo/gmd:MD_DataIdentification"/>
+
+<!--  Distribution -->
+<xsl:apply-templates select="./gmd:distributionInfo/gmd:MD_Distribution"/>
+
+<!-- ContentInfo -->
+<xsl:apply-templates select="./gmd:contentInfo"/>
+
+<!--  DataQuality -->
+<xsl:apply-templates select="./gmd:dataQualityInfo/gmd:DQ_DataQuality"/>
   		
    </body>
  </html>
@@ -215,14 +222,139 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
       <xsl:apply-templates select="./gmd:abstract"/>
       </td>
       </tr>
+      
+      <!-- Keywords  -->
+      <xsl:choose>
+      <xsl:when test="./gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword">
+      <tr>
+      <td class="meta-param">Keywords:</td>
+        <td class="meta-value">
+            <xsl:apply-templates select="./gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword"/>
+        </td>
+      </tr>  
+      </xsl:when>
+      <xsl:otherwise>
+      </xsl:otherwise>
+    </xsl:choose>
+      
+     <!--  Spatial repres --> 
+      <xsl:call-template name="tablerow">
+      <xsl:with-param name="cname" select="'Spatial representation type'"/>
+      <xsl:with-param name="cvalue" select="./gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode"/>
+      </xsl:call-template>
+      
+      <!-- Spatial scale -->
+      <xsl:choose>
+      <xsl:when test="./gmd:spatialResolution/gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer">
+      <tr>
+      <td class="meta-param">Spatial scale:</td>
+        <td class="meta-value">
+            1:<xsl:apply-templates select="./gmd:spatialResolution/gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer"/>
+        </td>
+      </tr>  
+      </xsl:when>
+          <xsl:otherwise>
+        </xsl:otherwise>
+      </xsl:choose>
+      
+      <!-- Spatial accuracy -->
+      <xsl:choose>
+      <xsl:when test="./gmd:spatialResolution/gmd:MD_Resolution/gmd:distance/gco:Distance">
+      <tr>
+      <td class="meta-param">Spatial accuracy:</td>
+        <td class="meta-value">
+            <xsl:apply-templates select="./gmd:spatialResolution/gmd:MD_Resolution/gmd:distance/gco:Distance"/>
+            <xsl:apply-templates select="./gmd:spatialResolution/gmd:MD_Resolution/gmd:distance/gco:Distance/@uom"/>
+        </td>
+      </tr>  
+      </xsl:when>
+          <xsl:otherwise>
+        </xsl:otherwise>
+      </xsl:choose>
+      
+     
+      
 </table>
-    <!-- License info block -->
-    <xsl:apply-templates select="./gmd:resourceConstraints/gmd:MD_LegalConstraints"/>
-    <xsl:apply-templates select="./gmd:extent"/>
-    <xsl:apply-templates select="./gmd:pointOfContact"/>
+            <!-- License info block -->
+            <xsl:apply-templates select="./gmd:resourceConstraints/gmd:MD_LegalConstraints"/>
+            <xsl:apply-templates select="./gmd:extent"/>
+            <xsl:apply-templates select="./gmd:pointOfContact"/>
+</div>
+
+</xsl:template>
+
+<!-- 'dataQualityInfo block -->
+<xsl:template match="gmd:DQ_DataQuality">
+<div class="captioneddiv">
+<h3>Data quality info</h3>
+<table class="meta"><tr></tr>
+        <xsl:call-template name="tablerow">
+            <xsl:with-param name="cname" select="'Scope'"/>
+            <xsl:with-param name="cvalue" select="./gmd:scope/gmd:DQ_Scope/gmd:level/gmd:MD_ScopeCode"/>
+        </xsl:call-template>
+        <xsl:call-template name="tablerow">
+            <xsl:with-param name="cname" select="'Statement'"/>
+            <xsl:with-param name="cvalue" select="./gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString"/>
+        </xsl:call-template>
+        <xsl:call-template name="tablerow">
+            <xsl:with-param name="cname" select="'Process info'"/>
+            <xsl:with-param name="cvalue" select="./gmd:lineage/gmd:LI_Lineage/gmd:processStep/gmd:LI_ProcessStep/gmd:description/gco:CharacterString"/>
+        </xsl:call-template>
+
+</table>
+</div>
+
+</xsl:template>
+ 
+
+<!-- 'dataQualityInfo block -->
+<xsl:template match="gmd:contentInfo">
+<div class="captioneddiv">
+<h3>Content information</h3>
+    <!-- Raster info -->
+    <xsl:apply-templates select="./gmd:MD_ImageDescription"/>
+    <!-- Vector info -->
 </div>
 </xsl:template>
 
+<xsl:template match="gmd:MD_ImageDescription">
+<table class="meta"><tr></tr>
+    <xsl:call-template name="tablerow">
+      <xsl:with-param name="cname" select="'Content type'"/>
+      <xsl:with-param name="cvalue" select="./gmd:contentType/gmd:MD_CoverageContentTypeCode"/>
+    </xsl:call-template>
+    <tr>
+    <td class="meta-param">Bands:</td>
+    <td class="meta-value">    
+       <xsl:apply-templates select="./gmd:dimension/gmd:MD_Band"/>
+    </td>
+    </tr>
+</table>
+</xsl:template>
+
+
+<!-- Band info -->
+<xsl:template match="gmd:MD_Band">
+<div class="captioneddiv">
+<table >
+          <xsl:call-template name="tablerow">
+          <xsl:with-param name="cname" select="'Min value'"/>
+          <xsl:with-param name="cvalue" select="./gmd:minValue/gco:Real"/>
+          </xsl:call-template>
+
+          <xsl:call-template name="tablerow">
+          <xsl:with-param name="cname" select="'Max value'"/>
+          <xsl:with-param name="cvalue" select="./gmd:maxValue/gco:Real"/>
+          </xsl:call-template>
+          
+          <xsl:call-template name="tablerow">
+          <xsl:with-param name="cname" select="'Bits per value'"/>
+          <xsl:with-param name="cvalue" select="./gmd:bitsPerValue/gco:Integer"/>
+          </xsl:call-template>              
+</table> 
+</div>
+</xsl:template>
+ 
 
  <!-- 'License info' block -->
   <xsl:template match="gmd:MD_LegalConstraints">
