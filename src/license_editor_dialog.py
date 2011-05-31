@@ -65,25 +65,29 @@ class LicenseEditorDialog(QDialog, Ui_LicenseEditorDialog):
     self.manageGui()
 
   def manageGui(self):
-    self.btnSave.setEnabled(False)
+    self.btnRemove.setEnabled(False)
     self.reloadTemplatesList()
+    self.btnSave.setEnabled(False)
 
   def reloadTemplatesList(self):
     self.cmbLicense.clear()
     self.cmbLicense.addItems(self.licenseTemplateManager.getTemplateList())
 
   def newLicense(self):
+    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Create new template without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+      return
     self.clearFormFields()
     self.licenseTemplate = LicenseTemplate()
-    self.btnSave.setEnabled(True)
+    self.btnSave.setEnabled(False)
 
   def removeLicense(self):
-    if self.licenseTemplate.name and self.licenseTemplate.name != "":
+    if self.licenseTemplate.name:
       self.licenseTemplateManager.removeTemplate(self.licenseTemplate.name)
       self.reloadTemplatesList()
 
     if self.cmbLicense.count() == 0:
       self.clearFormFields()
+      self.btnSave.setEnabled(False)
 
   # enable save button when template edited
   def templateModified(self):
@@ -92,12 +96,14 @@ class LicenseEditorDialog(QDialog, Ui_LicenseEditorDialog):
   def licenseChanged(self):
     templateName = self.cmbLicense.currentText()
     if templateName.isEmpty():
+      self.licenseTemplate = LicenseTemplate()
+      self.btnRemove.setEnabled(False)
       return
 
     self.licenseTemplate = self.licenseTemplateManager.loadTemplate(templateName)
     self.templateToForm(self.licenseTemplate)
-
     self.btnSave.setEnabled(False)
+    self.btnRemove.setEnabled(True)
 
   def saveTemplate(self):
     template = self.templateFromForm()

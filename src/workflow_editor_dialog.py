@@ -64,25 +64,29 @@ class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
     self.manageGui()
 
   def manageGui(self):
-    self.btnSave.setEnabled(False)
+    self.btnRemove.setEnabled(False)
     self.reloadTemplatesList()
+    self.btnSave.setEnabled(False)
 
   def reloadTemplatesList(self):
     self.cmbWorkflow.clear()
     self.cmbWorkflow.addItems(self.workflowTemplateManager.getTemplateList())
 
   def newWorkflow(self):
+    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Create new template without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+      return
     self.clearFormFields()
     self.workflowTemplate = WorkflowTemplate()
-    self.btnSave.setEnabled(True)
+    self.btnSave.setEnabled(False)
 
   def removeWorkflow(self):
-    if self.workflowTemplate.name and self.workflowTemplate.name != "":
+    if self.workflowTemplate.name:
       self.workflowTemplateManager.removeTemplate(self.workflowTemplate.name)
       self.reloadTemplatesList()
 
     if self.cmbWorkflow.count() == 0:
       self.clearFormFields()
+      self.btnSave.setEnabled(False)
 
   # enable save button when templated edited
   def templateModified(self):
@@ -92,12 +96,15 @@ class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
     #QMessageBox.warning( self, "DEBUG", "changed" )
     templateName = self.cmbWorkflow.currentText()
     if templateName.isEmpty():
+      self.workflowTemplate = WorkflowTemplate()
+      self.btnRemove.setEnabled(False)
       return
 
     self.workflowTemplate = self.workflowTemplateManager.loadTemplate(templateName)
     self.templateToForm(self.workflowTemplate)
-
     self.btnSave.setEnabled(False)
+    self.btnRemove.setEnabled(True)
+
 
 
 

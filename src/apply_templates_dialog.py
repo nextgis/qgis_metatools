@@ -94,7 +94,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
   def manageGui(self):
     # populate layer list
     self.fillLstLayers()
-    
+
     # populate comboboxes with templates
     self.updateLicenseTemplatesList()
     self.updateWorkflowTemplatesList()
@@ -107,12 +107,12 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
   def fillLstLayers(self):
     self.lstLayers.clear()
-    layers=utils.getSupportedLayers()
+    layers = utils.getSupportedLayers()
     for (name, source) in layers:
         item = QListWidgetItem(name, self.lstLayers)
         item.setData(Qt.UserRole, source)
         item.setData(Qt.ToolTipRole, source)
-        
+
 
   def toggleExternalFiles(self):
     self.btnApply.setEnabled(False)
@@ -222,7 +222,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     self.layers = []
     selection = self.lstLayers.selectedItems()
     for item in selection:
-      layerSource=item.data(Qt.UserRole)
+      layerSource = item.data(Qt.UserRole)
       self.layers.append(layerSource.toString())
 
     if len(self.layers) != 0:
@@ -261,16 +261,20 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
                                    .arg(layer))
           continue
 
-        
+
         if os.path.splitext(unicode(layer))[1].lower() not in (".shp", ".mif", ".tab"):
             # extract image specific information
             if self.chkUpdateImageInfo.isChecked():
               utils.writeRasterInfo(layer, metaFilePath)
-            
+
             # generate preview
             if self.chkGeneratePreview.isChecked():
-		      utils.generatePreview(layer)
-        
+		          utils.generatePreview(layer)
+        else:
+            if self.chkUpdateImageInfo.isChecked():
+              utils.writeVectorInfo(layer, metaFilePath)
+
+
         # load metadata file
         file = QFile(metaFilePath)
         metaXML = QDomDocument()

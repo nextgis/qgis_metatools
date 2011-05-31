@@ -77,19 +77,23 @@ class OrganizationEditorDialog(QDialog, Ui_OrganizationEditorDialog):
     self.manageGui()
 
   def manageGui(self):
-    self.btnSave.setEnabled(False)
+    self.btnRemove.setEnabled(False)
     self.reloadTemplatesList()
+    self.btnSave.setEnabled(False)
 
   def reloadTemplatesList(self):
     self.cmbOrganization.clear()
     self.cmbOrganization.addItems(self.orgTemplateManager.tempalateNames())
 
   def newOrganization(self):
+    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Create new template without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+      return
     self.clearFormFields()
     self.orgTemplate = OrganizationTemplate()
-    self.btnSave.setEnabled(True)
+    self.btnSave.setEnabled(False)
 
   def removeOrganization(self):
+
     self.orgTemplateManager.removeTemplate(self.cmbOrganization.currentText())
     self.reloadTemplatesList()
 
@@ -103,11 +107,14 @@ class OrganizationEditorDialog(QDialog, Ui_OrganizationEditorDialog):
   def organizationChanged(self):
     templateName = self.cmbOrganization.currentText()
     if templateName.isEmpty():
+      self.orgTemplate = OrganizationTemplate()
+      self.btnRemove.setEnabled(False)
       return
 
     self.orgTemplate = self.orgTemplateManager.organizations[ templateName ]
     self.templateToForm(self.orgTemplate)
     self.btnSave.setEnabled(False)
+    self.btnRemove.setEnabled(True)
 
   def saveTemplate(self):
     template = self.templateFromForm()

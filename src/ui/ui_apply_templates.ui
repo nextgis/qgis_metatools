@@ -154,7 +154,7 @@
       <item row="6" column="0" colspan="3">
        <widget class="QCheckBox" name="chkUpdateImageInfo">
         <property name="text">
-         <string>Extract image parameters to metadata XML</string>
+         <string>Extract layer parameters to metadata XML</string>
         </property>
        </widget>
       </item>

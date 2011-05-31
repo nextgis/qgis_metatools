@@ -34,7 +34,7 @@ from qgis.gui import *
 
 import os
 
-from osgeo import gdal
+from osgeo import gdal, ogr, osr
 
 META_EXT = '.xml'
 PREVIEW_SUFFIX = '_preview'
@@ -66,13 +66,13 @@ def getSupportedLayerNames():
     if IsLayerSupport(layer):
       layerList << layer.name()
   return layerList
-  
+
 def getSupportedLayers():
   layermap = QgsMapLayerRegistry.instance().mapLayers()
   layers = []
   for name, layer in layermap.iteritems():
     if IsLayerSupport(layer):
-      layers.append( (layer.name(), layer.source()) )
+      layers.append((layer.name(), layer.source()))
   return layers
 
 def getRasterLayerByName(layerName):
@@ -135,6 +135,34 @@ def getBandInfo(path, bandNumber):
   raster = None
 
   return min, max, dataType
+
+# helper functions for vector metadata
+def getGeneralVectorInfo(path):
+  ogrDataSource = ogr.Open(unicode(path).encode("utf8"))
+  layer = ogrDataSource[0]
+
+  #get extent and layer SR
+  xMin, xMax, yMin, yMax = layer.GetExtent()
+  layerSR = layer.GetSpatialRef()
+
+  #create wgs84 SR
+  wgsSR = osr.SpatialReference()
+  wgsSR.ImportFromEPSG(4326)
+
+  #transform coord if needed
+  if not wgsSR.IsSame(layerSR):
+    transform = osr.CoordinateTransformation(layerSR, wgsSR)
+    coord = transform.TransformPoints([(xMin, yMin), (xMax, yMax) ])
+    xMin = coord[0][0]
+    yMin = coord[0][1]
+    xMax = coord[1][0]
+    yMax = coord[1][1]
+    transform = None
+
+  layer = None
+  ogrDataSource = None
+
+  return [ xMin, yMin, xMax, yMax ]
 
 
 # helper functions for XML processing
@@ -201,10 +229,10 @@ def writeRasterInfo(dataFile, metadataFile):
   metaXML = QDomDocument()
   metaXML.setContent(f)
   f.close()
-                      
+
   # general raster info
   bands, extent = getGeneralRasterInfo(dataFile)
-  
+
   root = metaXML.documentElement()
 
   # geographic bounding box
@@ -271,6 +299,55 @@ def writeRasterInfo(dataFile, metadataFile):
   metaXML.save(stream, 2)
   f.close()
 
+# write raster information in metadata
+def writeVectorInfo(dataFile, metadataFile):
+  f = QFile(metadataFile)
+  f.open(QFile.ReadOnly)
+  metaXML = QDomDocument()
+  metaXML.setContent(f)
+  f.close()
+
+  # general raster info
+  extent = getGeneralVectorInfo(dataFile)
+
+  root = metaXML.documentElement()
+
+  # geographic bounding box
+  mdIdentificationInfo = getOrCreateChild(root, "identificationInfo")
+  mdDataIdentification = getOrCreateChild(mdIdentificationInfo, "MD_DataIdentification")
+  mdExtent = getOrCreateChild(mdDataIdentification, "extent")
+  mdEXExtent = getOrCreateChild(mdExtent, "EX_Extent")
+  mdGeorgaphicElement = getOrCreateChild(mdEXExtent, "geographicElement")
+  mdGeoBbox = getOrCreateChild(mdGeorgaphicElement, "EX_GeographicBoundingBox")
+
+  mdWestBound = getOrCreateChild(mdGeoBbox, "westBoundLongitude")
+  mdCharStringElement = getOrCreateChild(mdWestBound, "gco:Decimal")
+  textNode = getOrCreateTextChild(mdCharStringElement)
+  textNode.setNodeValue(str(extent[ 0 ]))
+
+  mdEastBound = getOrCreateChild(mdGeoBbox, "eastBoundLongitude")
+  mdCharStringElement = getOrCreateChild(mdEastBound, "gco:Decimal")
+  textNode = getOrCreateTextChild(mdCharStringElement)
+  textNode.setNodeValue(str(extent[ 2 ]))
+
+  mdSouthBound = getOrCreateChild(mdGeoBbox, "southBoundLatitude")
+  mdCharStringElement = getOrCreateChild(mdSouthBound, "gco:Decimal")
+  textNode = getOrCreateTextChild(mdCharStringElement)
+  textNode.setNodeValue(str(extent[ 1 ]))
+
+  mdNorthBound = getOrCreateChild(mdGeoBbox, "northBoundLatitude")
+  mdCharStringElement = getOrCreateChild(mdNorthBound, "gco:Decimal")
+  textNode = getOrCreateTextChild(mdCharStringElement)
+  textNode.setNodeValue(str(extent[ 3 ]))
+
+
+  f = QFile(metadataFile)
+  f.open(QFile.WriteOnly)
+  stream = QTextStream(f)
+  metaXML.save(stream, 2)
+  f.close()
+
+
 def generatePreview(dataFile):
   # get raster
   rasterLayer = getRasterLayerByPath(dataFile)
@@ -286,7 +363,7 @@ def generatePreview(dataFile):
   rasterLayer.thumbnailAsPixmap(preview)
   preview.save(previewPathFromLayerPath(dataFile))
 
-  
+
 def IsLayerSupport(layer):
     # Null layers are not supported :)
     if layer is None:

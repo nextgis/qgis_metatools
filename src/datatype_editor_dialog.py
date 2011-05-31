@@ -80,6 +80,7 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
     self.manageGui()
 
   def manageGui(self):
+    self.btnRemove.setEnabled(False)
     self.reloadTemplatesList()
     self.btnSave.setEnabled(False)
 
@@ -88,9 +89,11 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
     self.cmbDatatype.addItems(self.datatypeTemplateManager.getTemplateList())
 
   def newDatatype(self):
+    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Create new template without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+      return
     self.clearFormFields()
     self.datatypeTemplate = DatatypeTemplate()
-    self.btnSave.setEnabled(True)
+    self.btnSave.setEnabled(False)
 
   def removeDatatype(self):
     if self.datatypeTemplate.name:
@@ -99,6 +102,7 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
 
     if self.cmbDatatype.count() == 0:
       self.clearFormFields()
+      self.btnSave.setEnabled(False)
 
   # enable save button when template edited
   def templateModified(self):
@@ -107,11 +111,14 @@ class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
   def datatypeChanged(self):
     templateName = self.cmbDatatype.currentText()
     if templateName.isEmpty():
+      self.datatypeTemplate = DatatypeTemplate()
+      self.btnRemove.setEnabled(False)
       return
 
     self.datatypeTemplate = self.datatypeTemplateManager.loadTemplate(templateName)
     self.templateToForm(self.datatypeTemplate)
     self.btnSave.setEnabled(False)
+    self.btnRemove.setEnabled(True)
 
   def saveTemplate(self):
     template = self.templateFromForm()

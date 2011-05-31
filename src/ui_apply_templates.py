@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './ui_apply_templates.ui'
+# Form implementation generated from reading ui file 'ui_apply_templates.ui'
 #
-# Created: Wed May 25 19:46:36 2011
+# Created: Tue May 31 14:24:31 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -118,7 +118,7 @@ class Ui_ApplyTemplatesDialog(object):
         self.btnManageWorkflows.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Manage", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Log file", None, QtGui.QApplication.UnicodeUTF8))
         self.btnSelectLogFile.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.chkUpdateImageInfo.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Extract image parameters to metadata XML", None, QtGui.QApplication.UnicodeUTF8))
+        self.chkUpdateImageInfo.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Extract layer parameters to metadata XML", None, QtGui.QApplication.UnicodeUTF8))
         self.chkGeneratePreview.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Generate preview image", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "DataType", None, QtGui.QApplication.UnicodeUTF8))
         self.btnManageDatatypes.setText(QtGui.QApplication.translate("ApplyTemplatesDialog", "Manage", None, QtGui.QApplication.UnicodeUTF8))

@@ -323,12 +323,20 @@ http://gdsc.nlr.nl/gdsc/en/tools/excat
       <xsl:with-param name="cname" select="'Content type'"/>
       <xsl:with-param name="cvalue" select="./gmd:contentType/gmd:MD_CoverageContentTypeCode"/>
     </xsl:call-template>
-    <tr>
-    <td class="meta-param">Bands:</td>
-    <td class="meta-value">    
-       <xsl:apply-templates select="./gmd:dimension/gmd:MD_Band"/>
-    </td>
-    </tr>
+    
+    <xsl:choose>
+      <xsl:when test="./gmd:dimension/gmd:MD_Band">
+      <tr>
+      <td class="meta-param">Bands:</td>
+        <td class="meta-value">    
+            <xsl:apply-templates select="./gmd:dimension/gmd:MD_Band"/>
+        </td>   
+      </tr>  
+      </xsl:when>
+          <xsl:otherwise>
+        </xsl:otherwise>
+      </xsl:choose>
+
 </table>
 </xsl:template>
 
