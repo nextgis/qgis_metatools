@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-mVersion = "0.1.1"
+mVersion = "0.1.4"
 
 #******************************************************************************
 #
@@ -24,7 +24,6 @@ mVersion = "0.1.1"
 # at <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by writing
 # to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 # MA 02111-1307, USA.
-#
 #
 #******************************************************************************
 
