@@ -19,7 +19,7 @@ mVersion = "0.1.0"
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
 # details.
-#  
+#
 # A copy of the GNU General Public License is available on the World Wide Web
 # at <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by writing
 # to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
