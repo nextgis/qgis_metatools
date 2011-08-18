@@ -298,7 +298,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
       self.layers = []
       self.btnApply.setEnabled(False)
     except:
-      QMessageBox.warning(self, self.tr("Metatools"), self.tr("Operation can't be complited: ") + str(sys.exc_info()[ 1 ]))
+      QMessageBox.warning(self, self.tr("Metatools"), self.tr("Operation can't be completed: ") + str(sys.exc_info()[ 1 ]))
 
   # ----------- Appliers -----------
 
