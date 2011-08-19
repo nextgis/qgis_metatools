@@ -142,15 +142,15 @@ def getGeneralVectorInfo(path):
   layer = ogrDataSource[0]
 
   #get extent and layer SR
-  xMin, xMax, yMin, yMax = layer.GetExtent()
+  (xMin, xMax, yMin, yMax) = layer.GetExtent()
   layerSR = layer.GetSpatialRef()
 
   #create wgs84 SR
   wgsSR = osr.SpatialReference()
   wgsSR.ImportFromEPSG(4326)
 
-  #transform coord if needed
-  if not wgsSR.IsSame(layerSR):
+  #transform coord if layer CRS is defined otherwise assume WGS84
+  if ( layerSR is not None ) and ( not wgsSR.IsSame(layerSR) ):
     transform = osr.CoordinateTransformation(layerSR, wgsSR)
     coord = transform.TransformPoints([(xMin, yMin), (xMax, yMax) ])
     xMin = coord[0][0]
@@ -274,7 +274,7 @@ def writeRasterInfo(dataFile, metadataFile):
 
   mdDimension = insertAfterChild(mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"]) #profile version
 
-  # create new demensions  
+  # create new demensions
   for bandNumber in range(1, bands + 1):
     min, max, dt = getBandInfo(dataFile, bandNumber)
     #mdDimension = insertAfterChild( mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"] ) #standard version
@@ -373,7 +373,7 @@ def IsLayerSupport(layer):
     if layer.type() != QgsMapLayer.VectorLayer and layer.type() != QgsMapLayer.RasterLayer:
       return False
 
-    # Check raster layers  
+    # Check raster layers
     if layer.type() == QgsMapLayer.RasterLayer:
       # Only gdal-based raster are supported now!
       if layer.usesProvider() and layer.providerKey() != "gdal":
