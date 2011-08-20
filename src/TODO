@@ -1,0 +1,5 @@
+TODO
+* generate previews for vector data
+* save last used dirs for opened files
+* implement schema validation
+* add publish functionality i.e. a CSW Insert
