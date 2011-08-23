@@ -45,6 +45,7 @@ currentPath = os.path.abspath(os.path.dirname(__file__))
 class MetatoolsPlugin:
   def __init__(self, iface):
     self.iface = iface
+    self.loadingCanceled = False
 
     try:
       self.QgisVersion = unicode(QGis.QGIS_VERSION_INT)
@@ -77,8 +78,16 @@ class MetatoolsPlugin:
   def initGui(self):
     if int(self.QgisVersion) < 10500:
       QMessageBox.warning(self.iface.mainWindow(), "Metatools",
-                           QCoreApplication.translate("Metatools", "Quantum GIS version detected: %1.%2\n").arg(self.QgisVersion[ 0 ]).arg(self.QgisVersion[ 2 ]) +
-                           QCoreApplication.translate("Metatools", "This version of Metatools requires at least QGIS version 1.5.0\nPlugin will not be enabled."))
+                          QCoreApplication.translate("Metatools", "Quantum GIS version detected: %1.%2\n").arg(self.QgisVersion[ 0 ]).arg(self.QgisVersion[ 2 ]) +
+                          QCoreApplication.translate("Metatools", "This version of Metatools requires at least QGIS version 1.5.0\nPlugin will not be enabled."))
+      self.loadingCanceled = True
+      return None
+
+    if qVersion() < minQtVersion:
+      QMessageBox.warning(self.iface.mainWindow(), "Metatools",
+                          QCoreApplication.translate("Metatools", "Qt version detected: %1\n").arg(qVersion()) +
+                          QCoreApplication.translate("Metatools", "This version of Metatools requires at least Qt version %1\nPlugin will not be enabled.").arg(minQtVersion))
+      self.loadingCanceled = True
       return None
 
     # create editAction that will start metadata editor
@@ -133,6 +142,9 @@ class MetatoolsPlugin:
     self.layerChanged()
 
   def unload(self):
+    if self.loadingCanceled:
+      return
+
     # disconnect signals
     QObject.disconnect(self.iface, SIGNAL("currentLayerChanged( QgsMapLayer* )"), self.layerChanged)
 
@@ -163,15 +175,14 @@ class MetatoolsPlugin:
     self.editAction.setEnabled(True)
 
   def doEdit(self):
-    from metatoolseditor import MetatoolsEditor #tests
     try:
       from metatoolseditor import MetatoolsEditor
     except:
       QMessageBox.critical(self.iface.mainWindow(),
                             QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Plugin can't be loaded: Qt version must be higher than %1!\nCurrently running: %2")
-                            .arg(minQtVersion)
-                            .arg(qVersion()))
+                            QCoreApplication.translate("Metatools", "Editor can't be loaded: %1 %2!")
+                            .arg(unicode(sys.exc_info()[0]))
+                            .arg(unicode(sys.exc_info()[1])))
       return
 
     # check if metadata file exists
@@ -196,9 +207,9 @@ class MetatoolsPlugin:
     except:
       QMessageBox.critical(self.iface.mainWindow(),
                             QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Plugin can't be loaded: Qt version must be higher than %1!\nCurrently running: %2")
-                            .arg(minQtVersion)
-                            .arg(qVersion()))
+                            QCoreApplication.translate("Metatools", "Viewer can't be loaded: %1 %2!")
+                            .arg(unicode(sys.exc_info()[0]))
+                            .arg(unicode(sys.exc_info()[1])))
       return
 
     # check if metadata file exists
@@ -224,15 +235,14 @@ class MetatoolsPlugin:
     dlg.exec_()
 
   def doApplyTemplates(self):
-#    from apply_templates_dialog import ApplyTemplatesDialog
     try:
       from apply_templates_dialog import ApplyTemplatesDialog
     except ImportError:
       QMessageBox.critical(self.iface.mainWindow(),
                             QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Plugin can't be loaded: Qt version must be higher than %1! Currently running: %2")
-                            .arg(minQtVersion)
-                            .arg(qVersion()))
+                            QCoreApplication.translate("Metatools", "Applyer can't be loaded: %1 %2!")
+                            .arg(unicode(sys.exc_info()[0]))
+                            .arg(unicode(sys.exc_info()[1])))
       return
 
     dlg = ApplyTemplatesDialog(self.iface)
