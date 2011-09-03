@@ -41,7 +41,7 @@ from datatype_template_manager import DatatypeTemplateManager, DatatypeTemplate
 
 currentPath = os.path.abspath(os.path.dirname(__file__))
 
-class DatatypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
+class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
   def __init__(self):
     QDialog.__init__(self)
     self.setupUi(self)

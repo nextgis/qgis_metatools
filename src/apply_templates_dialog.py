@@ -44,7 +44,7 @@ from workflow_template_manager import WorkflowTemplateManager
 from organization_editor_dialog import OrganizationEditorDialog
 from organization_template_manager import OrganizationTemplateManager
 
-from datatype_editor_dialog import DatatypeEditorDialog
+from datatype_editor_dialog import DataTypeEditorDialog
 from datatype_template_manager import DatatypeTemplateManager
 
 from ui_apply_templates import Ui_ApplyTemplatesDialog
@@ -155,7 +155,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
   def manageDatatypes(self):
     oldValue = self.cmbDatatype.currentText()
 
-    dlg = DatatypeEditorDialog()
+    dlg = DataTypeEditorDialog()
     dlg.exec_()
 
     self.updateDatatypesTemplatesList()

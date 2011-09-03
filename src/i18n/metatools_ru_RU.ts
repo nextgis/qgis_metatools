@@ -137,9 +137,9 @@
 <context>
     <name>DataTypeEditorDialog</name>
     <message>
-        <location filename="ui/ui_datatype_editor.ui" line="14"/>
+        <location filename="datatype_editor_dialog.py" line="139"/>
         <source>Manage data types</source>
-        <translation>Управление типом данных</translation>
+        <translation>Управление шаблонами типов данных</translation>
     </message>
     <message>
         <location filename="ui/ui_datatype_editor.ui" line="25"/>
@@ -159,7 +159,7 @@
     <message>
         <location filename="ui/ui_datatype_editor.ui" line="50"/>
         <source>Name</source>
-        <translation>Имя</translation>
+        <translation>Название</translation>
     </message>
     <message>
         <location filename="ui/ui_datatype_editor.ui" line="60"/>
@@ -196,9 +196,6 @@
         <source>Edit</source>
         <translation>Редактировать</translation>
     </message>
-</context>
-<context>
-    <name>DatatypeEditorDialog</name>
     <message>
         <location filename="datatype_editor_dialog.py" line="222"/>
         <source>Metatools</source>
@@ -208,11 +205,6 @@
         <location filename="datatype_editor_dialog.py" line="92"/>
         <source>Template contains unsaved data. Create new template without saving?</source>
         <translation>Текущий шаблон содержит несохраненные данные. Создать новый шаблон без сохранения изменений?</translation>
-    </message>
-    <message>
-        <location filename="datatype_editor_dialog.py" line="139"/>
-        <source>Manage data types</source>
-        <translation>Управление типом данных</translation>
     </message>
     <message>
         <location filename="datatype_editor_dialog.py" line="128"/>
@@ -253,6 +245,64 @@
         <location filename="datatype_editor_dialog.py" line="222"/>
         <source>Remove this keyword?</source>
         <translation>Удалить это ключевое слово?</translation>
+    </message>
+</context>
+<context>
+    <name>DatatypeEditorDialog</name>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="222"/>
+        <source>Metatools</source>
+        <translation type="obsolete">Metatools</translation>
+    </message>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="92"/>
+        <source>Template contains unsaved data. Create new template without saving?</source>
+        <translation type="obsolete">Текущий шаблон содержит несохраненные данные. Создать новый шаблон без сохранения изменений?</translation>
+    </message>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="139"/>
+        <source>Manage data types</source>
+        <translation type="obsolete">Управление типом данных</translation>
+    </message>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="128"/>
+        <source>The name of the data type template must be specified!</source>
+        <translation type="obsolete">Необходимо указать название шаблона типа данных!</translation>
+    </message>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="139"/>
+        <source>Template can&apos;t be saved: </source>
+        <translation type="obsolete">Невозможно сохранить шаблон: </translation>
+    </message>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="153"/>
+        <source>Template contains unsaved data. Close the window without saving?</source>
+        <translation type="obsolete">Шаблон содержит несохраненные данные. Закрыть окно без сохранения?</translation>
+    </message>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="211"/>
+        <source>New keyword</source>
+        <translation type="obsolete">Новое ключевое слово</translation>
+    </message>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="211"/>
+        <source>Input keyword:</source>
+        <translation type="obsolete">Введите ключевое слово:</translation>
+    </message>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="209"/>
+        <source>Select keyword for edit</source>
+        <translation type="obsolete">Выберите ключевое слов для редактирования</translation>
+    </message>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="219"/>
+        <source>Select keyword for remove</source>
+        <translation type="obsolete">Выберите ключевое слово для удаления</translation>
+    </message>
+    <message>
+        <location filename="datatype_editor_dialog.py" line="222"/>
+        <source>Remove this keyword?</source>
+        <translation type="obsolete">Удалить это ключевое слово?</translation>
     </message>
 </context>
 <context>
@@ -323,7 +373,7 @@
     <message>
         <location filename="ui/ui_license_editor.ui" line="47"/>
         <source>Name</source>
-        <translation>Имя</translation>
+        <translation>Название</translation>
     </message>
     <message>
         <location filename="ui/ui_license_editor.ui" line="57"/>
@@ -434,7 +484,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="metatools.py" line="275"/>
         <source>Metadata file can&apos;t be created: </source>
-        <translation>Файл метаданых не может быть создан: </translation>
+        <translation>Невозможно создать файл метаданых: </translation>
     </message>
     <message>
         <location filename="apply_templates_dialog.py" line="65"/>
@@ -463,7 +513,7 @@ Plugin will not be enabled.</source>
         <location filename="metatoolseditor.py" line="210"/>
         <source>Metadata file can&apos;t be saved:
 </source>
-        <translation>Не возможно сохранить файл метаданых: </translation>
+        <translation>Невозможно сохранить файл метаданых: </translation>
     </message>
     <message>
         <location filename="metatoolseditor.py" line="223"/>
@@ -473,7 +523,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="metatoolseditor.py" line="223"/>
         <source>Can&apos;t open file %1</source>
-        <translation>Не возможно открыть файл %1</translation>
+        <translation>Невозможно открыть файл %1</translation>
     </message>
     <message>
         <location filename="ui/ui_editor.ui" line="14"/>
@@ -493,7 +543,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="ui/ui_editor.ui" line="44"/>
         <source>To set filtered view please check sample.txt in the filter directory for the filtering format and point to it at the plugin settings page.</source>
-        <translation>Для активации режима отображения избранных полей, ознакомьтесь с файлом sample.txt, чтобы разобраться с форматом записи фильтров и укажите файл фильтра в настройках модуля.</translation>
+        <translation>Для активации режима отображения избранных полей, ознакомьтесь с файлом sample.txt из каталога filter, чтобы разобраться с форматом записи фильтров и укажите файл фильтра в настройках модуля.</translation>
     </message>
     <message>
         <location filename="ui/ui_editor.ui" line="88"/>
@@ -574,7 +624,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="ui/ui_settings.ui" line="105"/>
         <source>Default profile</source>
-        <translation>Профиль по-умолчанию</translation>
+        <translation>Профиль по умолчанию</translation>
     </message>
 </context>
 <context>
@@ -640,7 +690,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="ui/ui_organization_editor.ui" line="63"/>
         <source>Delivery point</source>
-        <translation>Почтовый индекс</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="ui/ui_organization_editor.ui" line="73"/>
@@ -670,7 +720,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="ui/ui_organization_editor.ui" line="122"/>
         <source>Individual name</source>
-        <translation type="unfinished"></translation>
+        <translation>Ф.И.О.</translation>
     </message>
     <message>
         <location filename="ui/ui_organization_editor.ui" line="132"/>
@@ -680,7 +730,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="ui/ui_organization_editor.ui" line="142"/>
         <source>Person position</source>
-        <translation type="unfinished"></translation>
+        <translation>Должность</translation>
     </message>
     <message>
         <location filename="ui/ui_organization_editor.ui" line="155"/>
@@ -753,7 +803,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="ui/ui_workflow_editor.ui" line="50"/>
         <source>Name</source>
-        <translation>Имя</translation>
+        <translation>Название</translation>
     </message>
     <message>
         <location filename="ui/ui_workflow_editor.ui" line="60"/>
