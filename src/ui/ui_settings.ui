@@ -66,12 +66,31 @@
           <item row="0" column="1">
            <widget class="QComboBox" name="cmbImgFormat">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
            </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Default profile</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="defaultProfileLabel">
+            <property name="text">
+             <string>Select profile</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="defaultProfileComboBox"/>
           </item>
          </layout>
         </widget>
@@ -96,18 +115,32 @@
        <string>ISO 19115</string>
       </attribute>
       <layout class="QFormLayout" name="formLayout">
-       <property name="fieldGrowthPolicy">
-        <enum>QFormLayout::ExpandingFieldsGrow</enum>
-       </property>
        <item row="0" column="0">
-        <widget class="QLabel" name="defaultProfileLabel">
+        <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Default profile</string>
+          <string>View stylesheet</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QComboBox" name="defaultProfileComboBox"/>
+        <widget class="QComboBox" name="cmbIsoViewStylesheet"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="fgdcTab">
+      <attribute name="title">
+       <string>FGDC</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_4">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>View stylesheet</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="cmbFgdcViewStylesheet"/>
        </item>
       </layout>
      </widget>

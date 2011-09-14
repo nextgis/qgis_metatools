@@ -6,6 +6,7 @@
 # ---------------------------------------------------------
 # Metadata browser/editor
 #
+# Copyright (C) 2011 BV (enickulin@bv.com)
 # Copyright (C) 2011 NextGIS (info@nextgis.ru)
 #
 # This source is free software; you can redistribute it and/or modify it under
@@ -26,17 +27,19 @@
 #******************************************************************************
 
 class MetaInfoStandard:
-  UNKNOWN, ISO19115, FGDC, DC=range( 4 )
+  UNKNOWN, ISO19115, FGDC, DC = range(4)
 
   @staticmethod
-  def tryDetermineStandard( metaFilePath ):
-    metaFile = open( metaFilePath, "r" )
-    text  = metaFile.read()
-    metaFile.close()
+  def tryDetermineStandard(metaProvider):
+    text = metaProvider.getMetadata()
 
     # simple test for iso doc
-    if text.find( "MD_Metadata" ) >= 0 or text.find( "MI_Metadata" ) >= 0:
+    if text.find("MD_Metadata") >= 0 or text.find("MI_Metadata") >= 0:
         return MetaInfoStandard.ISO19115
 
-    # only iso support now
+    # simple test for fgdc doc
+    if text.find("idinfo") >= 0 and text.find("metainfo") >= 0:
+        return MetaInfoStandard.FGDC
+
+    # only iso and fgdc support now
     return MetaInfoStandard.UNKNOWN

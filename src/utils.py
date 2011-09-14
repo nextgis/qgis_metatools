@@ -5,7 +5,7 @@
 # Metatools
 # ---------------------------------------------------------
 # Metadata browser/editor
-#
+# Copyright (C) 2011 BV (enickulin@bv.com)
 # Copyright (C) 2011 NextGIS (info@nextgis.ru)
 #
 # This source is free software; you can redistribute it and/or modify it under
@@ -36,14 +36,18 @@ import os
 
 from osgeo import gdal, ogr, osr
 
+from metadata_provider import MetadataProvider
+
 META_EXT = '.xml'
 PREVIEW_SUFFIX = '_preview'
 
 
 def getMetafilePath(layer):
+  #not standard implementation in original plugin
   originalFilePath = unicode(layer.source())
-  originalFileName = os.path.splitext(originalFilePath)
-  metaFilePath = originalFileName[ 0 ] + META_EXT
+  #originalFileName = os.path.splitext(originalFilePath)
+  #metaFilePath = originalFileName[ 0 ] + META_EXT
+  metaFilePath = originalFilePath + META_EXT
   return metaFilePath
 
 def previewPathFromLayerPath(layerPath):
@@ -55,15 +59,17 @@ def previewPathFromLayerPath(layerPath):
   return metaFilePath
 
 def mdPathFromLayerPath(layerPath):
-  originalFileName = os.path.splitext(unicode(layerPath))
-  metaFilePath = originalFileName[ 0 ] + META_EXT
+  #not standard implementation in original plugin
+  #originalFileName = os.path.splitext(unicode(layerPath))
+  #metaFilePath = originalFileName[ 0 ] + META_EXT
+  metaFilePath = layerPath + META_EXT
   return metaFilePath
 
 def getSupportedLayerNames():
   layermap = QgsMapLayerRegistry.instance().mapLayers()
   layerList = QStringList()
   for name, layer in layermap.iteritems():
-    if IsLayerSupport(layer):
+    if MetadataProvider.IsLayerSupport(layer)[0]:
       layerList << layer.name()
   return layerList
 
@@ -71,7 +77,7 @@ def getSupportedLayers():
   layermap = QgsMapLayerRegistry.instance().mapLayers()
   layers = []
   for name, layer in layermap.iteritems():
-    if IsLayerSupport(layer):
+    if MetadataProvider.IsLayerSupport(layer)[0]:
       layers.append((layer.name(), layer.source()))
   return layers
 
@@ -362,31 +368,3 @@ def generatePreview(dataFile):
   # generate preview
   rasterLayer.thumbnailAsPixmap(preview)
   preview.save(previewPathFromLayerPath(dataFile))
-
-
-def IsLayerSupport(layer):
-    # Null layers are not supported :)
-    if layer is None:
-      return False
-
-    # Only vector and raster layers are supported now
-    if layer.type() != QgsMapLayer.VectorLayer and layer.type() != QgsMapLayer.RasterLayer:
-      return False
-
-    # Check raster layers
-    if layer.type() == QgsMapLayer.RasterLayer:
-      # Only gdal-based raster are supported now!
-      if layer.usesProvider() and layer.providerKey() != "gdal":
-        return False
-      # Only file based rasters are supported now
-      if not os.path.exists(unicode(layer.source())):
-        return False
-
-    #Check vector layers
-    if layer.type() == QgsMapLayer.VectorLayer:
-      if layer.providerType() != "ogr":
-        return False
-      if layer.storageType() != "ESRI Shapefile" and layer.storageType() != "MapInfo File":
-        return False
-
-    return True

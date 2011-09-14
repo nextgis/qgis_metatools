@@ -6,6 +6,7 @@
 # ---------------------------------------------------------
 # Metadata browser/editor
 #
+# Copyright (C) 2011 BV (enickulin@bv.com)
 # Copyright (C) 2011 NextGIS (info@nextgis.ru)
 #
 # This source is free software; you can redistribute it and/or modify it under
@@ -34,51 +35,95 @@ from qgis.core import *
 from qgis.gui import *
 
 from ui_viewer import Ui_MetatoolsViewer
+from error_handler import ErrorHandler
 
-# need this for debug
-class Handler( QAbstractMessageHandler ):
-  def handleMessage( self, msg_type, desc, identifier, loc ):
-    QMessageBox.information( None, "Error", desc + " " + identifier.toString() + " " + QString( str( loc.line() ) ) )
 
-class MetatoolsViewer( QDialog, Ui_MetatoolsViewer ):
-  def __init__( self ):
-    QDialog.__init__( self )
-    self.setupUi( self )
+class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
+  def __init__(self):
+    QDialog.__init__(self)
+    self.setupUi(self)
+    self.setWindowFlags( Qt.Window | Qt.WindowMaximizeButtonHint )
+    
+    #set browser context menu
+    self.webView.setContextMenuPolicy(Qt.CustomContextMenu)
+    self.webView.customContextMenuRequested.connect(self.openMenu)
+    self.contextMenu=QMenu()
+    self.connect(self.actionCopy, SIGNAL("activated()"), self.slotCopy)
+    self.connect(self.actionPrint, SIGNAL("activated()"), self.slotPrint)
+    self.connect(self.actionCopyAll, SIGNAL("activated()"), self.slotCopyAll)
+    
 
-  def setContent( self, metaFilePath, xsltFilePath ):
-    xsltFile = QFile( xsltFilePath )
-    srcFile = QFile( metaFilePath )
+  def openMenu(self, position):
+    self.contextMenu.clear()
+    if self.webView.selectedText():
+      self.contextMenu.addAction(self.actionCopy)
+      self.contextMenu.addSeparator()
+    self.contextMenu.addAction(self.actionPrint)
+    self.contextMenu.addAction(self.actionCopyAll)
+    
+    self.contextMenu.exec_(self.webView.mapToGlobal(position))
+    
+        
+  def slotPrint(self):
+    printer = QPrinter()
+    dialog = QPrintDialog(printer)
+    if dialog.exec_() == QDialog.Accepted:
+      self.webView.print_(printer)
+  
+  def slotCopyAll(self):
+    mimeData=QMimeData()
+    mimeData.setHtml(self.webView.page().mainFrame().toHtml())
+    mimeData.setText(self.webView.page().mainFrame().toPlainText())
+    clipboard = QApplication.clipboard()
+    clipboard.setMimeData(mimeData)
+  
+  def slotCopy(self):
+    if self.webView.selectedText():
+      clipboard = QApplication.clipboard()
+      clipboard.setText(self.webView.selectedText())
 
-    xsltFile.open( QIODevice.ReadOnly )
-    srcFile.open( QIODevice.ReadOnly )
-
-    xslt = QString( xsltFile.readAll() )
-    src = QString( srcFile.readAll() )
-
+  def setContent(self, metaProvider, xsltFilePath):
+    # load data
+    xsltFile = QFile(xsltFilePath)
+    xsltFile.open(QIODevice.ReadOnly)
+    xslt = QString(xsltFile.readAll())
     xsltFile.close()
-    srcFile.close()
 
-    qry = QXmlQuery( QXmlQuery.XSLT20 )
+    src = metaProvider.getMetadata()
 
-    self.handler = Handler();
-    qry.setMessageHandler( self.handler )
+    # translate
+    qry = QXmlQuery(QXmlQuery.XSLT20)
 
-    qry.setFocus( src )
-    qry.setQuery( xslt )
+    self.handler = ErrorHandler(self.tr("Translation error"))
+    qry.setMessageHandler(self.handler)
+
+    qry.setFocus(src)
+    qry.setQuery(xslt)
 
     #if qry.isValid():
     #  QMessageBox.information( self, "Valid", "Valid!" )
     #else:
     #  QMessageBox.information( self, "Valid", "Invalid!" )
 
-
-	#result = qry.evaluateToString()
-	#workaround, for PyQt < 4.8
-    array = QByteArray() 
+    #result = qry.evaluateToString()
+	  #workaround, for PyQt < 4.8
+    array = QByteArray()
     buf = QBuffer(array)
     buf.open(QIODevice.WriteOnly)
     qry.evaluateTo(buf)
-    result = QString.fromUtf8(array) 
-	
+    result = QString.fromUtf8(array)
+
     if result:
-      self.webView.setHtml( QString.fromUtf8( result ) )
+      #QXmlPattern not support CDATA section
+      result = result.replace('&amp;', '&')
+      result = result.replace('&gt;', '>')
+      result = result.replace('&lt;', '<')
+
+      self.webView.setHtml(result) # QString.fromUtf8(result))
+      return True
+    else:
+      return False
+
+  def setHtml(self, html):
+    self.webView.setHtml(html)
+

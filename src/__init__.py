@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-mVersion = "0.1.14"
-
 #******************************************************************************
 #
 # Metatools
 # ---------------------------------------------------------
 # Metadata browser/editor
 #
+# Copyright (C) 2011 BV (enickulin@bv.com)
 # Copyright (C) 2011 NextGIS (info@nextgis.ru)
 #
 # This source is free software; you can redistribute it and/or modify it under
@@ -27,21 +26,25 @@ mVersion = "0.1.14"
 #
 #******************************************************************************
 
+mVersion = "0.2.0"
+mName = "Metatools"
+mDesc = "Metadata browser/editor"
+
 def name():
-  return "Metatools"
+  return mName
 
 def description():
-  return "Metadata browser/editor"
+  return mDesc
 
 def version():
   return mVersion
 
 def icon():
-  return "icons/view.png"
+  return "icons/metafile.png"
 
 def qgisMinimumVersion():
   return "1.5"
 
 def classFactory(iface):
   from metatools import MetatoolsPlugin
-  return MetatoolsPlugin( iface )
+  return MetatoolsPlugin(iface)

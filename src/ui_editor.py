@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './ui_editor.ui'
+# Form implementation generated from reading ui file './ui/ui_editor.ui'
 #
-# Created: Mon Apr 11 00:42:27 2011
+# Created: Wed Aug 10 17:39:47 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,6 +18,7 @@ class Ui_MetatoolsEditor(object):
     def setupUi(self, MetatoolsEditor):
         MetatoolsEditor.setObjectName(_fromUtf8("MetatoolsEditor"))
         MetatoolsEditor.resize(800, 600)
+        MetatoolsEditor.setSizeGripEnabled(True)
         self.verticalLayout = QtGui.QVBoxLayout(MetatoolsEditor)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.splitter = QtGui.QSplitter(MetatoolsEditor)
@@ -84,6 +85,11 @@ class Ui_MetatoolsEditor(object):
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Close|QtGui.QDialogButtonBox.Save)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.verticalLayout.addWidget(self.buttonBox)
+        self.actionCopyPath = QtGui.QAction(MetatoolsEditor)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/metatools/icons/menu_copy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionCopyPath.setIcon(icon)
+        self.actionCopyPath.setObjectName(_fromUtf8("actionCopyPath"))
 
         self.retranslateUi(MetatoolsEditor)
         self.tabWidget.setCurrentIndex(0)
@@ -100,4 +106,7 @@ class Ui_MetatoolsEditor(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("MetatoolsEditor", "Filtered view", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("MetatoolsEditor", "Edit value", None, QtGui.QApplication.UnicodeUTF8))
         self.lblNodePath.setText(QtGui.QApplication.translate("MetatoolsEditor", "TextLabel", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCopyPath.setText(QtGui.QApplication.translate("MetatoolsEditor", "Copy path", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCopyPath.setToolTip(QtGui.QApplication.translate("MetatoolsEditor", "Copy node path to clipboard", None, QtGui.QApplication.UnicodeUTF8))
 
+import resources_rc

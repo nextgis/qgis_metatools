@@ -1,9 +1,15 @@
 <RCC>
-    <qresource prefix="/plugins/metatools" >
-        <file>icons/icon.png</file>
-        <file>icons/edit.png</file>
-        <file>icons/settings.png</file>
-        <file>icons/templates.png</file>
-        <file>icons/view.png</file>
-    </qresource>
+  <qresource prefix="/plugins/metatools">
+    <file>icons/edit.png</file>
+    <file>icons/menu_copy.png</file>
+    <file>icons/menu_print.png</file>
+    <file>icons/settings.png</file>
+    <file>icons/templates.png</file>
+    <file>icons/view.png</file>
+    <file>icons/check.png</file>
+    <file>icons/usgs.png</file>
+    <file>icons/usgs_check.png</file>
+    <file>icons/import.png</file>
+    <file>icons/export.png</file>
+  </qresource>
 </RCC>

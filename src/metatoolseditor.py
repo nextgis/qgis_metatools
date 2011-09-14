@@ -6,6 +6,7 @@
 # ---------------------------------------------------------
 # Metadata browser/editor
 #
+# Copyright (C) 2011 BV (enickulin@bv.com)
 # Copyright (C) 2011 NextGIS (info@nextgis.ru)
 #
 # This source is free software; you can redistribute it and/or modify it under
@@ -39,62 +40,73 @@ import utils
 
 from ui_editor import Ui_MetatoolsEditor
 
-class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
-  def __init__( self ):
-    QDialog.__init__( self )
-    self.setupUi( self )
+class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
+  def __init__(self):
+    QDialog.__init__(self)
+    self.setupUi(self)
+    self.setWindowFlags( Qt.Window | Qt.WindowMaximizeButtonHint )
 
-    self.tabWidget.setCurrentIndex( 0 )
-    self.lblNodePath.setText( "" )
+    self.tabWidget.setCurrentIndex(0)
+    self.lblNodePath.setText("")
 
-    self.btnSave = self.buttonBox.button( QDialogButtonBox.Save )
-    self.btnClose = self.buttonBox.button( QDialogButtonBox.Close )
+    self.btnSave = self.buttonBox.button(QDialogButtonBox.Save)
+    self.btnClose = self.buttonBox.button(QDialogButtonBox.Close)
 
-    self.btnApply = QPushButton( self.tr( "Apply" ) )
-    self.btnDiscard = QPushButton( self.tr( "Discard" ) )
+    self.btnApply = QPushButton(self.tr("Apply"))
+    self.btnDiscard = QPushButton(self.tr("Discard"))
     self.editorButtonBox.clear()
-    self.editorButtonBox.addButton( self.btnApply, QDialogButtonBox.AcceptRole )
-    self.editorButtonBox.addButton( self.btnDiscard, QDialogButtonBox.RejectRole )
-
+    self.editorButtonBox.addButton(self.btnApply, QDialogButtonBox.AcceptRole)
+    self.editorButtonBox.addButton(self.btnDiscard, QDialogButtonBox.RejectRole)
+    
+    #contextmenu
+    self.lblNodePath.setContextMenuPolicy(Qt.ActionsContextMenu)
+    self.lblNodePath.addAction(self.actionCopyPath)
+    self.connect(self.actionCopyPath, SIGNAL("activated()"), self.slotCopyPath)
+    
     # full metadata view
-    QObject.connect( self.treeFull, SIGNAL( "clicked( QModelIndex )" ), self.itemSelected )
-    QObject.connect( self.treeFull, SIGNAL( "collapsed( QModelIndex )" ), self.collapsedExpanded )
-    QObject.connect( self.treeFull, SIGNAL( "expanded( QModelIndex )" ), self.collapsedExpanded )
-    
+    QObject.connect(self.treeFull, SIGNAL("clicked( QModelIndex )"), self.itemSelected)
+    QObject.connect(self.treeFull, SIGNAL("collapsed( QModelIndex )"), self.collapsedExpanded)
+    QObject.connect(self.treeFull, SIGNAL("expanded( QModelIndex )"), self.collapsedExpanded)
+
     # filtered metadata view
-    QObject.connect( self.tbwFiltered, SIGNAL( "currentCellChanged ( int , int , int, int )" ), self.cellSelected )
- 
-    QObject.connect( self.textValue, SIGNAL( "textChanged()" ), self.valueModified )
-    QObject.connect( self.tabWidget, SIGNAL( "currentChanged( int )" ), self.tabChanged )
+    QObject.connect(self.tbwFiltered, SIGNAL("currentCellChanged ( int , int , int, int )"), self.cellSelected)
 
-    QObject.connect( self.btnApply, SIGNAL( "clicked()" ), self.applyEdits )
-    QObject.connect( self.btnDiscard, SIGNAL( "clicked()" ), self.resetEdits )
+    QObject.connect(self.textValue, SIGNAL("textChanged()"), self.valueModified)
+    QObject.connect(self.tabWidget, SIGNAL("currentChanged( int )"), self.tabChanged)
 
-    QObject.disconnect( self.buttonBox, SIGNAL( "accepted()" ), self.accept )
-    QObject.connect( self.btnSave, SIGNAL( "clicked()" ), self.saveMetadata )
+    QObject.connect(self.btnApply, SIGNAL("clicked()"), self.applyEdits)
+    QObject.connect(self.btnDiscard, SIGNAL("clicked()"), self.resetEdits)
 
-  def setContent( self, metaFilePath ):
-    self.metaFilePath = metaFilePath
+    QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
+    QObject.connect(self.btnSave, SIGNAL("clicked()"), self.saveMetadata)
     
+  def slotCopyPath(self):
+    QApplication.clipboard().setText(self.lblNodePath.text())
+  
+
+  def setContent(self, metaProvider):
+    self.metaProvider = metaProvider
+
     # load main model
-    self.file = QFile( metaFilePath )
+    #self.file = QFile( metaFilePath )
     self.metaXML = QDomDocument()
-    self.metaXML.setContent( self.file )
-    self.model = DomModel( self.metaXML, self )
-    
+    metadata = self.metaProvider.getMetadata().encode("utf-8")
+    self.metaXML.setContent(metadata)
+    self.model = DomModel(self.metaXML, self)
+
     # set full view
-    self.treeFull.setModel( self.model )
-    self.treeFull.hideColumn( 1 ) # hide attrs
-    self.treeFull.resizeColumnToContents( 0 ) # resize value column
-    
+    self.treeFull.setModel(self.model)
+    self.treeFull.hideColumn(1) # hide attrs
+    self.treeFull.resizeColumnToContents(0) # resize value column
+
     # load filtered list 
-    self.filteredIndexes=None # lazy init
+    self.filteredIndexes = None # lazy init
     # set filtered view
     #self.fillTableWidget()
 
-    self.btnSave.setEnabled( False )
+    self.btnSave.setEnabled(False)
 
-  def itemSelected( self, mindex ):
+  def itemSelected(self, mindex):
     # Display item selected in TreeView in edit box.
     self.textValue.clear()
 
@@ -103,52 +115,52 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
     self.text = QVariant()
 
    # full view
-    self.mindex = self.model.index( mindex.row(), 2, mindex.parent() )
-    path = self.model.nodePath( self.mindex )
-    editable = self.model.isEditable( self.mindex )
-    self.text = self.model.data( self.mindex, 0 )
-    
-    self.lblNodePath.setText( path )
+    self.mindex = self.model.index(mindex.row(), 2, mindex.parent())
+    path = self.model.nodePath(self.mindex)
+    editable = self.model.isEditable(self.mindex)
+    self.text = self.model.data(self.mindex, 0)
+
+    self.lblNodePath.setText(path)
     if editable:
-      self.textValue.setPlainText( self.text.toString() )
-      self.groupBox.setEnabled( True )
-      self.editorButtonBox.setEnabled( False )
+      self.textValue.setPlainText(self.text.toString())
+      self.groupBox.setEnabled(True)
+      self.editorButtonBox.setEnabled(False)
     else:
       self.textValue.clear()
-      self.groupBox.setEnabled( False )
-      
-  def cellSelected( self, currentRow, currentColumn, previousRow, previousColumn  ):
+      self.groupBox.setEnabled(False)
+
+  def cellSelected(self, currentRow, currentColumn, previousRow, previousColumn):
     # Display item selected in TableWidget in edit box.
     self.textValue.clear()
 
     path = ""
     editable = False
     self.text = QVariant()
-    
-    self.mindex = self.filteredIndexes[currentRow][1]
-    path = self.model.nodePath( self.mindex ) 
-    editable = self.model.isEditable( self.mindex )
-    self.text = self.model.data( self.mindex, 0 )
 
-    self.lblNodePath.setText( path )
+    self.mindex = self.filteredIndexes[currentRow][1]
+    path = self.model.nodePath(self.mindex)
+    editable = self.model.isEditable(self.mindex)
+    self.text = self.model.data(self.mindex, 0)
+
+    self.lblNodePath.setText(path)
     if editable:
-      self.textValue.setPlainText( self.text.toString() )
-      self.groupBox.setEnabled( True )
-      self.editorButtonBox.setEnabled( False )
+      self.textValue.setPlainText(self.text.toString())
+      self.groupBox.setEnabled(True)
+      self.editorButtonBox.setEnabled(False)
     else:
       self.textValue.clear()
-      self.groupBox.setEnabled( False )
+      self.groupBox.setEnabled(False)
 
-  def collapsedExpanded( self, mindex ):
+  def collapsedExpanded(self, mindex):
     if self.tabWidget.currentIndex() == 0:
-      self.treeFull.resizeColumnToContents( 0 )
+      self.treeFull.resizeColumnToContents(0)
     else:
-      self.tbwFiltered.resizeColumnToContents( 0 )
+      self.tbwFiltered.resizeColumnToContents(0)
 
-  def valueModified( self ):
-    self.editorButtonBox.setEnabled( True )
+  def valueModified(self):
+    self.editorButtonBox.setEnabled(True)
 
-  def tabChanged( self, tab ):
+  def tabChanged(self, tab):
     self.textValue.clear()
 
     path = ""
@@ -157,98 +169,96 @@ class MetatoolsEditor( QDialog, Ui_MetatoolsEditor ):
 
     if tab == 0:
       mindex = self.treeFull.currentIndex()
-      self.mindex = self.model.index( mindex.row(), 2, mindex.parent() )
-      path = self.model.nodePath( self.mindex )
-      editable = self.model.isEditable( self.mindex )
-      self.text = self.model.data( self.mindex, 0 )
+      self.mindex = self.model.index(mindex.row(), 2, mindex.parent())
+      path = self.model.nodePath(self.mindex)
+      editable = self.model.isEditable(self.mindex)
+      self.text = self.model.data(self.mindex, 0)
     else:
       # lazy init
       if not self.filteredIndexes:
         filter = self.loadFilter()
-        self.filteredIndexes=self.searchNodes(self.model, filter)
+        self.filteredIndexes = self.searchNodes(self.model, filter)
         self.tbwFiltered.horizontalHeader().setVisible(True) # pyuic4 bug
         self.tbwFiltered.setRowCount(len(self.filteredIndexes))
       # refresh table
       self.fillTableWidget()
       # refresh selection
-      selectedItems=self.tbwFiltered.selectedItems()
+      selectedItems = self.tbwFiltered.selectedItems()
       if len(selectedItems):
           self.mindex = self.filteredIndexes[selectedItems[0].row()][1]
-          path = self.model.nodePath( self.mindex ) 
-          editable = self.model.isEditable( self.mindex )
-          self.text = self.model.data( self.mindex, 0 )
+          path = self.model.nodePath(self.mindex)
+          editable = self.model.isEditable(self.mindex)
+          self.text = self.model.data(self.mindex, 0)
 
-    self.lblNodePath.setText( path )
+    self.lblNodePath.setText(path)
     if editable:
-      self.textValue.setPlainText( self.text.toString() )
-      self.groupBox.setEnabled( True )
-      self.editorButtonBox.setEnabled( False )
+      self.textValue.setPlainText(self.text.toString())
+      self.groupBox.setEnabled(True)
+      self.editorButtonBox.setEnabled(False)
     else:
       self.textValue.clear()
-      self.groupBox.setEnabled( False )
+      self.groupBox.setEnabled(False)
 
-  def applyEdits( self ):
-    self.model.setData( self.mindex, self.textValue.toPlainText() )
-    self.text = self.model.data( self.mindex, 0 )
-    self.btnSave.setEnabled( True )
-    self.editorButtonBox.setEnabled( False )
+  def applyEdits(self):
+    self.model.setData(self.mindex, self.textValue.toPlainText())
+    self.text = self.model.data(self.mindex, 0)
+    self.btnSave.setEnabled(True)
+    self.editorButtonBox.setEnabled(False)
     if self.tabWidget.currentIndex() != 0:
         self.fillTableWidget()
 
-  def resetEdits( self ):
-    self.textValue.setPlainText( self.text.toString() )
-    self.editorButtonBox.setEnabled( False )
+  def resetEdits(self):
+    self.textValue.setPlainText(self.text.toString())
+    self.editorButtonBox.setEnabled(False)
 
-  def saveMetadata( self ):
+  def saveMetadata(self):
     try:
-      metafile = codecs.open( self.metaFilePath, "w", encoding="utf-8" )
-      metafile.write( unicode( self.metaXML.toString().toUtf8(), "utf-8" ) )
-      metafile.close()
+      self.metaProvider.setMetadata(unicode(self.metaXML.toString().toUtf8(), "utf-8"))
       # TODO: create preview image if need
-      self.btnSave.setEnabled( False )
+      self.btnSave.setEnabled(False)
     except:
-      QMessageBox.warning(self, self.tr( "Metatools" ), self.tr( "Metadata file can't be saved:\n" ) + str( sys.exc_info()[ 0 ] ) )
+      QMessageBox.warning(self, self.tr("Metatools"), self.tr("Metadata can't be saved:\n") + str(sys.exc_info()[ 0 ]))
 
-  def loadFilter( self ):
-    settings = QSettings( "NextGIS", "metatools" )
-    fileName = settings.value( "general/filterFile", QVariant() ).toString()
+  def loadFilter(self):
+    settings = QSettings("NextGIS", "metatools")
+    fileName = settings.value("general/filterFile", QVariant()).toString()
 
     if fileName.isEmpty():
       return []
 
     # read filter from file
     filter = []
-    f = QFile( fileName )
-    if not f.open( QIODevice.ReadOnly ):
-      QMessageBox.warning( self, self.tr( 'I/O error' ), self.tr( "Can't open file %1" ).arg( fileName ) )
+    f = QFile(fileName)
+    if not f.open(QIODevice.ReadOnly):
+      QMessageBox.warning(self, self.tr('I/O error'), self.tr("Can't open file %1").arg(fileName))
       return []
 
-    stream = QTextStream( f )
+    stream = QTextStream(f)
     while not stream.atEnd():
       line = stream.readLine()
-      filter.append( line )
+      filter.append(line)
     f.close()
 
     return filter
 
   def searchNodes(self, model, filters):
-    allItemsIndexes= model.match(model.index(0,0,QModelIndex()),  Qt.DisplayRole, '*', -1, Qt.MatchWildcard | Qt.MatchRecursive)
-    searchedItems=[]
+    allItemsIndexes = model.match(model.index(0, 0, QModelIndex()), Qt.DisplayRole, '*', -1, Qt.MatchWildcard | Qt.MatchRecursive)
+    searchedItems = []
     for itemIndex in allItemsIndexes:
       if self.model.nodePath(itemIndex) in filters:
-        valueItemIndex=self.model.index(0,2,itemIndex.parent())
+        valueItemIndex = self.model.index(0, 2, itemIndex.parent())
         if not self.model.isEditable(itemIndex) and self.model.hasOneGco(itemIndex) :
-            valueItemIndex=self.model.index(0,2,itemIndex) 
+            valueItemIndex = self.model.index(0, 2, itemIndex)
         searchedItems.append([itemIndex, valueItemIndex])
     return searchedItems
-    
+
   def fillTableWidget(self):
-      row=0
+      row = 0
       for nameItemIndex, valueItemIndex in self.filteredIndexes:
-          name=self.model.data(nameItemIndex, Qt.DisplayRole).toString()
-          value=self.model.data(valueItemIndex, Qt.DisplayRole).toString()
-          self.tbwFiltered.setItem(row,0,QTableWidgetItem(name))
-          self.tbwFiltered.setItem(row,1,QTableWidgetItem(value))
-          row+=1
-      
-      self.tbwFiltered.resizeColumnToContents( 0 )
+          name = self.model.data(nameItemIndex, Qt.DisplayRole).toString()
+          value = self.model.data(valueItemIndex, Qt.DisplayRole).toString()
+          self.tbwFiltered.setItem(row, 0, QTableWidgetItem(name))
+          self.tbwFiltered.setItem(row, 1, QTableWidgetItem(value))
+          row += 1
+
+      self.tbwFiltered.resizeColumnToContents(0)

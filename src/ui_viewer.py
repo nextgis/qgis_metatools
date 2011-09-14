@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_viewer.ui'
+# Form implementation generated from reading ui file './ui/ui_viewer.ui'
 #
-# Created: Wed Mar 30 16:36:25 2011
+# Created: Wed Aug 10 16:34:31 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,6 +19,7 @@ class Ui_MetatoolsViewer(object):
         MetatoolsViewer.setObjectName(_fromUtf8("MetatoolsViewer"))
         MetatoolsViewer.resize(550, 350)
         MetatoolsViewer.setMinimumSize(QtCore.QSize(200, 100))
+        MetatoolsViewer.setSizeGripEnabled(True)
         self.verticalLayout = QtGui.QVBoxLayout(MetatoolsViewer)
         self.verticalLayout.setMargin(6)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
@@ -42,6 +43,19 @@ class Ui_MetatoolsViewer(object):
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Close)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.verticalLayout.addWidget(self.buttonBox)
+        self.actionPrint = QtGui.QAction(MetatoolsViewer)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/metatools/icons/menu_print.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionPrint.setIcon(icon)
+        self.actionPrint.setObjectName(_fromUtf8("actionPrint"))
+        self.actionCopyAll = QtGui.QAction(MetatoolsViewer)
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/metatools/icons/menu_copy.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionCopyAll.setIcon(icon1)
+        self.actionCopyAll.setObjectName(_fromUtf8("actionCopyAll"))
+        self.actionCopy = QtGui.QAction(MetatoolsViewer)
+        self.actionCopy.setIcon(icon1)
+        self.actionCopy.setObjectName(_fromUtf8("actionCopy"))
 
         self.retranslateUi(MetatoolsViewer)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), MetatoolsViewer.accept)
@@ -50,5 +64,9 @@ class Ui_MetatoolsViewer(object):
 
     def retranslateUi(self, MetatoolsViewer):
         MetatoolsViewer.setWindowTitle(QtGui.QApplication.translate("MetatoolsViewer", "Metadata viewer", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPrint.setText(QtGui.QApplication.translate("MetatoolsViewer", "Print", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCopyAll.setText(QtGui.QApplication.translate("MetatoolsViewer", "Copy all", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCopy.setText(QtGui.QApplication.translate("MetatoolsViewer", "Copy", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
+import resources_rc

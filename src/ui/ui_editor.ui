@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Metadata editor</string>
   </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QSplitter" name="splitter">
@@ -141,8 +144,22 @@
     </widget>
    </item>
   </layout>
+  <action name="actionCopyPath">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/plugins/metatools/icons/menu_copy.png</normaloff>:/plugins/metatools/icons/menu_copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy path</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy node path to clipboard</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

@@ -6,6 +6,7 @@
 # ---------------------------------------------------------
 # Metadata browser/editor
 #
+# Copyright (C) 2011 BV (enickulin@bv.com)
 # Copyright (C) 2011 NextGIS (info@nextgis.ru)
 #
 # This source is free software; you can redistribute it and/or modify it under
@@ -35,61 +36,82 @@ import os
 
 from ui_settings import Ui_MetatoolsSettingsDialog
 
-currentPath = os.path.abspath( os.path.dirname( __file__ ) )
+currentPath = os.path.abspath(os.path.dirname(__file__))
 
-class MetatoolsSettings( QDialog, Ui_MetatoolsSettingsDialog ):
-  def __init__( self ):
-    QDialog.__init__( self )
-    self.setupUi( self )
+class MetatoolsSettings(QDialog, Ui_MetatoolsSettingsDialog):
+  def __init__(self):
+    QDialog.__init__(self)
+    self.setupUi(self)
 
     self.manageGui()
 
     self.readSettings()
 
-    QObject.connect( self.btnSelectFilter, SIGNAL( "clicked()" ), self.updateFilter )
+    QObject.connect(self.btnSelectFilter, SIGNAL("clicked()"), self.updateFilter)
 
-  def manageGui( self ):
+  def manageGui(self):
     # populate profiles combobox
-    profilesDir = QDir( QDir.toNativeSeparators( os.path.join( currentPath, "xml_profiles" ) ) )
-    profilesDir.setFilter( QDir.Files | QDir.NoSymLinks | QDir.NoDotAndDotDot )
+    profilesDir = QDir(QDir.toNativeSeparators(os.path.join(currentPath, "xml_profiles")))
+    profilesDir.setFilter(QDir.Files | QDir.NoSymLinks | QDir.NoDotAndDotDot)
     fileFilter = QStringList() << "*.xml" << "*.XML"
-    profilesDir.setNameFilters( fileFilter )
+    profilesDir.setNameFilters(fileFilter)
     profiles = profilesDir.entryList()
-    self.defaultProfileComboBox.addItems( profiles )
-    
+    self.defaultProfileComboBox.addItems(profiles)
+
+    # populate iso and fgdc stylesheet comboboxes
+    xslDir = QDir(QDir.toNativeSeparators(os.path.join(currentPath, "xsl")))
+    xslDir.setFilter(QDir.Files | QDir.NoSymLinks | QDir.NoDotAndDotDot)
+    fileFilter = QStringList() << "*.xsl" << "*.XSL"
+    xslDir.setNameFilters(fileFilter)
+    xsls = xslDir.entryList()
+    self.cmbIsoViewStylesheet.addItems(xsls)
+    self.cmbFgdcViewStylesheet.addItems(xsls)
+
     # populate image format combobox
-    formats=['jpg', 'tiff', 'png', 'bmp']
+    formats = ['jpg', 'tiff', 'png', 'bmp']
     self.cmbImgFormat.addItems(formats)
 
-  def readSettings( self ):
-    settings = QSettings( "NextGIS", "metatools" )
-    self.leFilterFileName.setText( settings.value( "general/filterFile", QVariant() ).toString() )
+  def readSettings(self):
+    settings = QSettings("NextGIS", "metatools")
+    self.leFilterFileName.setText(settings.value("general/filterFile", QVariant()).toString())
 
     # restore default profile
-    profile = settings.value( "iso19115/defaultProfile", QVariant() ).toString()
-    self.defaultProfileComboBox.setCurrentIndex( self.defaultProfileComboBox.findText( profile ) )
-    
-    #restore preview image format
-    format = settings.value( "preview/format", QVariant('jpg') ).toString()
-    self.cmbImgFormat.setCurrentIndex( self.cmbImgFormat.findText( format ) )
-    
+    profile = settings.value("general/defaultProfile", QVariant()).toString()
+    self.defaultProfileComboBox.setCurrentIndex(self.defaultProfileComboBox.findText(profile))
 
-  def updateFilter( self ):
-    fileName = QFileDialog.getOpenFileName( self, self.tr( 'Select filter' ), '.', self.tr( 'Text files (*.txt *.TXT)' ) )
+    # restore preview image format
+    format = settings.value("preview/format", QVariant('jpg')).toString()
+    self.cmbImgFormat.setCurrentIndex(self.cmbImgFormat.findText(format))
+
+    # restore iso stylesheet
+    isoXsl = settings.value("iso19115/stylesheet", QVariant('iso19115.xsl')).toString()
+    self.cmbIsoViewStylesheet.setCurrentIndex(self.cmbIsoViewStylesheet.findText(isoXsl))
+
+    # restore fgdc stylesheet
+    fgdcXsl = settings.value("fgdc/stylesheet", QVariant('fgdc.xsl')).toString()
+    self.cmbFgdcViewStylesheet.setCurrentIndex(self.cmbFgdcViewStylesheet.findText(fgdcXsl))
+
+
+  def updateFilter(self):
+    fileName = QFileDialog.getOpenFileName(self, self.tr('Select filter'), '.', self.tr('Text files (*.txt *.TXT)'))
 
     if fileName.isEmpty():
       return
 
-    self.leFilterFileName.setText( fileName )
+    self.leFilterFileName.setText(fileName)
 
-  def accept( self ):
+  def accept(self):
     # save settings
-    settings = QSettings( "NextGIS", "metatools" )
-    settings.setValue( "general/filterFile", self.leFilterFileName.text() )
+    settings = QSettings("NextGIS", "metatools")
+    settings.setValue("general/filterFile", self.leFilterFileName.text())
 
-    settings.setValue( "iso19115/defaultProfile",  self.defaultProfileComboBox.currentText()  )
-     
-    settings.setValue(  "preview/format",  self.cmbImgFormat.currentText()  )
+    settings.setValue("general/defaultProfile", self.defaultProfileComboBox.currentText())
+
+    settings.setValue("preview/format", self.cmbImgFormat.currentText())
+
+    settings.setValue("iso19115/stylesheet", self.cmbIsoViewStylesheet.currentText())
+
+    settings.setValue("fgdc/stylesheet", self.cmbFgdcViewStylesheet.currentText())
 
     # close dialog
-    QDialog.accept( self )
+    QDialog.accept(self)

@@ -50,6 +50,7 @@ from datatype_template_manager import DatatypeTemplateManager
 from ui_apply_templates import Ui_ApplyTemplatesDialog
 
 from standard import MetaInfoStandard
+from metadata_provider import FileMetadataProvider
 import utils
 
 currentPath = os.path.abspath(os.path.dirname(__file__))
@@ -93,7 +94,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
   def manageGui(self):
     # populate layer list
-    self.fillLstLayers()
+    self.fillLstLayers() 
 
     # populate comboboxes with templates
     self.updateLicenseTemplatesList()
@@ -104,7 +105,8 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     # disable Apply button when there are no layers
     if len(self.layers) == 0:
       self.btnApply.setEnabled(False)
-
+  
+  #version from trunk
   def fillLstLayers(self):
     self.lstLayers.clear()
     layers = utils.getSupportedLayers()
@@ -117,13 +119,11 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
   def toggleExternalFiles(self):
     self.btnApply.setEnabled(False)
     if self.chkExternalFiles.isChecked():
-      #self.lstLayers.setEnabled( False )
       self.lstLayers.clear()
       self.lstLayers.setSelectionMode(QAbstractItemView.NoSelection)
       self.btnSelectDataFiles.setEnabled(True)
       self.layers = []
     else:
-      #self.lstLayers.setEnabled( True )
       self.fillLstLayers()
       self.lstLayers.setSelectionMode(QAbstractItemView.ExtendedSelection)
       self.btnSelectDataFiles.setEnabled(False)
@@ -224,11 +224,17 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     for item in selection:
       layerSource = item.data(Qt.UserRole)
       self.layers.append(layerSource.toString())
+      #my old version
+      #layer = utils.getRasterLayerByName( item.text() )
+      #self.layers.append( layer.source() )
 
     if len(self.layers) != 0:
       self.btnApply.setEnabled(True)
 
   def applyTemplates(self):
+    # TODO: !!! Remake to metaprovider !!!
+    # TODO: !!! Adding standard check !!!
+    
     # TODO: check if there are some templates selected
 
     # get profile from settings
@@ -254,7 +260,8 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
             continue
 
         # check metadata standard
-        standard = MetaInfoStandard.tryDetermineStandard(metaFilePath)
+        metaprovider = FileMetadataProvider(unicode(layer)) #temporary code
+        standard = MetaInfoStandard.tryDetermineStandard(metaprovider)
         if standard != MetaInfoStandard.ISO19115:
           QMessageBox.warning(self, self.tr("Metatools"),
                                    self.tr("File %1 has unsupported metadata standard! Only ISO19115 supported now!")
@@ -577,42 +584,3 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     mdCharStringElement = utils.getOrCreateChild(mdDescription, "gco:CharacterString")
     textNode = utils.getOrCreateTextChild(mdCharStringElement)
     textNode.setNodeValue(logFileContent)
-
-  # ----------- XML Helpers -----------
-
-  #~ def getOrCreateChild( self, element, childName ):
-    #~ child = element.firstChildElement( childName )
-    #~ if child.isNull():
-      #~ child = element.ownerDocument().createElement( childName )
-      #~ element.appendChild( child )
-    #~ return child
-#~
-  #~ def getOrIsertAfterChild( self, element, childName, prevChildsName ):
-    #~ child = element.firstChildElement( childName )
-    #~ if child.isNull():
-      #~ child = element.ownerDocument().createElement( childName )
-#~
-      #~ # search previous element
-      #~ for elementName in prevChildsName:
-        #~ prevElement = element.firstChildElement( elementName )
-        #~ if not prevElement.isNull():
-          #~ element.insertAfter( child, prevElement )
-          #~ return child
-#~
-      #~ # if not found, simply append
-      #~ element.appendChild( child )
-    #~ return child
-#~
-  #~ def getOrIsertTopChild( self, element, childName ):
-    #~ child = element.firstChildElement( childName )
-    #~ if child.isNull():
-      #~ child = element.ownerDocument().createElement( childName )
-      #~ element.insertBefore( child, QDomNode() )
-    #~ return child
-#~
-  #~ def getOrCreateTextChild( self, element ):
-    #~ childTextNode = element.childNodes().at( 0 ) # bad! need full search and type checker
-    #~ if childTextNode.isNull():
-      #~ childTextNode = element.ownerDocument().createTextNode( "" )
-      #~ element.appendChild( childTextNode )
-    #~ return childTextNode

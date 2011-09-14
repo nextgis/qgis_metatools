@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>Metadata viewer</string>
   </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="margin">
     <number>6</number>
@@ -70,6 +73,39 @@
     </widget>
    </item>
   </layout>
+  <action name="actionPrint">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/plugins/metatools/icons/menu_print.png</normaloff>:/plugins/metatools/icons/menu_print.png</iconset>
+   </property>
+   <property name="text">
+    <string>Print</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionCopyAll">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/plugins/metatools/icons/menu_copy.png</normaloff>:/plugins/metatools/icons/menu_copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy all</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/plugins/metatools/icons/menu_copy.png</normaloff>:/plugins/metatools/icons/menu_copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -78,7 +114,9 @@
    <header>QtWebKit/QWebView</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
@@ -87,8 +125,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>254</x>
+     <y>343</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -103,8 +141,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>322</x>
+     <y>343</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
