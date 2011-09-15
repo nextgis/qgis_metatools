@@ -32,14 +32,12 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 
-import os, sys, shutil
+import os, sys
 
 from metatoolssettings import MetatoolsSettings
 from standard import MetaInfoStandard
 from error_handler import ErrorHandler
 from metadata_provider import MetadataProvider
-
-import utils
 import resources_rc
 
 minQtVersion = '4.6.0'
@@ -378,19 +376,17 @@ class MetatoolsPlugin:
       return
 
     # start tool
-    from sys import platform
     toolPath = self.pluginPath + '/external_tools/tkme'
-    if platform == 'win32':
+    if sys.platform == 'win32':
         execFilePath = toolPath + '/tkme.exe'
     else:
         execFilePath = toolPath + '/tkme.kit'
 
         #bug in qgis plugin installer:
         tclkitFilePath = toolPath + '/tclkit'
-        from os import chmod
         import stat
-        chmod(execFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
-        chmod(tclkitFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
+        os.chmod(execFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
+        os.chmod(tclkitFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
 
 
     try:
@@ -420,10 +416,9 @@ class MetatoolsPlugin:
       return
 
     # start tool
-    from sys import platform
     toolPath = self.pluginPath + '/external_tools/mp'
 
-    if platform == 'win32':
+    if sys.platform == 'win32':
         mpFilePath = toolPath + '/mp.exe'
         errFilePath = toolPath + '/err2html.exe'
         throwShell = True
@@ -433,10 +428,9 @@ class MetatoolsPlugin:
         throwShell = False
 
         #bug in qgis plugin installer:
-        from os import chmod
         import stat
-        chmod(mpFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
-        chmod(errFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
+        os.chmod(mpFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
+        os.chmod(errFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
 
     tempPath = os.tempnam()
     temporaryMetafile = self.metaProvider.SaveToTempFile()
@@ -495,10 +489,8 @@ class MetatoolsPlugin:
                             QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only FGDC supported now!"))
       return
     
-    from PyQt4.QtXml import *
-    from PyQt4.QtXmlPatterns import *
-
-
+    
+    from PyQt4.QtXmlPatterns import QXmlSchema, QXmlSchemaValidator
     # TODO: validate metadata file
 
     # setup xml schema

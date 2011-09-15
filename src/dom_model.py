@@ -27,8 +27,6 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtXml import *
 
-import sys
-
 def getPath( node ):
   path = ""
   if not node.parentNode().isNull() and node.parentNode().nodeType() != QDomNode.DocumentNode:
@@ -166,7 +164,7 @@ class DomModel( QAbstractItemModel ):
   def setData( self, index, value, role = Qt.EditRole ):
     if index.isValid():
       item = index.internalPointer()
-      node = item.node()
+      #node = item.node() ?not used never
       item.setItemValue( QVariant( value ).toString() )
 
       self.emit( SIGNAL( "dataChanged( const QModelIndex &, const QModelIndex &)" ), index, index )
@@ -177,7 +175,7 @@ class DomModel( QAbstractItemModel ):
     if not index.isValid():
       return Qt.ItemIsEnabled
 
-    item = index.internalPointer()
+    #item = index.internalPointer() ?not used never
     return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
   def headerData( self, section, orientation, role ):

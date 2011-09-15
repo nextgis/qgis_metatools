@@ -80,8 +80,8 @@ class MetatoolsSettings(QDialog, Ui_MetatoolsSettingsDialog):
     self.defaultProfileComboBox.setCurrentIndex(self.defaultProfileComboBox.findText(profile))
 
     # restore preview image format
-    format = settings.value("preview/format", QVariant('jpg')).toString()
-    self.cmbImgFormat.setCurrentIndex(self.cmbImgFormat.findText(format))
+    preview_format = settings.value("preview/format", QVariant('jpg')).toString()
+    self.cmbImgFormat.setCurrentIndex(self.cmbImgFormat.findText(preview_format))
 
     # restore iso stylesheet
     isoXsl = settings.value("iso19115/stylesheet", QVariant('iso19115.xsl')).toString()

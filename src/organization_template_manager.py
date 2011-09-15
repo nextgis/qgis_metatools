@@ -29,8 +29,6 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4.QtXml import *
 
-import os, codecs
-
 class OrganizationTemplate:
   def __init__(self, name=None, deliveryPoint=None, city=None, adminArea=None, \
                 postalCode=None, country=None, phone=None, fax=None, email=None, \

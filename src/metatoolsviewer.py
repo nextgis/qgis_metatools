@@ -57,9 +57,9 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
     self.contextMenu.clear()
     if self.webView.selectedText():
       self.contextMenu.addAction(self.actionCopy)
-      self.contextMenu.addSeparator()
-    self.contextMenu.addAction(self.actionPrint)
     self.contextMenu.addAction(self.actionCopyAll)
+    self.contextMenu.addSeparator()
+    self.contextMenu.addAction(self.actionPrint)
     
     self.contextMenu.exec_(self.webView.mapToGlobal(position))
     

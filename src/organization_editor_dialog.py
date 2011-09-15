@@ -33,7 +33,7 @@ from PyQt4.QtXmlPatterns  import *
 from qgis.core import *
 from qgis.gui import *
 
-import os, sys
+import os
 
 from ui_organization_editor import Ui_OrganizationEditorDialog
 from organization_template_manager import OrganizationTemplateManager, OrganizationTemplate

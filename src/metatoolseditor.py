@@ -33,11 +33,8 @@ from PyQt4.QtXml import *
 from qgis.core import *
 from qgis.gui import *
 
-import codecs, sys
-
+import sys
 from dom_model import DomModel, FilterDomModel
-import utils
-
 from ui_editor import Ui_MetatoolsEditor
 
 class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
@@ -176,8 +173,8 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
     else:
       # lazy init
       if not self.filteredIndexes:
-        filter = self.loadFilter()
-        self.filteredIndexes = self.searchNodes(self.model, filter)
+        filter_lines = self.loadFilter()
+        self.filteredIndexes = self.searchNodes(self.model, filter_lines)
         self.tbwFiltered.horizontalHeader().setVisible(True) # pyuic4 bug
         self.tbwFiltered.setRowCount(len(self.filteredIndexes))
       # refresh table
@@ -227,7 +224,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
       return []
 
     # read filter from file
-    filter = []
+    filter_lines = []
     f = QFile(fileName)
     if not f.open(QIODevice.ReadOnly):
       QMessageBox.warning(self, self.tr('I/O error'), self.tr("Can't open file %1").arg(fileName))
@@ -236,10 +233,10 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
     stream = QTextStream(f)
     while not stream.atEnd():
       line = stream.readLine()
-      filter.append(line)
+      filter_lines.append(line)
     f.close()
 
-    return filter
+    return filter_lines
 
   def searchNodes(self, model, filters):
     allItemsIndexes = model.match(model.index(0, 0, QModelIndex()), Qt.DisplayRole, '*', -1, Qt.MatchWildcard | Qt.MatchRecursive)

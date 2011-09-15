@@ -283,9 +283,9 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
 
         # load metadata file
-        file = QFile(metaFilePath)
+        metadata_file = QFile(metaFilePath)
         metaXML = QDomDocument()
-        metaXML.setContent(file)
+        metaXML.setContent(metadata_file)
 
         # apply templates (BAD version - change to applier with standard)
         self.applyInstitutionTemplate(metaXML)

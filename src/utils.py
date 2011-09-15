@@ -52,10 +52,10 @@ def getMetafilePath(layer):
 
 def previewPathFromLayerPath(layerPath):
   settings = QSettings("NextGIS", "metatools")
-  format = settings.value("preview/format", QVariant('jpg')).toString()
+  format_preview = settings.value("preview/format", QVariant('jpg')).toString()
 
   originalFileName = os.path.splitext(unicode(layerPath))
-  metaFilePath = originalFileName[ 0 ] + PREVIEW_SUFFIX + '.' + format
+  metaFilePath = originalFileName[ 0 ] + PREVIEW_SUFFIX + '.' + format_preview
   return metaFilePath
 
 def mdPathFromLayerPath(layerPath):
@@ -125,22 +125,22 @@ def getBandInfo(path, bandNumber):
   raster = gdal.Open(unicode(path).encode("utf8"))
   band = raster.GetRasterBand(bandNumber)
 
-  min, max = band.ComputeRasterMinMax()
-  if not min:
-    min = 0
-  if not max:
-    max = 0
+  min_value, max_value = band.ComputeRasterMinMax()
+  if not min_value:
+    min_value = 0
+  if not max_value:
+    max_value = 0
 
   dataType = band.DataType
   bytes_in_types = {0:-1, 1:8, 2:16, 3:16, 4: 32, 5: 32, 6: 32, 7:64, 8:16, 9:32, 10:32, 11: 64}
   dataType = bytes_in_types[dataType]
 
-  #QMessageBox.information(QWidget(), "Metatools", "Min: "+str(min)+" Max: "+str(max)+" Dt: "+str(band.DataType) + " Byte: "+str(dataType)) #debug
+  #QMessageBox.information(QWidget(), "Metatools", "Min: "+str(min_value)+" Max: "+str(max_value)+" Dt: "+str(band.DataType) + " Byte: "+str(dataType)) #debug
 
   band = None
   raster = None
 
-  return min, max, dataType
+  return min_value, max_value, dataType
 
 # helper functions for vector metadata
 def getGeneralVectorInfo(path):
@@ -282,18 +282,18 @@ def writeRasterInfo(dataFile, metadataFile):
 
   # create new demensions
   for bandNumber in range(1, bands + 1):
-    min, max, dt = getBandInfo(dataFile, bandNumber)
+    min_value, max_value, dt = getBandInfo(dataFile, bandNumber)
     #mdDimension = insertAfterChild( mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"] ) #standard version
     #mdBand = getOrCreateChild( mdDimension, "MD_Band") #standard version
     mdBand = createChild(mdDimension, "MD_Band") #profile version
     mdMaxValue = getOrCreateChild(mdBand, "maxValue")
     mdGcoReal = getOrCreateChild(mdMaxValue, "gco:Real")
     textNode = getOrCreateTextChild(mdGcoReal)
-    textNode.setNodeValue(str(max))
+    textNode.setNodeValue(str(max_value))
     mdMinValue = getOrCreateChild(mdBand, "minValue")
     mdGcoReal = getOrCreateChild(mdMinValue, "gco:Real")
     textNode = getOrCreateTextChild(mdGcoReal)
-    textNode.setNodeValue(str(min))
+    textNode.setNodeValue(str(min_value))
     mdBitsPerValue = getOrCreateChild(mdBand, "bitsPerValue")
     mdGcoInt = getOrCreateChild(mdBitsPerValue, "gco:Integer")
     textNode = getOrCreateTextChild(mdGcoInt)

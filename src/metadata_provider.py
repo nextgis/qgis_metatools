@@ -24,9 +24,6 @@
 # MA 02111-1307, USA.
 #
 #******************************************************************************
-from PyQt4.QtGui import * # tests
-import sys # tests
-
 from qgis.core import *
 from os import path, tempnam, remove
 import codecs
