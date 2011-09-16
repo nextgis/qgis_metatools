@@ -26,7 +26,7 @@
 #
 #******************************************************************************
 
-mVersion = "0.2.0"
+mVersion = "0.2.1"
 mName = "Metatools"
 mDesc = "Metadata browser/editor"
 
