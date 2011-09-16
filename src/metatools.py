@@ -25,13 +25,13 @@
 # MA 02111-1307, USA.
 #
 #******************************************************************************
-
+    
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from qgis.core import *
 from qgis.gui import *
-
+    
 import os, sys
 
 from metatoolssettings import MetatoolsSettings
@@ -111,18 +111,9 @@ class MetatoolsPlugin:
     self.validateAction.setStatusTip(QCoreApplication.translate("Metatools", "Validate metadata"))
     self.validateAction.setWhatsThis(QCoreApplication.translate("Metatools", "Validate metadata"))
 
-
-    # create configAction that will start plugin configuration
-    self.usgsAction = QAction(QIcon(":/plugins/metatools/icons/usgs.png"), QCoreApplication.translate("Metatools", "USGS Tool"), self.iface.mainWindow())
-    self.usgsAction.setStatusTip(QCoreApplication.translate("Metatools", "USGS Tool"))
-    self.usgsAction.setWhatsThis(QCoreApplication.translate("Metatools", "USGS Tool"))
-
-    # create configAction that will start plugin configuration
-    self.mpAction = QAction(QIcon(":/plugins/metatools/icons/usgs_check.png"), QCoreApplication.translate("Metatools", "MP Tool"), self.iface.mainWindow())
-    self.mpAction.setStatusTip(QCoreApplication.translate("Metatools", "MP Tool"))
-    self.mpAction.setWhatsThis(QCoreApplication.translate("Metatools", "MP Tool"))
-
-    self.importAction = QAction(QIcon(":/plugins/metatools/icons/import.png"), QCoreApplication.translate("Metatools", "Import metadata"), self.iface.mainWindow())
+    self.importAction = QAction(QIcon(":/plugins/metatools/icons/import.png"),
+        QCoreApplication.translate("Metatools", "Import metadata"),   
+self.iface.mainWindow())
     self.importAction.setStatusTip(QCoreApplication.translate("Metatools", "Import metadata from file"))
     self.importAction.setWhatsThis(QCoreApplication.translate("Metatools", "Import metadata"))
 
@@ -134,7 +125,17 @@ class MetatoolsPlugin:
     self.metaBrowserAction.setStatusTip(QCoreApplication.translate("Metatools", "Metadata browser"))
     self.metaBrowserAction.setWhatsThis(QCoreApplication.translate("Metatools", "Metadata browser"))
 
+    # ------------ FGDC actions
+    # Tkme action
+    self.usgsAction = QAction(QIcon(":/plugins/metatools/icons/usgs.png"), QCoreApplication.translate("Metatools", "USGS Tool"), self.iface.mainWindow())
+    self.usgsAction.setStatusTip(QCoreApplication.translate("Metatools", "USGS Tool"))
+    self.usgsAction.setWhatsThis(QCoreApplication.translate("Metatools", "USGS Tool"))
 
+    # mp action
+    self.mpAction = QAction(QIcon(":/plugins/metatools/icons/usgs_check.png"), 
+        QCoreApplication.translate("Metatools", "MP Tool"), self.iface.mainWindow())
+    self.mpAction.setStatusTip(QCoreApplication.translate("Metatools", "MP Tool"))
+    self.mpAction.setWhatsThis(QCoreApplication.translate("Metatools", "MP Tool"))
 
     QObject.connect(self.editAction, SIGNAL("triggered()"), self.doEdit)
     QObject.connect(self.applyTemplatesAction, SIGNAL("triggered()"), self.doApplyTemplates)
@@ -163,9 +164,6 @@ class MetatoolsPlugin:
     self.toolBar = self.iface.addToolBar(QCoreApplication.translate("Metatools", "Metatools"))
     self.toolBar.setObjectName(QCoreApplication.translate("Metatools", "Metatools"))
 
-    self.toolBar.addAction(self.usgsAction)
-    self.toolBar.addAction(self.mpAction)
-    self.toolBar.addSeparator()
     self.toolBar.addAction(self.importAction)
     self.toolBar.addAction(self.exportAction)
     self.toolBar.addSeparator()
@@ -176,6 +174,12 @@ class MetatoolsPlugin:
     self.toolBar.addAction(self.applyTemplatesAction)
     self.toolBar.addAction(self.configAction)
 
+    # add fgdc toolbar
+    self.fgdcToolBar = self.iface.addToolBar(QCoreApplication.translate("Metatools", "Metatools: FGDC tools"))
+    self.fgdcToolBar.setObjectName(QCoreApplication.translate("Metatools", "Metatools: FGDC tools"))
+
+    self.fgdcToolBar.addAction(self.usgsAction)
+    self.fgdcToolBar.addAction(self.mpAction)
 
     # track layer changing
     QObject.connect(self.iface, SIGNAL("currentLayerChanged( QgsMapLayer* )"), self.layerChanged)
@@ -206,6 +210,7 @@ class MetatoolsPlugin:
     self.iface.removePluginMenu("Metatools", self.exportAction)
 
     del self.toolBar
+    del self.fgdcToolBar
 
   def layerChanged(self):
     self.layer = self.iface.activeLayer()
