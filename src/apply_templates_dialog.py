@@ -93,8 +93,11 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     self.manageGui()
 
   def manageGui(self):
+    # read settings and restore checkbox state
+    self.__loadSettings()
+
     # populate layer list
-    self.fillLstLayers() 
+    self.fillLstLayers()
 
     # populate comboboxes with templates
     self.updateLicenseTemplatesList()
@@ -105,7 +108,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     # disable Apply button when there are no layers
     if len(self.layers) == 0:
       self.btnApply.setEnabled(False)
-  
+
   #version from trunk
   def fillLstLayers(self):
     self.lstLayers.clear()
@@ -234,7 +237,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
   def applyTemplates(self):
     # TODO: !!! Remake to metaprovider !!!
     # TODO: !!! Adding standard check !!!
-    
+
     # TODO: check if there are some templates selected
 
     # get profile from settings
@@ -304,6 +307,9 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
       self.lstLayers.clearSelection()
       self.layers = []
       self.btnApply.setEnabled(False)
+
+      # save settings
+      self.__saveSettings()
     except:
       QMessageBox.warning(self, self.tr("Metatools"), self.tr("Operation can't be completed: ") + str(sys.exc_info()[ 1 ]))
 
@@ -584,3 +590,16 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     mdCharStringElement = utils.getOrCreateChild(mdDescription, "gco:CharacterString")
     textNode = utils.getOrCreateTextChild(mdCharStringElement)
     textNode.setNodeValue(logFileContent)
+
+  def __loadSettings( self ):
+    settings = QSettings( "NextGIS", "metatools" )
+
+    self.chkUpdateImageInfo.setCheckState( settings.value( "templates/extractLayerInfo" ).toInt()[0] )
+    self.chkGeneratePreview.setCheckState( settings.value( "templates/generatePreview" ).toInt()[0] )
+
+  def __saveSettings( self ):
+    settings = QSettings( "NextGIS", "metatools" )
+
+    settings.setValue( "templates/extractLayerInfo", self.chkUpdateImageInfo.checkState() )
+    settings.setValue( "templates/generatePreview",  self.chkGeneratePreview.checkState() )
+
