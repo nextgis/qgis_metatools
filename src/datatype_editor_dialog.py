@@ -52,8 +52,9 @@ class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
     self.btnSave = self.buttonBox.button(QDialogButtonBox.Save)
     self.btnClose = self.buttonBox.button(QDialogButtonBox.Close)
 
-    self.leSpatialAccuracy.setValidator(QDoubleValidator())
-    self.leSpatialScale.setValidator(QIntValidator())
+    if PYQT_VERSION_STR >= '4.8.5':
+      self.leSpatialAccuracy.setValidator(QDoubleValidator())
+      self.leSpatialScale.setValidator(QIntValidator())
 
     for key, value in DatatypeTemplate.TYPES.iteritems():
       self.cmbType.addItem(value, key)
