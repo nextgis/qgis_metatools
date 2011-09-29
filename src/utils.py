@@ -112,12 +112,29 @@ def getGeneralRasterInfo(path):
 
   gt = raster.GetGeoTransform()
 
-  raster = None
-
   xMin = gt[ 0 ]
   yMin = gt[ 3 ] + width * gt[ 4 ] + height * gt[ 5 ]
   xMax = gt[ 0 ] + width * gt[ 1 ] + height * gt[ 2 ]
   yMax = gt[ 3 ]
+
+  rasterSR = raster.GetProjectionRef()
+  layerSR = osr.SpatialReference()
+  layerSR.ImportFromWkt(rasterSR)
+  #create wgs84 SR
+  wgsSR = osr.SpatialReference()
+  wgsSR.ImportFromEPSG(4326)
+
+  #transform coord if layer CRS is defined otherwise assume WGS84
+  if ( layerSR is not None ) and ( not wgsSR.IsSame(layerSR) ):
+    transform = osr.CoordinateTransformation(layerSR, wgsSR)
+    coord = transform.TransformPoints([(xMin, yMin), (xMax, yMax) ])
+    xMin = coord[0][0]
+    yMin = coord[0][1]
+    xMax = coord[1][0]
+    yMax = coord[1][1]
+    transform = None
+
+  raster = None
 
   return bands, [ xMin, yMin, xMax, yMax ]
 
