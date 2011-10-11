@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="uk_UA">
+<!DOCTYPE TS><TS version="1.1" language="uk_UA">
 <context>
     <name>ApplyTemplatesDialog</name>
     <message>
@@ -14,57 +13,57 @@
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="133"/>
+        <location filename="apply_templates_dialog.py" line="136"/>
         <source>Select files</source>
         <translation>Вибрати файли</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="133"/>
+        <location filename="apply_templates_dialog.py" line="136"/>
         <source>All files (*.*)</source>
         <translation>Всі файли (*.*)</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="197"/>
+        <location filename="apply_templates_dialog.py" line="200"/>
         <source>Select log file</source>
         <translation>Вибрати log-файл</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="197"/>
+        <location filename="apply_templates_dialog.py" line="200"/>
         <source>Text files (*.txt);;Log files (*.log);;All files (*)</source>
         <translation>Текстові файли (*.txt);;Log-файли (*.log);;Всі файли (*.*)</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="244"/>
+        <location filename="apply_templates_dialog.py" line="247"/>
         <source>No profile</source>
         <translation>Профіль відсутній</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="244"/>
+        <location filename="apply_templates_dialog.py" line="247"/>
         <source>No profile selected. Please set default profile in plugin settings</source>
         <translation>Не вибрано профіль. Буд ласка вкажіть профіль в налаштуваннях модуля</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="308"/>
+        <location filename="apply_templates_dialog.py" line="314"/>
         <source>Metatools</source>
         <translation>Metatools</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="259"/>
+        <location filename="apply_templates_dialog.py" line="262"/>
         <source>Metadata file can&apos;t be created: </source>
         <translation>Не вдалося створити файл метаданих:</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="266"/>
+        <location filename="apply_templates_dialog.py" line="269"/>
         <source>File %1 has unsupported metadata standard! Only ISO19115 supported now!</source>
         <translation>Формат метаданих файла %1 не підтримується! На сьогодні підтримується лише ISO19115!</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="302"/>
+        <location filename="apply_templates_dialog.py" line="305"/>
         <source>Done!</source>
         <translation>Виконано!</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="308"/>
+        <location filename="apply_templates_dialog.py" line="314"/>
         <source>Operation can&apos;t be completed: </source>
         <translation>Не вдалося завершити операцію: </translation>
     </message>
@@ -137,7 +136,7 @@
 <context>
     <name>DataTypeEditorDialog</name>
     <message>
-        <location filename="datatype_editor_dialog.py" line="139"/>
+        <location filename="datatype_editor_dialog.py" line="140"/>
         <source>Manage data types</source>
         <translation>Управління шаблонами типів даних</translation>
     </message>
@@ -197,52 +196,52 @@
         <translation>Редагувати</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="222"/>
+        <location filename="datatype_editor_dialog.py" line="223"/>
         <source>Metatools</source>
         <translation>Metatools</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="92"/>
+        <location filename="datatype_editor_dialog.py" line="93"/>
         <source>Template contains unsaved data. Create new template without saving?</source>
         <translation>Поточний шаблон містить незбережені дані. Створити новий шаблон без збереження змін?</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="128"/>
+        <location filename="datatype_editor_dialog.py" line="129"/>
         <source>The name of the data type template must be specified!</source>
         <translation>Необхідно вказати назву шаблона типу даних!</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="139"/>
+        <location filename="datatype_editor_dialog.py" line="140"/>
         <source>Template can&apos;t be saved: </source>
         <translation>Не вдалося зберегти шаблон: </translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="153"/>
+        <location filename="datatype_editor_dialog.py" line="154"/>
         <source>Template contains unsaved data. Close the window without saving?</source>
         <translation>Шаблон містить незбережені дані. Закрити вікно без збереження?</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="211"/>
+        <location filename="datatype_editor_dialog.py" line="212"/>
         <source>New keyword</source>
         <translation>Нове ключове слово</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="211"/>
+        <location filename="datatype_editor_dialog.py" line="212"/>
         <source>Input keyword:</source>
         <translation>Введіть ключове слово:</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="209"/>
+        <location filename="datatype_editor_dialog.py" line="210"/>
         <source>Select keyword for edit</source>
         <translation>Виберіть ключове слово для редагування</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="219"/>
+        <location filename="datatype_editor_dialog.py" line="220"/>
         <source>Select keyword for remove</source>
         <translation>Виберіть ключове слово для видалення</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="222"/>
+        <location filename="datatype_editor_dialog.py" line="223"/>
         <source>Remove this keyword?</source>
         <translation>Видалити це ключове слово?</translation>
     </message>

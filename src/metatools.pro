@@ -30,4 +30,5 @@ FORMS = ui/ui_apply_templates.ui \
 
 TRANSLATIONS = i18n/metatools_ru.ts \
                i18n/metatools_uk.ts \
-               i18n/metatools_fr.ts
+               i18n/metatools_fr.ts \
+               i18n/metatools_es.ts
