@@ -1,0 +1,7 @@
+[general]
+name=Metatools
+description=Metadata browser/editor
+version=Version 0.2.2
+authorName=NextGIS, BV
+icon=icons/metafile.png
+qgisMinimumVersion=1.5.0
