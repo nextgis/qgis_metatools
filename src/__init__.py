@@ -29,12 +29,16 @@
 mVersion = "0.2.2"
 mName = "Metatools"
 mDesc = "Metadata browser/editor"
+mCat = "Plugins"
 
 def name():
   return mName
 
 def description():
   return mDesc
+
+def category():
+  return mCat
 
 def version():
   return mVersion
