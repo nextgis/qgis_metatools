@@ -26,7 +26,7 @@
 #
 #******************************************************************************
 
-mVersion = "0.2.2"
+mVersion = "0.2.3"
 mName = "Metatools"
 mDesc = "Metadata browser/editor"
 mCat = "Plugins"

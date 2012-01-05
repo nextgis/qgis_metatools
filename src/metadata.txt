@@ -2,7 +2,7 @@
 name=Metatools
 description=Metadata browser/editor
 category=Plugins
-version=Version 0.2.2
+version=Version 0.2.3
 authorName=NextGIS, BV
 icon=icons/metafile.png
 qgisMinimumVersion=1.5.0

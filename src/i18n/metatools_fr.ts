@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="fr">
+<!DOCTYPE TS>
+<TS version="2.0" language="fr">
 <context>
     <name>ApplyTemplatesDialog</name>
     <message>
@@ -332,27 +333,27 @@
     <message>
         <location filename="ui/ui_metadata_browser.ui" line="14"/>
         <source>Metadata browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Parcourir les métadonnées</translation>
     </message>
     <message>
         <location filename="ui/ui_metadata_browser.ui" line="24"/>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechercher</translation>
     </message>
     <message>
         <location filename="ui/ui_metadata_browser.ui" line="33"/>
         <source>Search condition</source>
-        <translation type="unfinished"></translation>
+        <translation>Conditions de echerche</translation>
     </message>
     <message>
         <location filename="ui/ui_metadata_browser.ui" line="42"/>
         <source>Find</source>
-        <translation type="unfinished"></translation>
+        <translation>Trouver</translation>
     </message>
     <message>
         <location filename="ui/ui_metadata_browser.ui" line="52"/>
         <source>Search result</source>
-        <translation type="unfinished"></translation>
+        <translation>Résultat des recherches</translation>
     </message>
     <message>
         <location filename="ui/ui_metadata_browser.ui" line="128"/>
@@ -362,12 +363,12 @@
     <message>
         <location filename="ui/ui_metadata_browser.ui" line="98"/>
         <source>Catalog</source>
-        <translation type="unfinished"></translation>
+        <translation>Catalogue</translation>
     </message>
     <message>
         <location filename="ui/ui_metadata_browser.ui" line="141"/>
         <source>Databases</source>
-        <translation type="unfinished"></translation>
+        <translation>Bases de données</translation>
     </message>
     <message>
         <location filename="ui/ui_metadata_browser.ui" line="184"/>
@@ -483,137 +484,137 @@ Le plugin ne sera pas activé.</translation>
     <message>
         <location filename="metatools.py" line="112"/>
         <source>Validate metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Valider les métadonnées</translation>
     </message>
     <message>
         <location filename="metatools.py" line="118"/>
         <source>Import metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Importer les métadonnées</translation>
     </message>
     <message>
         <location filename="metatools.py" line="117"/>
         <source>Import metadata from file</source>
-        <translation type="unfinished"></translation>
+        <translation>Importer les métadonnées à partir d&apos;un fichier</translation>
     </message>
     <message>
         <location filename="metatools.py" line="121"/>
         <source>Export metadata</source>
-        <translation type="unfinished"></translation>
+        <translation>Exporter les métadonnées</translation>
     </message>
     <message>
         <location filename="metatools.py" line="122"/>
         <source>Export metadata to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Exporter les métadonnées dans un fichier</translation>
     </message>
     <message>
         <location filename="metatools.py" line="126"/>
         <source>Metadata browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Visualisateur de métadonnées</translation>
     </message>
     <message>
         <location filename="metatools.py" line="132"/>
         <source>USGS Tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Outil USGS</translation>
     </message>
     <message>
         <location filename="metatools.py" line="138"/>
         <source>MP Tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Outil MP</translation>
     </message>
     <message>
         <location filename="metatools.py" line="179"/>
         <source>Metatools: FGDC tools</source>
-        <translation type="unfinished"></translation>
+        <translation>Metatools : Outils FGDC</translation>
     </message>
     <message>
         <location filename="metatools.py" line="319"/>
         <source>Unsupported metadata standard! Only ISO19115 and FGDC supported now!</source>
-        <translation type="unfinished"></translation>
+        <translation>Norme de métadonnées non pris en charge! Seul l&apos;ISO19115 est pris en charge maintenant!</translation>
     </message>
     <message>
         <location filename="metatools.py" line="340"/>
         <source>The layer does not have metadata! Create metadata?</source>
-        <translation type="unfinished"></translation>
+        <translation>La couche n&apos;a pas de métadonnées! Créer un fichier de métadonnées?</translation>
     </message>
     <message>
         <location filename="metatools.py" line="378"/>
         <source>USGS tool support only FGDC standard!</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;outil de l&apos;USGS ne supporte que la norme du FGDC!</translation>
     </message>
     <message>
         <location filename="metatools.py" line="404"/>
         <source>USGS tool can&apos;t be runing: </source>
-        <translation type="unfinished"></translation>
+        <translation>Outil de l&apos;USGS ne peut pas s&apos;exécuter :</translation>
     </message>
     <message>
         <location filename="metatools.py" line="418"/>
         <source>MP tool support only FGDC standard!</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;outil MP ne supporte que la norme du FGDC!</translation>
     </message>
     <message>
         <location filename="metatools.py" line="458"/>
         <source>MP tool can&apos;t be runing: </source>
-        <translation type="unfinished"></translation>
+        <translation>Outil MP ne peut pas s&apos;exécuter :</translation>
     </message>
     <message>
         <location filename="metatools.py" line="474"/>
         <source>MP result</source>
-        <translation type="unfinished"></translation>
+        <translation>Résultats MP</translation>
     </message>
     <message>
         <location filename="metatools.py" line="492"/>
         <source>Unsupported metadata standard! Only FGDC supported now!</source>
-        <translation type="unfinished"></translation>
+        <translation>Norme de métadonnées non pris en charge! Seul FGDC est pris en charge maintenant!</translation>
     </message>
     <message>
         <location filename="metatools.py" line="505"/>
         <source>Metadata is invalid</source>
-        <translation type="unfinished"></translation>
+        <translation>La métadonnée n&apos;est pas valide</translation>
     </message>
     <message>
         <location filename="metatools.py" line="515"/>
         <source>Shcema for validate not loaded!</source>
-        <translation type="unfinished"></translation>
+        <translation>Schéma de validation non chargé !</translation>
     </message>
     <message>
         <location filename="metatools.py" line="528"/>
         <source>Metadata is valid!</source>
-        <translation type="unfinished"></translation>
+        <translation>La métadonnée est valide !</translation>
     </message>
     <message>
         <location filename="metatools.py" line="539"/>
         <source>Select metadata file</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner le fichier de métadonnée</translation>
     </message>
     <message>
         <location filename="metatools.py" line="565"/>
         <source>XML files (*.xml);;Text files (*.txt *.TXT);;All files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="metatools.py" line="550"/>
         <source>Metadata can&apos;t be imported: </source>
-        <translation type="unfinished"></translation>
+        <translation>Les métadonnées peuvent pas être importées :</translation>
     </message>
     <message>
         <location filename="metatools.py" line="556"/>
         <source>Metadata was imported successful!</source>
-        <translation type="unfinished"></translation>
+        <translation>Métadonnées importées avec succès!</translation>
     </message>
     <message>
         <location filename="metatools.py" line="565"/>
         <source>Save metadata to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Enregistrer les métadonnées dans un fichier</translation>
     </message>
     <message>
         <location filename="metatools.py" line="576"/>
         <source>Metadata can&apos;t be exported: </source>
-        <translation type="unfinished"></translation>
+        <translation>Les métadonnée ne peuvent pas être exportées :</translation>
     </message>
     <message>
         <location filename="metatools.py" line="582"/>
         <source>Metadata was exported successful!</source>
-        <translation type="unfinished"></translation>
+        <translation>Métadonnées exportées avec succès!</translation>
     </message>
 </context>
 <context>
@@ -693,7 +694,7 @@ Le plugin ne sera pas activé.</translation>
     <message>
         <location filename="ui/ui_editor.ui" line="153"/>
         <source>Copy path</source>
-        <translation type="unfinished"></translation>
+        <translation>Copier le chemin</translation>
     </message>
     <message>
         <location filename="ui/ui_editor.ui" line="156"/>
@@ -704,7 +705,7 @@ Le plugin ne sera pas activé.</translation>
         <location filename="metatoolseditor.py" line="217"/>
         <source>Metadata can&apos;t be saved:
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Les métadonnées peuvent pas être enregistrées :</translation>
     </message>
 </context>
 <context>
@@ -770,12 +771,12 @@ Le plugin ne sera pas activé.</translation>
     <message>
         <location filename="ui/ui_settings.ui" line="88"/>
         <source>Select profile</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner le profil</translation>
     </message>
     <message>
         <location filename="ui/ui_settings.ui" line="138"/>
         <source>View stylesheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Voir la feuille de style</translation>
     </message>
     <message>
         <location filename="ui/ui_settings.ui" line="132"/>
@@ -798,7 +799,7 @@ Le plugin ne sera pas activé.</translation>
     <message>
         <location filename="ui/ui_viewer.ui" line="82"/>
         <source>Print</source>
-        <translation type="unfinished"></translation>
+        <translation>Imprimer</translation>
     </message>
     <message>
         <location filename="ui/ui_viewer.ui" line="85"/>
@@ -808,12 +809,12 @@ Le plugin ne sera pas activé.</translation>
     <message>
         <location filename="ui/ui_viewer.ui" line="94"/>
         <source>Copy all</source>
-        <translation type="unfinished"></translation>
+        <translation>Copier tout</translation>
     </message>
     <message>
         <location filename="ui/ui_viewer.ui" line="103"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Copier</translation>
     </message>
     <message>
         <location filename="ui/ui_viewer.ui" line="106"/>
@@ -823,7 +824,7 @@ Le plugin ne sera pas activé.</translation>
     <message>
         <location filename="metatoolsviewer.py" line="97"/>
         <source>Translation error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur de traduction</translation>
     </message>
 </context>
 <context>
