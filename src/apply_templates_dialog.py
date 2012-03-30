@@ -242,7 +242,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
     # get profile from settings
     settings = QSettings("NextGIS", "metatools")
-    profile = settings.value("iso19115/defaultProfile", QVariant("")).toString()
+    profile = settings.value("general/defaultProfile", QVariant("")).toString()
     if profile.isEmpty():
       QMessageBox.warning(self, self.tr("No profile"), self.tr("No profile selected. Please set default profile in plugin settings"))
       return
@@ -279,7 +279,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
             # generate preview
             if self.chkGeneratePreview.isChecked():
-		          utils.generatePreview(layer)
+              utils.generatePreview(layer)
         else:
             if self.chkUpdateImageInfo.isChecked():
               utils.writeVectorInfo(layer, metaFilePath)
