@@ -1,411 +1,218 @@
--- Table: layer_metadata
+DROP TABLE IF EXISTS ISO_metadata CASCADE;
+DROP TABLE IF EXISTS ISO_metadata_reference CASCADE;
 
-DROP TABLE IF EXISTS layer_metadata;
-
-CREATE TABLE layer_metadata
+CREATE TABLE ISO_metadata
 (
-  f_table_catalog character varying(256) NOT NULL,
-  f_table_schema character varying(256) NOT NULL,
-  f_table_name character varying(256) NOT NULL,
-  metadata xml,
-  CONSTRAINT layer_metadata_pk PRIMARY KEY (f_table_catalog, f_table_schema, f_table_name)
+	id serial PRIMARY KEY,
+	md_scope character varying(64),
+	metadata xml,
+	fileId xml default null,
+	parentId xml default null,
+	geometry geometry
 )
 WITH (
   OIDS=TRUE
 );
-ALTER TABLE layer_metadata OWNER TO postgres;
-GRANT ALL ON TABLE layer_metadata TO postgres;
+-- ALTER TABLE ISO_metadata OWNER TO postgres;
+-- GRANT ALL ON TABLE ISO_metadata TO postgres;
 
--- GRANT ALL ON TABLE layer_metadata TO "GisAdmin";
--- GRANT ALL ON TABLE layer_metadata TO "GisUser";
+CREATE TABLE ISO_metadata_reference
+(
+	reference_scope character varying(64),
+	table_name character varying(256),
+	column_name character varying(256),
+	row_id_value integer,
+	timestamp timestamp default statement_timestamp(),
+	md_file_id integer references ISO_metadata(id) default 0,
+	md_parent_id integer references ISO_metadata(id) default 0
+	
+)
+WITH (
+  OIDS=TRUE
+);
+-- ALTER TABLE ISO_metadata_reference OWNER TO postgres;
+-- GRANT ALL ON TABLE ISO_metadata_reference TO postgres;
+
+CREATE OR REPLACE FUNCTION update_imr_timestamp_column()
+	RETURNS TRIGGER AS $$
+	BEGIN
+	   NEW.timestamp = now(); 
+	   RETURN NEW;
+	END;
+	$$ language 'plpgsql';
+
+CREATE TRIGGER update_imr_timestamp BEFORE UPDATE
+        ON ISO_metadata_reference FOR EACH ROW EXECUTE PROCEDURE 
+        update_imr_timestamp_column();
 
 
+-- REGISTER ISO METADATA ######################################
 
-
--- Function: addlayermetadata(character varying, character varying, character varying, character varying, integer, character varying, integer)
--- DROP FUNCTION addlayermetadata(character varying, character varying, character varying, character varying);
-
-CREATE OR REPLACE FUNCTION addlayermetadata(character varying, character varying, character varying, character varying)
+CREATE OR REPLACE FUNCTION public.RegisterIsoMetadata(character varying, character varying, character varying)
   RETURNS text AS
 $BODY$
 DECLARE
-    catalog_name alias for $1;
-    schema_name alias for $2;
-    table_name alias for $3;
-    meta_text alias for $4;
+	schema_name alias for $1;
+	table_name_alias alias for $2;
+	metadata alias for $3;
 
-    -- meta_xml xml;
-    real_schema name;
-    sql text;
-BEGIN
-    -- Verify schema
-    IF ( schema_name IS NOT NULL AND schema_name != '' ) THEN
-        sql := 'SELECT nspname FROM pg_namespace ' ||
-            'WHERE text(nspname) = ' || quote_literal(schema_name) ||
-            'LIMIT 1';
-        RAISE DEBUG '%', sql;
-        EXECUTE sql INTO real_schema;
+	sql text;
+	ret text;
+	tmp text;
+	fid xml;
+	pid xml;
+	geo geometry;
+	ns varchar[];
 
-        IF ( real_schema IS NULL ) THEN
-            RAISE EXCEPTION 'Schema % is not a valid schemaname', quote_literal(schema_name);
-            RETURN 'fail';
-        END IF;
-    END IF;
+BEGIN    
+	ns := ARRAY[ARRAY['gmd', 'http://www.isotc211.org/2005/gmd']];
+	IF position('gmd:fileIdentifier' in metadata) <> -1 THEN
+		fid := xpath('//gmd:fileIdentifier/*', XMLPARSE(DOCUMENT metadata), ns);
+		pid := xpath('//gmd:parentIdentifier/*', XMLPARSE(DOCUMENT metadata), ns);
+	ELSE
+		fid := xpath('//fileIdentifier/*', XMLPARSE(DOCUMENT metadata), ns);
+		pid := xpath('//parentIdentifier/*', XMLPARSE(DOCUMENT metadata), ns);
+	END IF;
+	geo := BBoxGeometryFromMetadata(metadata);
+	tmp := XMLSERIALIZE(CONTENT pid AS text);
+	IF tmp = '{}' THEN
+		pid := fid;
+	END IF;
+	sql := 'SELECT GetIsoMetadata(''' || schema_name || ''', ''' || table_name_alias || ''')';
+	EXECUTE sql INTO tmp;
+	INSERT INTO iso_metadata(md_scope, metadata, fileid, parentid, geometry)
+	       VALUES('undefined', XMLPARSE(DOCUMENT metadata), fid, pid, geo); 
+	sql := 'SELECT max(id) FROM iso_metadata';
+	EXECUTE sql INTO ret;
 
-    IF ( real_schema IS NULL ) THEN
-        RAISE DEBUG 'Detecting schema';
-        sql := 'SELECT n.nspname AS schemaname ' ||
-            'FROM pg_catalog.pg_class c ' ||
-              'JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace ' ||
-            'WHERE c.relkind = ' || quote_literal('r') ||
-            ' AND n.nspname NOT IN (' || quote_literal('pg_catalog') || ', ' || quote_literal('pg_toast') || ')' ||
-            ' AND pg_catalog.pg_table_is_visible(c.oid)' ||
-            ' AND c.relname = ' || quote_literal(table_name);
-        RAISE DEBUG '%', sql;
-        EXECUTE sql INTO real_schema;
-
-        IF ( real_schema IS NULL ) THEN
-            RAISE EXCEPTION 'Table % does not occur in the search_path', quote_literal(table_name);
-            RETURN 'fail';
-        END IF;
-    END IF;
-
-    -- Validate XML
-    --not need
-    --meta_xml := XMLPARSE( DOCUMENT meta_text);
-
-    -- Delete stale record in layer_metadata (if any)
-    sql := 'DELETE FROM layer_metadata WHERE
-        f_table_catalog = ' || quote_literal('') ||
-        ' AND f_table_schema = ' ||
-        quote_literal(real_schema) ||
-        ' AND f_table_name = ' || quote_literal(table_name);
-    RAISE DEBUG '%', sql;
-    EXECUTE sql;
-
-
-    -- Add record in layer_metadata
-    sql := 'INSERT INTO layer_metadata (f_table_catalog,f_table_schema,f_table_name,metadata)' ||
-                       ' VALUES (' ||
-                                   quote_literal('') || ',' ||
-                                   quote_literal(real_schema) || ',' ||
-                                   quote_literal(table_name) || ',' ||
-                                   'XMLPARSE( DOCUMENT ' || quote_literal(meta_text) || ') )';
-    RAISE DEBUG '%', sql;
-    EXECUTE sql;
-
-    RETURN
-        real_schema || '.' ||
-        table_name;
-END;
-$BODY$
-  LANGUAGE plpgsql VOLATILE STRICT
-  COST 100;
-ALTER FUNCTION addlayermetadata(character varying, character varying, character varying, character varying) OWNER TO postgres;
-
-
-
--- Function: addlayermetadata(character varying, character varying, character varying)
-
--- DROP FUNCTION addlayermetadata(character varying, character varying, character varying);
-
-CREATE OR REPLACE FUNCTION addlayermetadata(character varying, character varying, character varying)
-  RETURNS text AS
-$BODY$
-DECLARE
-    ret  text;
-BEGIN
-    SELECT addlayermetadata('',$1,$2,$3) into ret;
-    RETURN ret;
-END;
-$BODY$
-  LANGUAGE plpgsql VOLATILE STRICT
-  COST 100;
-ALTER FUNCTION addlayermetadata(character varying, character varying, character varying) OWNER TO postgres;
-
-
-
--- Function: addlayermetadata(character varying, character varying)
-
--- DROP FUNCTION addlayermetadata(character varying, character varying);
-
-CREATE OR REPLACE FUNCTION addlayermetadata(character varying, character varying)
-  RETURNS text AS
-$BODY$
-DECLARE
-    ret  text;
-BEGIN
-    SELECT addlayermetadata('', '', $1,$2) into ret;
-    RETURN ret;
-END;
-$BODY$
-  LANGUAGE plpgsql VOLATILE STRICT
-  COST 100;
-ALTER FUNCTION addlayermetadata(character varying, character varying) OWNER TO postgres;
-
-
-
-
-
-
-
-
-
--- Function: droplayermetadata(character varying, character varying, character varying)
-
--- DROP FUNCTION droplayermetadata(character varying, character varying, character varying);
-
-CREATE OR REPLACE FUNCTION droplayermetadata(character varying, character varying, character varying)
-  RETURNS text AS
-$BODY$
-DECLARE
-    catalog_name alias for $1;
-    schema_name alias for $2;
-    table_name alias for $3;
-    real_schema name;
-
-BEGIN
-
-    IF ( schema_name = '' ) THEN
-        SELECT current_schema() into real_schema;
-    ELSE
-        real_schema = schema_name;
-    END IF;
-
-    -- Remove refs from layer_metadata table
-    EXECUTE 'DELETE FROM layer_metadata WHERE ' ||
-        'f_table_schema = ' || quote_literal(real_schema) ||
-        ' AND ' ||
-        ' f_table_name = ' || quote_literal(table_name);
-    RETURN
-        'Metadata for ' || real_schema || '.' ||
-        table_name ||' dropped.';
+	IF tmp <> '' THEN
+		UPDATE iso_metadata_reference SET md_file_id = cast(ret AS integer), md_parent_id = cast(ret AS integer) 
+		       WHERE reference_scope='table' AND table_name = table_name_alias;
+	ELSE 
+		INSERT INTO iso_metadata_reference(reference_scope, table_name, md_file_id, md_parent_id)
+		       VALUES('table', table_name_alias, cast(ret AS integer), cast(ret AS integer));
+	END IF;
+	RETURN ret;
 
 END;
 $BODY$
   LANGUAGE plpgsql VOLATILE STRICT
   COST 100;
-ALTER FUNCTION droplayermetadata(character varying, character varying, character varying) OWNER TO postgres;
+ALTER FUNCTION public.RegisterIsoMetadata(character varying, character varying, character varying)
+  OWNER TO postgres;
 
 
--- Function: droplayermetadata(character varying, character varying)
--- DROP FUNCTION droplayermetadata(character varying, character varying);
+-- GET ISO METADATA ######################################
 
-CREATE OR REPLACE FUNCTION droplayermetadata(character varying, character varying)
-  RETURNS text AS
-$BODY$ SELECT droplayermetadata('',$1,$2) $BODY$
-  LANGUAGE sql VOLATILE STRICT
-  COST 100;
-ALTER FUNCTION droplayermetadata(character varying, character varying) OWNER TO postgres;
-
-
--- Function: droplayermetadata(character varying)
--- DROP FUNCTION droplayermetadata(character varying);
-
-CREATE OR REPLACE FUNCTION droplayermetadata(character varying)
-  RETURNS text AS
-$BODY$ SELECT droplayermetadata('','',$1) $BODY$
-  LANGUAGE sql VOLATILE STRICT
-  COST 100;
-ALTER FUNCTION droplayermetadata(character varying) OWNER TO postgres;
-
-
-
-
-
-
--- Function: updatelayermetadata(character varying, character varying, character varying, character varying)
-
--- DROP FUNCTION updatelayermetadata(character varying, character varying, character varying, character varying);
-CREATE OR REPLACE FUNCTION updatelayermetadata(character varying, character varying, character varying, character varying)
+CREATE OR REPLACE FUNCTION public.GetIsoMetadata(character varying, character varying)
   RETURNS text AS
 $BODY$
 DECLARE
-    catalog_name alias for $1;
-    schema_name alias for $2;
-    table_name alias for $3;
-    meta_text alias for $4;
+    schema_name alias for $1;
+    table_name alias for $2;
 
-    real_schema name;
-    okay boolean;
-    myrec RECORD;
-BEGIN
-    -- Find, check or fix schema_name
-    IF ( schema_name != '' ) THEN
-        okay = 'f';
-
-        FOR myrec IN SELECT nspname FROM pg_namespace WHERE text(nspname) = schema_name LOOP
-            okay := 't';
-        END LOOP;
-
-        IF ( okay <> 't' ) THEN
-            RAISE EXCEPTION 'Invalid schema name';
-        ELSE
-            real_schema = schema_name;
-        END IF;
-    ELSE
-        SELECT INTO real_schema current_schema()::text;
-    END IF;
-
-
-
-    -- Update ref from layer_metadata table
-    EXECUTE 'UPDATE layer_metadata SET metadata = XMLPARSE( DOCUMENT '  || quote_literal(meta_text) || ')' ||
-        ' where f_table_schema = ' ||
-        quote_literal(real_schema) || ' and f_table_name = ' ||
-        quote_literal(table_name);
-
-    RETURN real_schema || '.' || table_name || '.' || ' metadata changed';
-
-END;
-$BODY$
-  LANGUAGE plpgsql VOLATILE STRICT
-  COST 100;
-ALTER FUNCTION updatelayermetadata(character varying, character varying, character varying, character varying) OWNER TO postgres;
-
-
-
-
-
-
--- Function: updatelayermetadata(character varying, character varying, character varying)
-
--- DROP FUNCTION updatelayermetadata(character varying, character varying, character varying);
-
-CREATE OR REPLACE FUNCTION updatelayermetadata(character varying, character varying, character varying)
-  RETURNS text AS
-$BODY$
-DECLARE
-    ret  text;
-BEGIN
-    SELECT updatelayermetadata('',$1,$2,$3) into ret;
-    RETURN ret;
-END;
-$BODY$
-  LANGUAGE plpgsql VOLATILE STRICT
-  COST 100;
-ALTER FUNCTION updatelayermetadata(character varying, character varying, character varying) OWNER TO postgres;
-
-
--- Function: updatelayermetadata(character varying, character varying)
--- DROP FUNCTION updatelayermetadata(character varying, character varying);
-
-CREATE OR REPLACE FUNCTION updatelayermetadata(character varying, character varying)
-  RETURNS text AS
-$BODY$
-DECLARE
-    ret  text;
-BEGIN
-    SELECT updatelayermetadata('','',$1,$2) into ret;
-    RETURN ret;
-END;
-$BODY$
-  LANGUAGE plpgsql VOLATILE STRICT
-  COST 100;
-ALTER FUNCTION updatelayermetadata(character varying, character varying) OWNER TO postgres;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- Function: getlayermetadata(character varying, character varying, character varying)
-
--- DROP FUNCTION getlayermetadata(character varying, character varying, character varying);
-
-CREATE OR REPLACE FUNCTION getlayermetadata(character varying, character varying, character varying)
-  RETURNS text AS
-$BODY$
-DECLARE
-    catalog_name alias for $1;
-    schema_name alias for $2;
-    table_name alias for $3;
-
-    real_schema name;
-    okay boolean;
-    myrec RECORD;
+    rowid integer;
+    metadata xml;
     sql text;
     ret text;
 BEGIN
-    -- Find, check or fix schema_name
-    IF ( schema_name != '' ) THEN
-        okay = 'f';
 
-        FOR myrec IN SELECT nspname FROM pg_namespace WHERE text(nspname) = schema_name LOOP
-            okay := 't';
-        END LOOP;
+    sql := 'SELECT md_file_id FROM iso_metadata_reference WHERE column_name IS NULL AND row_id_value IS NULL AND reference_scope=''table'' AND table_name=''' || table_name || ''' LIMIT 1';
+    EXECUTE sql INTO rowid;
 
-        IF ( okay <> 't' ) THEN
-            RAISE EXCEPTION 'Invalid schema name';
-        ELSE
-            real_schema = schema_name;
-        END IF;
-    ELSE
-        SELECT INTO real_schema current_schema()::text;
+    IF rowid IS NULL THEN
+	RETURN '';
     END IF;
 
+    sql := 'SELECT metadata FROM iso_metadata WHERE id=' || rowid || ' LIMIT 1 ';
+    EXECUTE sql INTO metadata;
 
-    -- Update ref from layer_metadata table
-    sql := 'SELECT XMLSERIALIZE(DOCUMENT metadata as TEXT) FROM layer_metadata WHERE ' ||
-           'f_table_schema = ' || quote_literal(real_schema) ||
-           ' and f_table_name = ' || quote_literal(table_name) || ' LIMIT 1';
-    EXECUTE sql INTO ret;
-    RETURN ret;
-    --RETURN XMLSERIALIZE(DOCUMENT ret as TEXT);
+    RETURN metadata::text;
 
 END;
 $BODY$
   LANGUAGE plpgsql VOLATILE STRICT
   COST 100;
-ALTER FUNCTION getlayermetadata(character varying, character varying, character varying) OWNER TO postgres;
+ALTER FUNCTION public.GetIsoMetadata(character varying, character varying)
+  OWNER TO postgres;
 
-
-
-
-
--- Function: getlayermetadata(character varying, character varying)
-
--- DROP FUNCTION getlayermetadata(character varying, character varying);
-
-CREATE OR REPLACE FUNCTION getlayermetadata(character varying, character varying)
-  RETURNS text AS
+CREATE OR REPLACE FUNCTION public.BBoxGeometryFromMetadata(character varying)
+  RETURNS geometry AS
 $BODY$
 DECLARE
-    ret  text;
-BEGIN
-    SELECT getlayermetadata('',$1,$2) into ret;
-    RETURN ret;
+	src alias for $1;
+	tmp text;
+
+	extentPath character varying;
+
+	substract boolean;
+	north numeric;
+	south numeric;
+	east numeric;
+	west numeric;
+
+	ns varchar[];
+
+	m xml;
+	app xml;
+	doc xml[];
+
+	box geometry;
+	geo geometry;
+
+BEGIN    
+	ns := ARRAY[ARRAY['gmd', 'http://www.isotc211.org/2005/gmd'], 
+	            ARRAY['gco', 'http://www.isotc211.org/2005/gco'], 
+	            ARRAY['srv', 'http://www.isotc211.org/2005/srv'] ];
+	doc := xpath('/gmd:MD_Metadata/gmd:identificationInfo/*/*/gmd:EX_Extent', XMLPARSE(DOCUMENT src), ns);
+	FOREACH m IN ARRAY doc
+	LOOP
+		IF position('gmd:EX_Extent' in XMLSERIALIZE(DOCUMENT m AS text)) <> -1 THEN
+			tmp := '<root xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv">'||regexp_replace(XMLSERIALIZE(DOCUMENT m AS text), 'gmd:', '','g')||'</root>';
+		ELSE
+			tmp := '<root xmlns="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv">'||XMLSERIALIZE(DOCUMENT m AS text)||'</root>';
+		END IF;
+		IF xpath_exists('/*/EX_Extent/geographicElement/EX_GeographicBoundingBox', tmp::xml, ns) THEN
+			substract := FALSE;
+			IF xpath_exists('/*/EX_Extent/geographicElement/EX_GeographicBoundingBox/extentTypeCode/*', tmp::xml, ns) THEN
+				app := xpath('/*/EX_Extent/geographicElement/EX_GeographicBoundingBox/extentTypeCode/*/text()', tmp::xml, ns); --gco:Boolean
+				IF app::text = '{0}' OR app::text = '{false}' OR app::text = '{FALSE}' THEN
+					substract := TRUE;
+				END IF;
+			END IF;
+			
+			app := xpath('/*/EX_Extent/geographicElement/EX_GeographicBoundingBox/westBoundLongitude/*/text()',  tmp::xml, ns);
+			west :=substring(app::text FROM '[0-9.-]+')::numeric;
+			app := xpath('/*/EX_Extent/geographicElement/EX_GeographicBoundingBox/eastBoundLongitude/*/text()',  tmp::xml, ns);
+			east :=substring(app::text FROM '[0-9.-]+')::numeric;
+			app := xpath('/*/EX_Extent/geographicElement/EX_GeographicBoundingBox/southBoundLatitude/*/text()',  tmp::xml, ns);
+			south :=substring(app::text FROM '[0-9.-]+')::numeric;
+			app := xpath('/*/EX_Extent/geographicElement/EX_GeographicBoundingBox/northBoundLatitude/*/text()',  tmp::xml, ns);
+			north :=substring(app::text FROM '[0-9.-]+')::numeric;
+			
+			box := st_astext(ST_MakeBox2D(ST_Point(west, south), ST_Point(east, north)));
+			IF geo IS NULL THEN
+				geo := box;
+			ELSE
+				IF substract THEN
+					geo := ST_Difference(geo, box);
+				ELSE
+					geo := ST_Union(geo, box);
+				END IF;
+			END IF;
+		ELSE
+			CONTINUE;
+		END IF;
+		IF geo IS NOT NULL THEN
+			geo = ST_ENVELOPE(geo);
+		END IF;
+	END LOOP;
+	RETURN geo;
 END;
 $BODY$
   LANGUAGE plpgsql VOLATILE STRICT
   COST 100;
-ALTER FUNCTION updatelayermetadata(character varying, character varying) OWNER TO postgres;
+ALTER FUNCTION public.BBoxGeometryFromMetadata(character varying)
+  OWNER TO postgres;
 
 
--- Function: getlayermetadata(character varying)
-
--- DROP FUNCTION getlayermetadata(character varying);
-
-CREATE OR REPLACE FUNCTION getlayermetadata(character varying)
-  RETURNS text AS
-$BODY$
-DECLARE
-    ret  text;
-BEGIN
-    SELECT getlayermetadata('','',$1) into ret;
-    RETURN ret;
-END;
-$BODY$
-  LANGUAGE plpgsql VOLATILE STRICT
-  COST 100;
-ALTER FUNCTION getlayermetadata(character varying) OWNER TO postgres;

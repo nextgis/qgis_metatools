@@ -218,8 +218,6 @@ self.iface.mainWindow())
     # check layer type - return (True/False, Desc)
     res = MetadataProvider.IsLayerSupport(self.layer)
 
-    #print "Metatools debug: ", res[1] # debug
-
     if not res[0]:
       self.disableLayerActions()
       self.layer = None

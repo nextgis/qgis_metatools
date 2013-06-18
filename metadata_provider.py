@@ -116,10 +116,10 @@ class MetadataProvider:
           return (False, "Only 'ESRI Shapefile' ogr provider is supported now!")
       if layer.providerType() == "postgres":
 	if NO_PSYCOPG2:
-	  return (False, "psycopg2 are not installed!")
-        if not PostgresMetadataProvider.checkExstension(layer.source()):
-          return (False, "MetadataPostgis extension are not installed for this DB or connection has failed!")
-
+	  return (False, "psycopg2 libraries are not installed!")
+        if not PostgresMetadataProvider.checkExtension(layer.source()):
+          if not PostgresMetadataProvider.installExtension(layer.source()):
+            return (False, "MetadataPostgis extension are not installed for this DB or connection has failed!")
 
     # layer is supported 
     return (True, "Layer is supported")
@@ -152,7 +152,6 @@ class FileMetadataProvider(MetadataProvider):
   META_EXT = '.xml'
   
   def __init__(self, layer):
-    print type(layer)
     if type(layer) == type(unicode()):
       self.layerFilePath = layer
     else:
@@ -194,17 +193,17 @@ class PostgresMetadataProvider(RemouteDbMetadataProvider):
     if self.getMetadata():
       return True
     else:
-      return False
+      return False    
 
   def getMetadata(self):
     conn = psycopg2.connect(str(self.dsURI.connectionInfo()))
     cur = conn.cursor()
-    cur.callproc("getlayermetadata", [str(self.dsURI.schema()), str(self.dsURI.table())])
+    cur.callproc("GetIsoMetadata", [str(self.dsURI.schema()), str(self.dsURI.table())])
     res = cur.fetchone()
     if res is None or res[0] is None:
         metadata = ''
     else:
-        metadata = unicode(res[0], "utf-8")
+        metadata = res[0]
     cur.close()
     conn.close()
     return metadata
@@ -212,23 +211,41 @@ class PostgresMetadataProvider(RemouteDbMetadataProvider):
   def setMetadata(self, metadata):
     conn = psycopg2.connect(str(self.dsURI.connectionInfo()))
     cur = conn.cursor()
-    cur.callproc("addlayermetadata", [str(self.dsURI.schema()), str(self.dsURI.table()), metadata])
+    cur.callproc("RegisterIsoMetadata", [str(self.dsURI.schema()), str(self.dsURI.table()), metadata])
     conn.commit()
     cur.close()
     conn.close()
 
   @staticmethod
-  def checkExstension(uri):
+  def checkExtension(uri):
     dsUri = QgsDataSourceURI(uri)
     try:
       conn = psycopg2.connect(str(dsUri.connectionInfo()))
       cur = conn.cursor()
-      cur.execute("SELECT COUNT(*) FROM pg_class WHERE relname='layer_metadata'")
+      cur.execute("SELECT COUNT(*) FROM pg_class WHERE relname='iso_metadata'")
       tableCount = cur.fetchone()[0]
       cur.close()
       conn.close()
       return (tableCount == 1)
     except:
+      return False
+
+  @staticmethod
+  def installExtension(uri):
+    dsUri = QgsDataSourceURI(uri)
+    try:
+      file = (path.join(path.abspath(path.dirname(__file__)), 'postgresql_ext/extension.sql'))
+      procedures  = open(file,'r').read() 
+      #print "", procedures
+      conn = psycopg2.connect(str(dsUri.connectionInfo()))
+      cur = conn.cursor()
+      cur.execute(procedures) 
+      conn.commit()
+      cur.close()
+      conn.close()
+      return True
+    except psycopg2.DatabaseError, e: 
+      print "Exception executing sql: ", e
       return False
 
 
