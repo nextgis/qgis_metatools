@@ -26,22 +26,17 @@
 #
 #******************************************************************************
 
-mVersion = "0.2.4"
-mName = "Metatools"
-mDesc = "Metadata browser/editor"
-mCat = "Plugins"
-
 def name():
-  return mName
+  return "Metatools"
 
 def description():
-  return mDesc
+  return "Metadata browser/editor"
 
 def category():
-  return mCat
+  return "Plugins"
 
 def version():
-  return mVersion
+  return "0.3.0"
 
 def icon():
   return "icons/metafile.png"
