@@ -42,7 +42,7 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
   def __init__(self):
     QDialog.__init__(self)
     self.setupUi(self)
-    self.setWindowFlags( Qt.Window | Qt.WindowMaximizeButtonHint )
+    self.setWindowFlags(Qt.Window | Qt.WindowMaximizeButtonHint)
 
     #set browser context menu
     self.webView.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -101,9 +101,9 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
     qry.setQuery(xslt)
 
     #if qry.isValid():
-    #  QMessageBox.information( self, "Valid", "Valid!" )
+    #  QMessageBox.information(self, "Valid", "Valid!")
     #else:
-    #  QMessageBox.information( self, "Valid", "Invalid!" )
+    #  QMessageBox.information(self, "Valid", "Invalid!")
 
     #result = qry.evaluateToString()
     #workaround, for PyQt < 4.8

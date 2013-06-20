@@ -77,18 +77,18 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     self.buttonBox.addButton(self.btnApply, QDialogButtonBox.AcceptRole)
     self.buttonBox.addButton(self.btnClose, QDialogButtonBox.RejectRole)
 
-    QObject.connect(self.chkExternalFiles, SIGNAL("stateChanged( int )"), self.toggleExternalFiles)
-    QObject.connect(self.lstLayers, SIGNAL("itemSelectionChanged()"), self.updateLayerList)
+    self.chkExternalFiles.stateChanged.connect(self.toggleExternalFiles)
+    self.lstLayers.itemSelectionChanged.connect(self.updateLayerList)
 
-    QObject.connect(self.btnSelectDataFiles, SIGNAL("clicked()"), self.selectExternalFiles)
-    QObject.connect(self.btnManageLicenses, SIGNAL("clicked()"), self.manageLicenses)
-    QObject.connect(self.btnManageOrgs, SIGNAL("clicked()"), self.manageOrganizations)
-    QObject.connect(self.btnManageWorkflows, SIGNAL("clicked()"), self.manageWorkflows)
-    QObject.connect(self.btnManageDatatypes, SIGNAL("clicked()"), self.manageDatatypes)
-    QObject.connect(self.btnSelectLogFile, SIGNAL("clicked()"), self.selectLogFile)
+    self.btnSelectDataFiles.clicked.connect(self.selectExternalFiles)
+    self.btnManageLicenses.clicked.connect(self.manageLicenses)
+    self.btnManageOrgs.clicked.connect(self.manageOrganizations)
+    self.btnManageWorkflows.clicked.connect(self.manageWorkflows)
+    self.btnManageDatatypes.clicked.connect(self.manageDatatypes)
+    self.btnSelectLogFile.clicked.connect(self.selectLogFile)
 
-    QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
-    QObject.connect(self.btnApply, SIGNAL("clicked()"), self.applyTemplates)
+    self.buttonBox.accepted.disconnect(self.accept)
+    self.btnApply.clicked.connect(self.applyTemplates)
 
     self.manageGui()
 
@@ -118,7 +118,6 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
         item.setData(Qt.UserRole, source)
         item.setData(Qt.ToolTipRole, source)
 
-
   def toggleExternalFiles(self):
     self.btnApply.setEnabled(False)
     if self.chkExternalFiles.isChecked():
@@ -133,9 +132,13 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
       self.updateLayerList()
 
   def selectExternalFiles(self):
-    files = QFileDialog.getOpenFileNames(self, self.tr("Select files"), ".", self.tr("All files (*.*)"))
+    files = QFileDialog.getOpenFileNames(self,
+                                         self.tr("Select files"),
+                                         ".",
+                                         self.tr("All files (*.*)")
+                                        )
 
-    if files.isEmpty():
+    if len(files) == 0:
       return
 
     self.layers = files
@@ -197,7 +200,12 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
   def selectLogFile(self):
     # TODO: need to save last dir and set it in dialog
-    logFileName = QFileDialog.getOpenFileName(self, self.tr("Select log file"), ".", self.tr("Text files (*.txt);;Log files (*.log);;All files (*)"), None, QFileDialog.ReadOnly)
+    logFileName = QFileDialog.getOpenFileName(self,
+                                              self.tr("Select log file"),
+                                              ".",
+                                              self.tr("Text files (*.txt);;Log files (*.log);;All files (*)"),
+                                              options=QFileDialog.ReadOnly
+                                             )
     self.leLogFile.setText(logFileName)
     self.leLogFile.setToolTip(logFileName)
 
@@ -226,10 +234,10 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     selection = self.lstLayers.selectedItems()
     for item in selection:
       layerSource = item.data(Qt.UserRole)
-      self.layers.append(layerSource.toString())
+      self.layers.append(layerSource)
       #my old version
-      #layer = utils.getRasterLayerByName( item.text() )
-      #self.layers.append( layer.source() )
+      #layer = utils.getRasterLayerByName(item.text())
+      #self.layers.append(layer.source())
 
     if len(self.layers) != 0:
       self.btnApply.setEnabled(True)
@@ -242,12 +250,15 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
     # get profile from settings
     settings = QSettings("NextGIS", "metatools")
-    profile = settings.value("general/defaultProfile", QVariant("")).toString()
-    if profile.isEmpty():
-      QMessageBox.warning(self, self.tr("No profile"), self.tr("No profile selected. Please set default profile in plugin settings"))
+    profile = settings.value("general/defaultProfile", "")
+    if profile == "":
+      QMessageBox.warning(self,
+                          self.tr("No profile"),
+                          self.tr("No profile selected. Please set default profile in plugin settings")
+                         )
       return
 
-    profilePath = unicode(QDir.toNativeSeparators(os.path.join(currentPath, "xml_profiles", str(profile))))
+    profilePath = unicode(QDir.toNativeSeparators(os.path.join(currentPath, "xml_profiles", unicode(profile))))
 
     try:
       for layer in self.layers:
@@ -259,18 +270,20 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
           try:
             shutil.copyfile(profilePath, metaFilePath)
           except:
-            QMessageBox.warning(self, self.tr("Metatools"), self.tr("Metadata file can't be created: ") + str(sys.exc_info()[ 1 ]))
+            QMessageBox.warning(self,
+                                self.tr("Metatools"),
+                                self.tr("Metadata file can't be created: ") + unicode(sys.exc_info()[1])
+                               )
             continue
 
         # check metadata standard
         metaprovider = FileMetadataProvider(unicode(layer)) #temporary code
         standard = MetaInfoStandard.tryDetermineStandard(metaprovider)
         if standard != MetaInfoStandard.ISO19115:
-          QMessageBox.warning(self, self.tr("Metatools"),
-                                   self.tr("File %1 has unsupported metadata standard! Only ISO19115 supported now!")
-                                   .arg(layer))
+          QMessageBox.warning(self,
+                              self.tr("Metatools"),
+                              self.tr("File %s has unsupported metadata standard! Only ISO19115 supported now!") % (layer))
           continue
-
 
         if os.path.splitext(unicode(layer))[1].lower() not in (".shp", ".mif", ".tab"):
             # extract image specific information
@@ -283,7 +296,6 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
         else:
             if self.chkUpdateImageInfo.isChecked():
               utils.writeVectorInfo(layer, metaFilePath)
-
 
         # load metadata file
         metadata_file = QFile(metaFilePath)
@@ -299,10 +311,14 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
         # save metadata file (hmm.. why not QFile?)
         metafile = codecs.open(metaFilePath, "w", encoding="utf-8")
-        metafile.write(unicode(metaXML.toString().toUtf8(), "utf-8"))
+        metafile.write(unicode(metaXML, "utf-8"))
         metafile.close()
 
-      QMessageBox.information(self, self.tr("Metatools"), self.tr("Done!"))
+      QMessageBox.information(self,
+                              self.tr("Metatools"),
+                              self.tr("Done!")
+                             )
+
       # clear selection and disable Apply button
       self.lstLayers.clearSelection()
       self.layers = []
@@ -311,7 +327,10 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
       # save settings
       self.__saveSettings()
     except:
-      QMessageBox.warning(self, self.tr("Metatools"), self.tr("Operation can't be completed: ") + str(sys.exc_info()[ 1 ]))
+      QMessageBox.warning(self,
+                          self.tr("Metatools"),
+                          self.tr("Operation can't be completed: ") + unicode(sys.exc_info()[1])
+                         )
 
   # ----------- Appliers -----------
 
@@ -321,7 +340,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     if self.cmbOrganization.currentText() == self.translatedNoneLabel:
       return
 
-    template = self.orgsTemplateManager.organizations[ self.cmbOrganization.currentText() ]
+    template = self.orgsTemplateManager.organizations[self.cmbOrganization.currentText()]
 
     root = metaXML.documentElement()
     mdContact = utils.getOrCreateChild(root, "contact")
@@ -422,7 +441,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     mdIdentificationInfo = utils.getOrCreateChild(root, "identificationInfo")
     mdDataIdentification = utils.getOrCreateChild(mdIdentificationInfo, "MD_DataIdentification")
 
-    mdResourceConstraints = utils.getOrIsertAfterChild(mdDataIdentification, "resourceConstraints", [ "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdResourceConstraints = utils.getOrIsertAfterChild(mdDataIdentification, "resourceConstraints", ["resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract"])
     mdLegalConstraintsElement = utils.getOrCreateChild(mdResourceConstraints, "MD_LegalConstraints")
 
     # useLimitation
@@ -451,7 +470,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
     root = metaXML.documentElement()
 
-    mdDataQualityInfo = utils.getOrIsertAfterChild(root, "dataQualityInfo", [ "distributionInfo", "contentInfo", "identificationInfo" ])
+    mdDataQualityInfo = utils.getOrIsertAfterChild(root, "dataQualityInfo", ["distributionInfo", "contentInfo", "identificationInfo"])
     mdDQData = utils.getOrCreateChild(mdDataQualityInfo, "DQ_DataQuality")
 
     # check requirements (not need for workflow)
@@ -489,7 +508,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     mdDataIdentification = utils.getOrCreateChild(mdIdentificationInfo, "MD_DataIdentification")
 
     #insert type of data
-    mdSpatialRep = utils.getOrIsertAfterChild(mdDataIdentification, "spatialRepresentationType", [ "aggregationInfo", "resourceConstraints", "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdSpatialRep = utils.getOrIsertAfterChild(mdDataIdentification, "spatialRepresentationType", ["aggregationInfo", "resourceConstraints", "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract"])
     mdSpatialRepTypeCode = utils.getOrCreateChild(mdSpatialRep, "MD_SpatialRepresentationTypeCode")
     mdSpatialRepTypeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode")
     textNode = utils.getOrCreateTextChild(mdSpatialRepTypeCode)
@@ -510,29 +529,27 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
       textNode = utils.getOrCreateTextChild(mdContentTypeCode)
       textNode.setNodeValue(datatypeTemplate.type)
 
-
     #insert keywords
-    mdDescKeywords = utils.getOrIsertAfterChild(mdDataIdentification, "descriptiveKeywords", [ "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdDescKeywords = utils.getOrIsertAfterChild(mdDataIdentification, "descriptiveKeywords", ["resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract"])
     mdKeywords = utils.getOrCreateChild(mdDescKeywords, "MD_Keywords")
     for keyword in datatypeTemplate.keywords:
-      mdKeyword = utils.insertAfterChild(mdKeywords, "keyword", ["keyword", ])
+      mdKeyword = utils.insertAfterChild(mdKeywords, "keyword", ["keyword",])
       mdString = utils.getOrCreateChild(mdKeyword, "gco:CharacterString")
       textNode = utils.getOrCreateTextChild(mdString)
       textNode.setNodeValue(keyword)
-    mdType = utils.getOrIsertAfterChild(mdKeywords, "type", ["keyword", ])
+    mdType = utils.getOrIsertAfterChild(mdKeywords, "type", ["keyword",])
     mdTypeCode = utils.getOrCreateChild(mdType, "MD_KeywordTypeCode")
     mdTypeCode.setAttribute("codeList", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode")
     mdTypeCode.setAttribute("codeListValue", "theme")
     textNode = utils.getOrCreateTextChild(mdTypeCode)
     textNode.setNodeValue("theme")
 
-
     #drop all spatial scale/accuracy
-    while not (mdDataIdentification.firstChildElement("spatialResolution")).isNull():
+    while not mdDataIdentification.firstChildElement("spatialResolution").isNull():
       mdDataIdentification.removeChild(mdDataIdentification.firstChildElement("spatialResolution"))
 
     #insert spatial scale
-    mdSpatialResolution = utils.insertAfterChild(mdDataIdentification, "spatialResolution", ["spatialRepresentationType", "aggregationInfo", "resourceConstraints", "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdSpatialResolution = utils.insertAfterChild(mdDataIdentification, "spatialResolution", ["spatialRepresentationType", "aggregationInfo", "resourceConstraints", "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract"])
     mdResolution = utils.getOrCreateChild(mdSpatialResolution, "MD_Resolution")
     mdEqScale = utils.getOrIsertTopChild(mdResolution, "equivalentScale")
     mdFraction = utils.getOrCreateChild(mdEqScale, "MD_RepresentativeFraction")
@@ -542,7 +559,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     textNode.setNodeValue(datatypeTemplate.scale)
 
     #insert spatial accuracy
-    mdSpatialResolution = utils.insertAfterChild(mdDataIdentification, "spatialResolution", ["spatialResolution", "spatialRepresentationType", "aggregationInfo", "resourceConstraints", "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract" ])
+    mdSpatialResolution = utils.insertAfterChild(mdDataIdentification, "spatialResolution", ["spatialResolution", "spatialRepresentationType", "aggregationInfo", "resourceConstraints", "resourceSpecificUsage", "descriptiveKeywords", "resourceFormat", "graphicOverview", "resourceMaintenance", "pointOfContact", "status", "credit", "purpose", "abstract"])
     mdResolution = utils.getOrCreateChild(mdSpatialResolution, "MD_Resolution")
     mdDistance = utils.getOrCreateChild(mdResolution, "distance")
     mdGcoDistance = utils.getOrCreateChild(mdDistance, "gco:Distance")
@@ -551,13 +568,11 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     mdGcoDistance.setAttribute("uom", "M")
 
     #insert thematic accurancy??????
-
     return
-
 
   def applyLogFile(self, metaXML):
     # TODO: make more safe
-    if self.leLogFile.text().isEmpty():
+    if self.leLogFile.text() == "":
       return
 
     logFile = codecs.open(self.leLogFile.text(), "r", encoding="utf-8")
@@ -566,7 +581,7 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
 
     root = metaXML.documentElement()
 
-    mdDataQualityInfo = utils.getOrIsertAfterChild(root, "dataQualityInfo", [ "distributionInfo", "contentInfo", "identificationInfo" ])
+    mdDataQualityInfo = utils.getOrIsertAfterChild(root, "dataQualityInfo", ["distributionInfo", "contentInfo", "identificationInfo"])
     mdDQData = utils.getOrCreateChild(mdDataQualityInfo, "DQ_DataQuality")
 
     # check requirements (not need for log file)
@@ -591,15 +606,17 @@ class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
     textNode = utils.getOrCreateTextChild(mdCharStringElement)
     textNode.setNodeValue(logFileContent)
 
-  def __loadSettings( self ):
-    settings = QSettings( "NextGIS", "metatools" )
+  def __loadSettings(self):
+    settings = QSettings("NextGIS", "metatools")
 
-    self.chkUpdateImageInfo.setCheckState( settings.value( "templates/extractLayerInfo" ).toInt()[0] )
-    self.chkGeneratePreview.setCheckState( settings.value( "templates/generatePreview" ).toInt()[0] )
+    self.chkUpdateImageInfo.setCheckState(int(settings.value("templates/extractLayerInfo", 0)))
+    self.chkGeneratePreview.setCheckState(int(settings.value("templates/generatePreview", 0)))
 
-  def __saveSettings( self ):
-    settings = QSettings( "NextGIS", "metatools" )
+  def __saveSettings(self):
+    settings = QSettings("NextGIS", "metatools")
 
-    settings.setValue( "templates/extractLayerInfo", self.chkUpdateImageInfo.checkState() )
-    settings.setValue( "templates/generatePreview",  self.chkGeneratePreview.checkState() )
+    settings.setValue("templates/extractLayerInfo", self.chkUpdateImageInfo.checkState())
+    settings.setValue("templates/generatePreview",  self.chkGeneratePreview.checkState())
 
+  def accept(self):
+    QDialog.accept(self)

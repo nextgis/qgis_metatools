@@ -52,15 +52,15 @@ class LicenseEditorDialog(QDialog, Ui_LicenseEditorDialog):
     self.btnSave = self.buttonBox.button(QDialogButtonBox.Save)
     self.btnClose = self.buttonBox.button(QDialogButtonBox.Close)
 
-    QObject.connect(self.btnNew, SIGNAL("clicked()"), self.newLicense)
-    QObject.connect(self.btnRemove, SIGNAL("clicked()"), self.removeLicense)
-    QObject.connect(self.leName, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leVersion, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.textDescription, SIGNAL("textChanged()"), self.templateModified)
-    QObject.connect(self.cmbLicense, SIGNAL("currentIndexChanged( QString )"), self.licenseChanged)
+    self.btnNew.clicked.connect(self.newLicense)
+    self.btnRemove.clicked.connect(self.removeLicense)
+    self.leName.textEdited.connect(self.templateModified)
+    self.leVersion.textEdited.connect(self.templateModified)
+    self.textDescription.textChanged.connect(self.templateModified)
+    self.cmbLicense.currentIndexChanged.connect(self.licenseChanged)
 
-    QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
-    QObject.connect(self.btnSave, SIGNAL("clicked()"), self.saveTemplate)
+    self.buttonBox.accepted.disconnect(self.accept)
+    self.btnSave.clicked.connect(self.saveTemplate)
 
     self.manageGui()
 
@@ -74,7 +74,10 @@ class LicenseEditorDialog(QDialog, Ui_LicenseEditorDialog):
     self.cmbLicense.addItems(self.licenseTemplateManager.getTemplateList())
 
   def newLicense(self):
-    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Create new template without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+    if self.btnSave.isEnabled() and QMessageBox.question(None,
+                                                         self.tr("Metatools"),
+                                                         self.tr("Template contains unsaved data. Create new template without saving?"),
+                                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
       return
     self.clearFormFields()
     self.licenseTemplate = LicenseTemplate()
@@ -95,7 +98,7 @@ class LicenseEditorDialog(QDialog, Ui_LicenseEditorDialog):
 
   def licenseChanged(self):
     templateName = self.cmbLicense.currentText()
-    if templateName.isEmpty():
+    if templateName == "":
       self.licenseTemplate = LicenseTemplate()
       self.btnRemove.setEnabled(False)
       return
@@ -110,7 +113,10 @@ class LicenseEditorDialog(QDialog, Ui_LicenseEditorDialog):
 
     # check template attrs
     if template.name is None or template.name == "":
-      QMessageBox.warning(self, self.tr("Manage licenses"), self.tr("The name of the license must be specified!"))
+      QMessageBox.warning(self,
+                          self.tr("Manage licenses"),
+                          self.tr("The name of the license must be specified!")
+                         )
       return
 
     # try to save template
@@ -121,7 +127,10 @@ class LicenseEditorDialog(QDialog, Ui_LicenseEditorDialog):
       # save new version
       self.licenseTemplateManager.saveTemplate(template)
     except:
-      QMessageBox.warning(self, self.tr("Manage licenses"), self.tr("Template can't be saved: ") + str(sys.exc_info()[ 1 ]))
+      QMessageBox.warning(self,
+                          self.tr("Manage licenses"),
+                          self.tr("Template can't be saved: ") + unicode(sys.exc_info()[1])
+                         )
       return
 
     # reload form
@@ -154,6 +163,12 @@ class LicenseEditorDialog(QDialog, Ui_LicenseEditorDialog):
     return template
 
   def reject(self):
-    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Close the window without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+    if self.btnSave.isEnabled() and QMessageBox.question(None,
+                                                         self.tr("Metatools"),
+                                                         self.tr("Template contains unsaved data. Close the window without saving?"),
+                                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
       return
     QDialog.reject(self)
+
+  def accept(self):
+    QDialog.accept(self)

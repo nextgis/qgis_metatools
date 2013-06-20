@@ -80,13 +80,13 @@ class OrganizationTemplateManager:
         if e.tagName() == "institution":
           org = self.loadInstitution(e)
           if org != None:
-            self.organizations[ e.attribute("name") ] = org
+            self.organizations[e.attribute("name")] = org
         else:
           print "Unknown tag: ", e.tagName()
         e = e.nextSiblingElement()
 
   def loadInstitution(self, root):
-    if root.attribute("name").isEmpty():
+    if root.attribute("name") == "":
       return None
     org = OrganizationTemplate()
     org.name = root.attribute("name")
@@ -213,13 +213,13 @@ class OrganizationTemplateManager:
   def addTemplate(self, templateName, template):
     # delete previous template if any
     if self.organizations.has_key(templateName):
-      del self.organizations[ templateName ]
+      del self.organizations[templateName]
 
-    self.organizations[ templateName ] = template
+    self.organizations[templateName] = template
 
   def removeTemplate(self, templateName):
     if self.organizations.has_key(templateName):
-      del self.organizations[ templateName ]
+      del self.organizations[templateName]
       self.saveTemplates()
 
   def tempalateNames(self):

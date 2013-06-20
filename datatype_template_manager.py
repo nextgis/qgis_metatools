@@ -42,7 +42,7 @@ class DatatypeTemplateManager:
     return os.path.join(self.basePluginPath, self.SUBFOLDER)
 
   def getTemplateFilePath(self, templateName):
-    return os.path.join(self.getTemplatesPath(), str(templateName) + self.EXT)
+    return os.path.join(self.getTemplatesPath(), unicode(templateName) + self.EXT)
 
   def getTemplateList(self):
     templatesList = []
@@ -55,7 +55,7 @@ class DatatypeTemplateManager:
   def loadTemplate(self, templateName):
     # TODO: more cheks on struct!
     template = DatatypeTemplate()
-    templateFile = QFile(self.getTemplateFilePath(templateName.toUtf8()))
+    templateFile = QFile(self.getTemplateFilePath(templateName))
 
     xmlTemplate = QDomDocument()
     xmlTemplate.setContent(templateFile)
@@ -121,15 +121,15 @@ class DatatypeTemplateManager:
     element.appendChild(textNode)
     root.appendChild(element)
 
-    # set keywords    
+    # set keywords
     for keyword in template.keywords:
       element = xmlTemplate.createElement("Keyword")
       textNode = xmlTemplate.createTextNode(keyword)
       element.appendChild(textNode)
       root.appendChild(element)
 
-    templateFile = codecs.open(self.getTemplateFilePath(template.name.toUtf8()), "w", encoding="utf-8")
-    templateFile.write(unicode(xmlTemplate.toString().toUtf8(), "utf-8"))
+    templateFile = codecs.open(self.getTemplateFilePath(template.name), "w", encoding="utf-8")
+    templateFile.write(unicode(xmlTemplate.toString()))
     templateFile.close()
 
   def removeTemplate(self, templateName):

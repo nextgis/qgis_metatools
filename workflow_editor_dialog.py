@@ -52,14 +52,14 @@ class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
     self.btnSave = self.buttonBox.button(QDialogButtonBox.Save)
     self.btnClose = self.buttonBox.button(QDialogButtonBox.Close)
 
-    QObject.connect(self.btnNew, SIGNAL("clicked()"), self.newWorkflow)
-    QObject.connect(self.btnRemove, SIGNAL("clicked()"), self.removeWorkflow)
-    QObject.connect(self.leName, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.textDescription, SIGNAL("textChanged()"), self.templateModified)
-    QObject.connect(self.cmbWorkflow, SIGNAL("currentIndexChanged( QString )"), self.workflowChanged)
+    self.btnNew.clicked.connect(self.newWorkflow)
+    self.btnRemove.clicked.connect(self.removeWorkflow)
+    self.leName.textEdited.connect(self.templateModified)
+    self.textDescription.textChanged.connect(self.templateModified)
+    self.cmbWorkflow.currentIndexChanged.connect(self.workflowChanged)
 
-    QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
-    QObject.connect(self.btnSave, SIGNAL("clicked()"), self.saveTemplate)
+    self.buttonBox.accepted.disconnect(self.accept)
+    self.btnSave.clicked.connect(self.saveTemplate)
 
     self.manageGui()
 
@@ -73,7 +73,10 @@ class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
     self.cmbWorkflow.addItems(self.workflowTemplateManager.getTemplateList())
 
   def newWorkflow(self):
-    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Create new template without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+    if self.btnSave.isEnabled() and QMessageBox.question(None,
+                                                         self.tr("Metatools"),
+                                                         self.tr("Template contains unsaved data. Create new template without saving?"),
+                                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
       return
     self.clearFormFields()
     self.workflowTemplate = WorkflowTemplate()
@@ -93,9 +96,8 @@ class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
     self.btnSave.setEnabled(True)
 
   def workflowChanged(self):
-    #QMessageBox.warning( self, "DEBUG", "changed" )
     templateName = self.cmbWorkflow.currentText()
-    if templateName.isEmpty():
+    if templateName == "":
       self.workflowTemplate = WorkflowTemplate()
       self.btnRemove.setEnabled(False)
       return
@@ -105,15 +107,15 @@ class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
     self.btnSave.setEnabled(False)
     self.btnRemove.setEnabled(True)
 
-
-
-
   def saveTemplate(self):
     template = self.templateFromForm()
 
     # check template attrs
     if template.name is None or template.name == "":
-      QMessageBox.warning(self, self.tr("Manage workflows"), self.tr("The name of the workflow must be specified!"))
+      QMessageBox.warning(self,
+                          self.tr("Manage workflows"),
+                          self.tr("The name of the workflow must be specified!")
+                         )
       return
 
     # try save template
@@ -124,7 +126,10 @@ class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
       # save new version
       self.workflowTemplateManager.saveTemplate(template)
     except:
-      QMessageBox.warning(self, self.tr("Manage workflows"), self.tr("Template can't be saved: ") + str(sys.exc_info()[ 1 ]))
+      QMessageBox.warning(self,
+                          self.tr("Manage workflows"),
+                          self.tr("Template can't be saved: ") + unicode(sys.exc_info()[1])
+                         )
       return
 
     # reload form
@@ -154,6 +159,12 @@ class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
     return template
 
   def reject(self):
-    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Close the window without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+    if self.btnSave.isEnabled() and QMessageBox.question(None,
+                                                         self.tr("Metatools"),
+                                                         self.tr("Template contains unsaved data. Close the window without saving?"),
+                                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
       return
     QDialog.reject(self)
+
+  def accept(self):
+    QDialog.accept(self)

@@ -27,14 +27,14 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtXml import *
 
-def getPath( node ):
+def getPath(node):
   path = ""
   if not node.parentNode().isNull() and node.parentNode().nodeType() != QDomNode.DocumentNode:
-    path = getPath( node.parentNode() ) + " -> "
+    path = getPath(node.parentNode()) + " -> "
   return path + node.nodeName()
 
 class DomItem:
-  def __init__( self, node, row, parent = None ):
+  def __init__(self, node, row, parent = None):
     self.domNode = node
     # record the item's location within its parent.
     self.rowNumber = row
@@ -43,99 +43,99 @@ class DomItem:
 
     self.editable = False
     if self.domNode.nodeType() == QDomNode.ElementNode:
-      self.editable = ( self.domNode.childNodes().count() == 1 and self.domNode.childNodes().at( 0 ).nodeType() == QDomNode.TextNode ) or ( not self.domNode.hasChildNodes() )
+      self.editable = (self.domNode.childNodes().count() == 1 and self.domNode.childNodes().at(0).nodeType() == QDomNode.TextNode) or (not self.domNode.hasChildNodes())
 
     self.hasOneGco=False
     if self.domNode.nodeType() == QDomNode.ElementNode and not self.editable:
-      self.hasOneGco=self.domNode.childNodes().count() == 1 and self.domNode.childNodes().at( 0 ).nodeType() == QDomNode.ElementNode and  self.domNode.childNodes().at( 0 ).nodeName().contains("gco:", Qt.CaseInsensitive)
+      self.hasOneGco=self.domNode.childNodes().count() == 1 and self.domNode.childNodes().at(0).nodeType() == QDomNode.ElementNode and  self.domNode.childNodes().at(0).nodeName().contains("gco:", Qt.CaseInsensitive)
 
-  def node( self ):
+  def node(self):
     return self.domNode
 
-  def parent( self ):
+  def parent(self):
     return self.parentItem
 
-  def child( self, i ):
-    if self.childItems.has_key( i ):
-      return self.childItems[ i ]
+  def child(self, i):
+    if self.childItems.has_key(i):
+      return self.childItems[i]
 
     if i >= 0 and i < self.domNode.childNodes().count():
-      childNode = self.domNode.childNodes().item( i )
-      childItem = DomItem( childNode, i, self )
-      self.childItems[ i ] = childItem
+      childNode = self.domNode.childNodes().item(i)
+      childItem = DomItem(childNode, i, self)
+      self.childItems[i] = childItem
       return childItem
 
     return 0
 
-  def row( self ):
+  def row(self):
     return self.rowNumber
 
   # editable flag. Need to remove #text nodes and organize editable control
-  def isEditable( self ):
+  def isEditable(self):
     return self.editable
 
   # child counts. Need to remove #text nodes
-  def childCount( self ):
+  def childCount(self):
     if self.editable:
       return 0
     else:
       return self.domNode.childNodes().count()
 
   # item value. Need to remove #text nodes
-  def itemValue( self ):
+  def itemValue(self):
     if self.editable:
-      return self.domNode.childNodes().at( 0 ).nodeValue()
+      return self.domNode.childNodes().at(0).nodeValue()
     else:
       return self.domNode.nodeValue()
 
   # set item value. Need to remove #text nodes
-  def setItemValue( self, value ):
+  def setItemValue(self, value):
     if self.editable:
       if not self.domNode.hasChildNodes():
         # create text node
-        textNode = self.domNode.ownerDocument().createTextNode( value )
-        self.domNode.appendChild( textNode )
+        textNode = self.domNode.ownerDocument().createTextNode(value)
+        self.domNode.appendChild(textNode)
       else:
-        self.domNode.childNodes().at( 0 ).setNodeValue( value )
+        self.domNode.childNodes().at(0).setNodeValue(value)
 
-  def getNodePath( self ):
-    return getPath( self.domNode )
+  def getNodePath(self):
+    return getPath(self.domNode)
 
-  def hasOneGcoElement( self ):
-    return self.hasOneGco  
+  def hasOneGcoElement(self):
+    return self.hasOneGco
 
 
-class DomModel( QAbstractItemModel ):
-  def __init__( self, document, parent = None ):
-    QAbstractItemModel.__init__( self, parent )
+class DomModel(QAbstractItemModel):
+  def __init__(self, document, parent = None):
+    QAbstractItemModel.__init__(self, parent)
     self.domDocument = document
-    self.rootItem = DomItem( self.domDocument, 0 )
+    self.rootItem = DomItem(self.domDocument, 0)
 
-  def columnCount( self, parent ):
+  def columnCount(self, parent):
     return 3
 
   # get editable flag by index
-  def isEditable( self, index ):
+  def isEditable(self, index):
     if not index.isValid():
       return QVariant()
 
     item = index.internalPointer()
     return item.isEditable()
 
-  def nodePath( self, index ):
+  def nodePath(self, index):
     if not index.isValid():
       return QString()
     item = index.internalPointer()
     return item.getNodePath()
 
-  def hasOneGco( self, index ):
+  def hasOneGco(self, index):
     if not index.isValid():
       return False
     item = index.internalPointer()
     return item.hasOneGco
 
 
-  def data( self, index, role ):
+  def data(self, index, role):
     if not index.isValid():
       return QVariant()
 
@@ -148,51 +148,51 @@ class DomModel( QAbstractItemModel ):
     attributeMap = node.attributes()
 
     if index.column() == 0:
-      return QVariant( node.nodeName() )
+      return QVariant(node.nodeName())
     elif index.column() == 1:
-      for i in range( 0, attributeMap.count() ):
-        attribute = attributeMap.item( i )
-        attributes.append( attribute.nodeName() + "=\"" + attribute.nodeValue() + "\"" )
+      for i in range(0, attributeMap.count()):
+        attribute = attributeMap.item(i)
+        attributes.append(attribute.nodeName() + "=\"" + attribute.nodeValue() + "\"")
 
-      return QVariant( attributes.join(" ") )
+      return QVariant(attributes.join(" "))
     elif index.column() == 2:
-      #return QVariant( node.nodeValue().split( "\n" ).join( " " ) )
-      return QVariant( item.itemValue().split( "\n" ).join( " " ) )
+      #return QVariant(node.nodeValue().split("\n").join(" "))
+      return QVariant(item.itemValue().split("\n").join(" "))
     else:
       return QVariant()
 
-  def setData( self, index, value, role = Qt.EditRole ):
+  def setData(self, index, value, role = Qt.EditRole):
     if index.isValid():
       item = index.internalPointer()
       #node = item.node() ?not used never
-      item.setItemValue( QVariant( value ).toString() )
+      item.setItemValue(QVariant(value).toString())
 
-      self.emit( SIGNAL( "dataChanged( const QModelIndex &, const QModelIndex &)" ), index, index )
+      self.emit(SIGNAL("dataChanged(const QModelIndex &, const QModelIndex &)"), index, index)
       return True
     return False
 
-  def flags( self, index ):
+  def flags(self, index):
     if not index.isValid():
       return Qt.ItemIsEnabled
 
     #item = index.internalPointer() ?not used never
     return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
-  def headerData( self, section, orientation, role ):
+  def headerData(self, section, orientation, role):
     if orientation == Qt.Horizontal and role == Qt.DisplayRole:
       if section == 0:
-        return QVariant( self.tr( "Name" ) )
+        return QVariant(self.tr("Name"))
       elif section == 1:
-        return QVariant( self.tr( "Attributes" ) )
+        return QVariant(self.tr("Attributes"))
       elif section == 2:
-        return QVariant( self.tr( "Value" ) )
+        return QVariant(self.tr("Value"))
       else:
         return QVariant()
 
     return QVariant()
 
-  def index( self, row, column, parent ):
-    if row < 0 or column < 0 or row >= self.rowCount( parent ) or column >= self.columnCount( parent ):
+  def index(self, row, column, parent):
+    if row < 0 or column < 0 or row >= self.rowCount(parent) or column >= self.columnCount(parent):
       return QModelIndex()
 
     if not parent.isValid():
@@ -200,13 +200,13 @@ class DomModel( QAbstractItemModel ):
     else:
       parentItem = parent.internalPointer()
 
-    childItem = parentItem.child( row )
+    childItem = parentItem.child(row)
     if childItem:
-      return self.createIndex( row, column, childItem )
+      return self.createIndex(row, column, childItem)
     else:
       return QModelIndex()
 
-  def parent( self, child ):
+  def parent(self, child):
     if not child.isValid():
       return QModelIndex()
 
@@ -216,9 +216,9 @@ class DomModel( QAbstractItemModel ):
     if not parentItem or parentItem == self.rootItem:
       return QModelIndex()
 
-    return self.createIndex( parentItem.row(), 0, parentItem )
+    return self.createIndex(parentItem.row(), 0, parentItem)
 
-  def rowCount( self, parent ):
+  def rowCount(self, parent):
     if parent.column() > 0:
       return 0
 
@@ -229,21 +229,21 @@ class DomModel( QAbstractItemModel ):
 
     return parentItem.childCount()
 
-class FilterDomModel( QSortFilterProxyModel ):
-  def __init__( self, filter, parent = None ):
-    QSortFilterProxyModel.__init__( self, parent )
+class FilterDomModel(QSortFilterProxyModel):
+  def __init__(self, filter, parent = None):
+    QSortFilterProxyModel.__init__(self, parent)
     self.filter = filter
 
-  def filterAcceptsRow( self, sourceRow, sourceParent ):
-    if len( self.filter ) == 0:
+  def filterAcceptsRow(self, sourceRow, sourceParent):
+    if len(self.filter) == 0:
       return True
-    index = self.sourceModel().index( sourceRow, 0, sourceParent )
-    value = self.sourceModel().data( index, Qt.DisplayRole ).toString()
+    index = self.sourceModel().index(sourceRow, 0, sourceParent)
+    value = self.sourceModel().data(index, Qt.DisplayRole).toString()
     if value in self.filter:
       return True
     else:
       return False
 
-  def setFilter( self, filter ):
+  def setFilter(self, filter):
     self.filter = filter
     self.invalidateFilter()

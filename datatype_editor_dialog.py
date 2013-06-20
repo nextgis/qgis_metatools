@@ -59,24 +59,23 @@ class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
     for key, value in DatatypeTemplate.TYPES.iteritems():
       self.cmbType.addItem(value, key)
 
-    QObject.connect(self.btnNew, SIGNAL("clicked()"), self.newDatatype)
-    QObject.connect(self.btnRemove, SIGNAL("clicked()"), self.removeDatatype)
+    self.btnNew.clicked.connect(self.newDatatype)
+    self.btnRemove.clicked.connect(self.removeDatatype)
 
-    QObject.connect(self.leName, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leSpatialAccuracy, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leSpatialScale, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.textThematicAccuracy, SIGNAL("textChanged()"), self.templateModified)
-    QObject.connect(self.cmbType, SIGNAL("currentIndexChanged( QString )"), self.templateModified)
+    self.leName.textEdited.connect(self.templateModified)
+    self.leSpatialAccuracy.textEdited.connect(self.templateModified)
+    self.leSpatialScale.textEdited.connect(self.templateModified)
+    self.textThematicAccuracy.textChanged.connect(self.templateModified)
+    self.cmbType.currentIndexChanged.connect(self.templateModified)
 
-    QObject.connect(self.cmbDatatype, SIGNAL("currentIndexChanged( QString )"), self.datatypeChanged)
+    self.cmbDatatype.currentIndexChanged.connect(self.datatypeChanged)
 
-    QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
-    QObject.connect(self.btnSave, SIGNAL("clicked()"), self.saveTemplate)
+    self.buttonBox.accepted.disconnect(self.accept)
+    self.btnSave.clicked.connect(self.saveTemplate)
 
-
-    QObject.connect(self.btnAddKeyword, SIGNAL("clicked()"), self.addKeyword)
-    QObject.connect(self.btnEditKeyword, SIGNAL("clicked()"), self.editKeyword)
-    QObject.connect(self.btnRemoveKeyword, SIGNAL("clicked()"), self.removeKeyword)
+    self.btnAddKeyword.clicked.connect(self.addKeyword)
+    self.btnEditKeyword.clicked.connect(self.editKeyword)
+    self.btnRemoveKeyword.clicked.connect(self.removeKeyword)
 
     self.manageGui()
 
@@ -90,7 +89,10 @@ class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
     self.cmbDatatype.addItems(self.datatypeTemplateManager.getTemplateList())
 
   def newDatatype(self):
-    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Create new template without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+    if self.btnSave.isEnabled() and QMessageBox.question(None,
+                                                         self.tr("Metatools"),
+                                                         self.tr("Template contains unsaved data. Create new template without saving?"),
+                                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
       return
     self.clearFormFields()
     self.datatypeTemplate = DatatypeTemplate()
@@ -111,7 +113,7 @@ class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
 
   def datatypeChanged(self):
     templateName = self.cmbDatatype.currentText()
-    if templateName.isEmpty():
+    if templateName == "":
       self.datatypeTemplate = DatatypeTemplate()
       self.btnRemove.setEnabled(False)
       return
@@ -126,7 +128,10 @@ class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
 
     # check template attrs
     if template.name is None or template.name == "":
-      QMessageBox.warning(self, self.tr("Manage data types"), self.tr("The name of the data type template must be specified!"))
+      QMessageBox.warning(self,
+                          self.tr("Manage data types"),
+                          self.tr("The name of the data type template must be specified!")
+                         )
       return
 
     # try to save template
@@ -137,7 +142,10 @@ class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
       # save new version
       self.datatypeTemplateManager.saveTemplate(template)
     except:
-      QMessageBox.warning(self, self.tr("Manage data types"), self.tr("Template can't be saved: ") + str(sys.exc_info()[ 1 ]))
+      QMessageBox.warning(self,
+                          self.tr("Manage data types"),
+                          self.tr("Template can't be saved: ") + unicode(sys.exc_info()[1])
+                         )
       return
 
     # reload form
@@ -151,7 +159,10 @@ class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
     self.btnSave.setEnabled(False)
 
   def reject(self):
-    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Close the window without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+    if self.btnSave.isEnabled() and QMessageBox.question(None,
+                                                         self.tr("Metatools"),
+                                                         self.tr("Template contains unsaved data. Close the window without saving?"),
+                                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
       return
     QDialog.reject(self)
 
@@ -188,7 +199,7 @@ class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
     template.accuracy = self.leSpatialAccuracy.text()
     template.scale = self.leSpatialScale.text()
 
-    template.type = str(self.cmbType.itemData(self.cmbType.currentIndex()).toString())
+    template.type = unicode(self.cmbType.itemData(self.cmbType.currentIndex()))
 
     template.keywords = []
     for num in range(self.lstKeywords.count()):
@@ -198,18 +209,28 @@ class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
 
     return template
 
-
   def addKeyword(self):
-    keyword, result = QInputDialog.getText(self, self.tr("New keyword"), self.tr("Input keyword:"))
+    keyword, result = QInputDialog.getText(self,
+                                           self.tr("New keyword"),
+                                           self.tr("Input keyword:")
+                                          )
     if result and keyword:
       self.lstKeywords.addItem(keyword)
       self.templateModified()
 
   def editKeyword(self):
     if self.lstKeywords.currentRow() < 0:
-      QMessageBox.information(self, self.tr("Metatools"), self.tr("Select keyword for edit"))
+      QMessageBox.information(self,
+                              self.tr("Metatools"),
+                              self.tr("Select keyword for edit")
+                             )
       return
-    keyword, result = QInputDialog.getText(self, self.tr("New keyword"), self.tr("Input keyword:"), QLineEdit.Normal, self.lstKeywords.item(self.lstKeywords.currentRow()).text())
+    keyword, result = QInputDialog.getText(self,
+                                           self.tr("New keyword"),
+                                           self.tr("Input keyword:"),
+                                           QLineEdit.Normal,
+                                           self.lstKeywords.item(self.lstKeywords.currentRow()).text()
+                                          )
 
     if result and keyword:
       self.lstKeywords.item(self.lstKeywords.currentRow()).setText(keyword)
@@ -217,9 +238,18 @@ class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
 
   def removeKeyword(self):
     if self.lstKeywords.currentRow() < 0:
-      QMessageBox.information(self, self.tr("Metatools"), self.tr("Select keyword for remove"))
+      QMessageBox.information(self,
+                              self.tr("Metatools"),
+                              self.tr("Select keyword for remove")
+                             )
       return
 
-    if QMessageBox.question(None, self.tr("Metatools"), self.tr("Remove this keyword?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
+    if QMessageBox.question(None,
+                            self.tr("Metatools"),
+                            self.tr("Remove this keyword?"),
+                            QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
       self.lstKeywords.takeItem(self.lstKeywords.currentRow())
       self.templateModified()
+
+  def accept(self):
+    QDialog.accept(self)

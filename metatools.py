@@ -25,13 +25,13 @@
 # MA 02111-1307, USA.
 #
 #******************************************************************************
-    
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from qgis.core import *
 from qgis.gui import *
-    
+
 import os, sys
 
 from metatoolssettings import MetatoolsSettings
@@ -43,7 +43,6 @@ import resources_rc
 minQtVersion = '4.6.0'
 currentPath = os.path.abspath(os.path.dirname(__file__))
 
-
 class MetatoolsPlugin:
   def __init__(self, iface):
     self.iface = iface
@@ -52,17 +51,17 @@ class MetatoolsPlugin:
     try:
       self.QgisVersion = unicode(QGis.QGIS_VERSION_INT)
     except:
-      self.QgisVersion = unicode(QGis.qgisVersion)[ 0 ]
+      self.QgisVersion = unicode(QGis.qgisVersion)[0]
 
     # get plugin folder (more simple version of original plugin)
     self.pluginPath = currentPath
 
     # i18n support
-    overrideLocale = QSettings().value("locale/overrideFlag", QVariant(False)).toBool()
+    overrideLocale = QSettings().value("locale/overrideFlag", False)
     if not overrideLocale:
       localeFullName = QLocale.system().name()
     else:
-      localeFullName = QSettings().value("locale/userLocale", QVariant("")).toString()
+      localeFullName = QSettings().value("locale/userLocale", "")
 
     self.localePath = self.pluginPath + "/i18n/metatools_" + localeFullName[0:2] + ".qm"
 
@@ -72,17 +71,19 @@ class MetatoolsPlugin:
       QCoreApplication.installTranslator(self.translator)
 
   def initGui(self):
-    if int(self.QgisVersion) < 10500:
+    if int(self.QgisVersion) < 10900:
       QMessageBox.warning(self.iface.mainWindow(), "Metatools",
-                           QCoreApplication.translate("Metatools", "Quantum GIS version detected: %1.%2\n").arg(self.QgisVersion[ 0 ]).arg(self.QgisVersion[ 2 ]) +
-                           QCoreApplication.translate("Metatools", "This version of Metatools requires at least QGIS version 1.5.0\nPlugin will not be enabled."))
+                          QCoreApplication.translate("Metatools", "Quantum GIS version detected: %d.%d\n") % (self.QgisVersion[0], self.QgisVersion[2]) +
+                          QCoreApplication.translate("Metatools", "This version of Metatools requires at least QGIS version 2.0\nPlugin will not be enabled.")
+                         )
       self.loadingCanceled = True
       return None
 
     if qVersion() < minQtVersion:
       QMessageBox.warning(self.iface.mainWindow(), "Metatools",
-                          QCoreApplication.translate("Metatools", "Qt version detected: %1\n").arg(qVersion()) +
-                          QCoreApplication.translate("Metatools", "This version of Metatools requires at least Qt version %1\nPlugin will not be enabled.").arg(minQtVersion))
+                          QCoreApplication.translate("Metatools", "Qt version detected: %s\n") % (qVersion()) +
+                          QCoreApplication.translate("Metatools", "This version of Metatools requires at least Qt version %s\nPlugin will not be enabled.") % (minQtVersion)
+                         )
       self.loadingCanceled = True
       return None
 
@@ -111,9 +112,7 @@ class MetatoolsPlugin:
     self.validateAction.setStatusTip(QCoreApplication.translate("Metatools", "Validate metadata"))
     self.validateAction.setWhatsThis(QCoreApplication.translate("Metatools", "Validate metadata"))
 
-    self.importAction = QAction(QIcon(":/plugins/metatools/icons/import.png"),
-        QCoreApplication.translate("Metatools", "Import metadata"),   
-self.iface.mainWindow())
+    self.importAction = QAction(QIcon(":/plugins/metatools/icons/import.png"), QCoreApplication.translate("Metatools", "Import metadata"), self.iface.mainWindow())
     self.importAction.setStatusTip(QCoreApplication.translate("Metatools", "Import metadata from file"))
     self.importAction.setWhatsThis(QCoreApplication.translate("Metatools", "Import metadata"))
 
@@ -132,21 +131,19 @@ self.iface.mainWindow())
     self.usgsAction.setWhatsThis(QCoreApplication.translate("Metatools", "USGS Tool"))
 
     # mp action
-    self.mpAction = QAction(QIcon(":/plugins/metatools/icons/usgs_check.png"), 
-        QCoreApplication.translate("Metatools", "MP Tool"), self.iface.mainWindow())
+    self.mpAction = QAction(QIcon(":/plugins/metatools/icons/usgs_check.png"), QCoreApplication.translate("Metatools", "MP Tool"), self.iface.mainWindow())
     self.mpAction.setStatusTip(QCoreApplication.translate("Metatools", "MP Tool"))
     self.mpAction.setWhatsThis(QCoreApplication.translate("Metatools", "MP Tool"))
 
-    QObject.connect(self.editAction, SIGNAL("triggered()"), self.doEdit)
-    QObject.connect(self.applyTemplatesAction, SIGNAL("triggered()"), self.doApplyTemplates)
-    QObject.connect(self.viewAction, SIGNAL("triggered()"), self.doView)
-    QObject.connect(self.configAction, SIGNAL("triggered()"), self.doConfigure)
-    QObject.connect(self.validateAction, SIGNAL("triggered()"), self.validateMetadataFile)
-    QObject.connect(self.usgsAction, SIGNAL("triggered()"), self.execUsgs)
-    QObject.connect(self.mpAction, SIGNAL("triggered()"), self.execMp)
-    QObject.connect(self.importAction, SIGNAL("triggered()"), self.doImport)
-    QObject.connect(self.exportAction, SIGNAL("triggered()"), self.doExport)
-
+    self.editAction.triggered.connect(self.doEdit)
+    self.applyTemplatesAction.triggered.connect(self.doApplyTemplates)
+    self.viewAction.triggered.connect(self.doView)
+    self.configAction.triggered.connect(self.doConfigure)
+    self.validateAction.triggered.connect(self.validateMetadataFile)
+    self.usgsAction.triggered.connect(self.execUsgs)
+    self.mpAction.triggered.connect(self.execMp)
+    self.importAction.triggered.connect(self.doImport)
+    self.exportAction.triggered.connect(self.doExport)
 
     # add menu items
     self.iface.addPluginToMenu("Metatools", self.usgsAction)
@@ -158,7 +155,6 @@ self.iface.mainWindow())
     self.iface.addPluginToMenu("Metatools", self.validateAction)
     self.iface.addPluginToMenu("Metatools", self.applyTemplatesAction)
     self.iface.addPluginToMenu("Metatools", self.configAction)
-
 
     # add toolbar and buttons
     self.toolBar = self.iface.addToolBar(QCoreApplication.translate("Metatools", "Metatools"))
@@ -182,7 +178,7 @@ self.iface.mainWindow())
     self.fgdcToolBar.addAction(self.mpAction)
 
     # track layer changing
-    QObject.connect(self.iface, SIGNAL("currentLayerChanged( QgsMapLayer* )"), self.layerChanged)
+    self.iface.currentLayerChanged.connect(self.layerChanged)
 
     # disable some actions when there is no active layer
     self.layer = None
@@ -196,7 +192,7 @@ self.iface.mainWindow())
       return
 
     # disconnect signals
-    QObject.disconnect(self.iface, SIGNAL("currentLayerChanged( QgsMapLayer* )"), self.layerChanged)
+    self.iface.currentLayerChanged.disconnect(self.layerChanged)
 
     # remove the plugin menu items and toolbar
     self.iface.removePluginMenu("Metatools", self.editAction)
@@ -225,9 +221,6 @@ self.iface.mainWindow())
     else:
       self.enableLayerActions()
       self.metaProvider = MetadataProvider.getProvider(self.layer)
-      # self.metaFilePath = utils.getMetafilePath(self.layer)
-
-
 
   def disableLayerActions(self):
     self.viewAction.setEnabled(False)
@@ -247,17 +240,14 @@ self.iface.mainWindow())
     self.importAction.setEnabled(True)
     self.exportAction.setEnabled(True)
 
-
-
   def doEdit(self):
     try:
       from metatoolseditor import MetatoolsEditor
     except:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Editor can't be loaded: %1 %2!")
-                            .arg(unicode(sys.exc_info()[0]))
-                            .arg(unicode(sys.exc_info()[1])))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "Editor can't be loaded: %s %s!") % (unicode(sys.exc_info()[0]), unicode(sys.exc_info()[1]))
+                          )
       return
 
     # check if metadata file exists
@@ -268,43 +258,39 @@ self.iface.mainWindow())
     standard = MetaInfoStandard.tryDetermineStandard(self.metaProvider)
     if standard != MetaInfoStandard.ISO19115 and standard != MetaInfoStandard.FGDC:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19115 and FGDC supported now!"))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19115 and FGDC supported now!")
+                          )
       return
 
     dlg = MetatoolsEditor()
     dlg.setContent(self.metaProvider)
     dlg.exec_()
 
-
   def doConfigure(self):
     dlg = MetatoolsSettings()
     dlg.exec_()
-    
-  
+
   def doApplyTemplates(self):
     try:
       from apply_templates_dialog import ApplyTemplatesDialog
     except ImportError:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Applyer can't be loaded: %1 %2!")
-                            .arg(unicode(sys.exc_info()[0]))
-                            .arg(unicode(sys.exc_info()[1])))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "Applyer can't be loaded: %s %s!") % (unicode(sys.exc_info()[0]), unicode(sys.exc_info()[1]))
+                          )
       return
     dlg = ApplyTemplatesDialog(self.iface)
     dlg.exec_()
-
 
   def doView(self):
     try:
       from metatoolsviewer import MetatoolsViewer
     except:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Viewer can't be loaded: %1 %2!")
-                            .arg(unicode(sys.exc_info()[0]))
-                            .arg(unicode(sys.exc_info()[1])))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "Viewer can't be loaded: %s %s!") % (unicode(sys.exc_info()[0]), unicode(sys.exc_info()[1]))
+                          )
       return
 
     # check metadata exists
@@ -315,8 +301,9 @@ self.iface.mainWindow())
     standard = MetaInfoStandard.tryDetermineStandard(self.metaProvider)
     if standard != MetaInfoStandard.ISO19115 and standard != MetaInfoStandard.FGDC:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19115 and FGDC supported now!"))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only ISO19115 and FGDC supported now!")
+                          )
       return
 
     # TODO: validate metadata file
@@ -324,10 +311,9 @@ self.iface.mainWindow())
     # get xsl file path
     settings = QSettings("NextGIS", "metatools")
     if standard == MetaInfoStandard.ISO19115:
-        xsltFilePath = os.path.join(self.pluginPath, "xsl/") + settings.value("iso19115/stylesheet", QVariant('iso19115.xsl')).toString()
+        xsltFilePath = os.path.join(self.pluginPath, "xsl/") + settings.value("iso19115/stylesheet", "iso19115.xsl")
     if standard == MetaInfoStandard.FGDC:
-        xsltFilePath = os.path.join(self.pluginPath, "xsl/") + settings.value("fgdc/stylesheet", QVariant('fgdc.xsl')).toString()
-
+        xsltFilePath = os.path.join(self.pluginPath, "xsl/") + settings.value("fgdc/stylesheet", "fgdc.xsl")
 
     dlg = MetatoolsViewer()
     if dlg.setContent(self.metaProvider, xsltFilePath):
@@ -336,25 +322,29 @@ self.iface.mainWindow())
   def checkMetadata(self):
     if not self.metaProvider.checkExists():
       result = QMessageBox.question(self.iface.mainWindow(),
-                                     QCoreApplication.translate("Metatools", "Metatools"),
-                                     QCoreApplication.translate("Metatools", "The layer does not have metadata! Create metadata?"),
-                                     QDialogButtonBox.Yes, QDialogButtonBox.No)
+                                    QCoreApplication.translate("Metatools", "Metatools"),
+                                    QCoreApplication.translate("Metatools", "The layer does not have metadata! Create metadata?"),
+                                    QDialogButtonBox.Yes, QDialogButtonBox.No
+                                   )
+
       if result == QDialogButtonBox.Yes:
         try:
           settings = QSettings("NextGIS", "metatools")
-          profile = settings.value("general/defaultProfile").toString()
-          if profile.isEmpty():
+          profile = settings.value("general/defaultProfile", "")
+          if profile == "":
             QMessageBox.warning(self.iface.mainWindow(),
-                                 QCoreApplication.translate("Metatools", "Metatools"),
-                                 QCoreApplication.translate("Metatools", "No profile selected. Please set default profile in plugin settings"))
+                                QCoreApplication.translate("Metatools", "Metatools"),
+                                QCoreApplication.translate("Metatools", "No profile selected. Please set default profile in plugin settings")
+                               )
             return False
 
           profilePath = unicode(QDir.toNativeSeparators(os.path.join(currentPath, "xml_profiles", unicode(profile))))
           self.metaProvider.ImportFromFile(profilePath)
         except:
           QMessageBox.warning(self.iface.mainWindow(),
-                               QCoreApplication.translate("Metatools", "Metatools"),
-                               QCoreApplication.translate("Metatools", "Metadata file can't be created: ") + str(sys.exc_info()[ 1 ]))
+                              QCoreApplication.translate("Metatools", "Metatools"),
+                              QCoreApplication.translate("Metatools", "Metadata file can't be created: ") + unicode(sys.exc_info()[1])
+                             )
           return False
         return True
       else:
@@ -362,7 +352,7 @@ self.iface.mainWindow())
     else:
       return True
 
-  # external tools
+  # ----------------- external tools -----------------
 
   def execUsgs(self):
     # check if metadata file exists
@@ -374,8 +364,9 @@ self.iface.mainWindow())
 
     if standard != MetaInfoStandard.FGDC:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "USGS tool support only FGDC standard!"))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "USGS tool support only FGDC standard!")
+                          )
       return
 
     # start tool
@@ -391,7 +382,6 @@ self.iface.mainWindow())
         os.chmod(execFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
         os.chmod(tclkitFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
 
-
     try:
       import subprocess
       prov = self.metaProvider
@@ -400,9 +390,9 @@ self.iface.mainWindow())
       prov.LoadFromTempFile(temporaryMetafile)
     except:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "USGS tool can't be runing: ") +
-                            QString(str(sys.exc_info()[1])))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "USGS tool can't be runing: ") + unicode(sys.exc_info()[1])
+                          )
 
   def execMp(self):
     # check if metadata exists
@@ -414,8 +404,9 @@ self.iface.mainWindow())
 
     if standard != MetaInfoStandard.FGDC:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "MP tool support only FGDC standard!"))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "MP tool support only FGDC standard!")
+                          )
       return
 
     # start tool
@@ -447,16 +438,16 @@ self.iface.mainWindow())
         result = subprocess.check_output([errFilePath, tempPath], shell=throwShell, cwd=toolPath)
       else:
         # workaround for python < 2.7
-        # ... stderr=subprocess.STDOUT, stdin=subprocess.PIPE ... ! FUCKED Python 2.5 bug on windows! 
+        # ... stderr=subprocess.STDOUT, stdin=subprocess.PIPE ... ! FUCKED Python 2.5 bug on windows!
         err2htmlProc = subprocess.Popen([errFilePath, tempPath], shell=throwShell, cwd=toolPath, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
         err2htmlProc.stdin.close()
         result = err2htmlProc.communicate()[0]
 
     except:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "MP tool can't be runing: ") +
-                            QString(str(sys.exc_info()[1])))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "MP tool can't be runing: ") + unicode(sys.exc_info()[1])
+                          )
       return
     finally:
       if os.path.exists(tempPath):
@@ -472,12 +463,7 @@ self.iface.mainWindow())
     dlg.setWindowTitle(QCoreApplication.translate("Metatools", "MP result"))
     dlg.exec_()
 
-
-
-
-
-
-  # validator ----
+  # ----------------- validator -----------------
 
   def validateMetadataFile(self):
     # check if metadata exists
@@ -488,11 +474,12 @@ self.iface.mainWindow())
     standard = MetaInfoStandard.tryDetermineStandard(self.metaProvider)
     if standard != MetaInfoStandard.FGDC:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only FGDC supported now!"))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "Unsupported metadata standard! Only FGDC supported now!")
+                          )
       return
-    
-    
+
+
     from PyQt4.QtXmlPatterns import QXmlSchema, QXmlSchemaValidator
     # TODO: validate metadata file
 
@@ -511,10 +498,10 @@ self.iface.mainWindow())
     loadResult = schema.load(schemaUrl)
     if not loadResult or self.handler.errorOccured:
         QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Shcema for validate not loaded!"))
+                             QCoreApplication.translate("Metatools", "Metatools"),
+                             QCoreApplication.translate("Metatools", "Schema for validate not loaded!")
+                            )
         return
-
 
     #setup validator
     validator = QXmlSchemaValidator(schema)
@@ -524,59 +511,64 @@ self.iface.mainWindow())
     metadata = self.metaProvider.getMetadata().encode('utf-8')
     if validator.validate(metadata):
         QMessageBox.information(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Metadata is valid!"))
+                                QCoreApplication.translate("Metatools", "Metatools"),
+                                QCoreApplication.translate("Metatools", "Metadata is valid!")
+                               )
 
+  # ----------------- import\ export -----------------
 
-  # import\ export -----------------
   def doImport(self):
-	# check if metadata exists
+  # check if metadata exists
     if not self.checkMetadata():
       return
-	
+
     fileName = QFileDialog.getOpenFileName(self.iface.mainWindow(),
                                            QCoreApplication.translate("Metatools", "Select metadata file"),
                                            "",
-                                           QCoreApplication.translate("Metatools", 'XML files (*.xml);;Text files (*.txt *.TXT);;All files (*.*)'))
+                                           QCoreApplication.translate("Metatools", 'XML files (*.xml);;Text files (*.txt *.TXT);;All files (*.*)')
+                                          )
 
-    if fileName.isEmpty():
+    if fileName == "":
       return
 
     try:
       self.metaProvider.ImportFromFile(unicode(fileName))
     except:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Metadata can't be imported: ") +
-                            QString(str(sys.exc_info()[1])))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "Metadata can't be imported: ") + unicode(sys.exc_info()[1])
+                          )
       return
 
     QMessageBox.information(self.iface.mainWindow(),
                             QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Metadata was imported successful!"))
+                            QCoreApplication.translate("Metatools", "Metadata was imported successful!")
+                           )
 
   def doExport(self):
-	# check if metadata exists
+  # check if metadata exists
     if not self.checkMetadata():
       return
-	  
+
     fileName = QFileDialog.getSaveFileName(self.iface.mainWindow(),
                                            QCoreApplication.translate("Metatools", "Save metadata to file"),
                                            "",
-                                           QCoreApplication.translate("Metatools", 'XML files (*.xml);;Text files (*.txt *.TXT);;All files (*.*)'))
+                                           QCoreApplication.translate("Metatools", 'XML files (*.xml);;Text files (*.txt *.TXT);;All files (*.*)')
+                                          )
 
-    if fileName.isEmpty():
+    if fileName == "":
       return
 
     try:
       self.metaProvider.ExportToFile(unicode(fileName))
     except:
       QMessageBox.critical(self.iface.mainWindow(),
-                            QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Metadata can't be exported: ") +
-                            QString(str(sys.exc_info()[1])))
+                           QCoreApplication.translate("Metatools", "Metatools"),
+                           QCoreApplication.translate("Metatools", "Metadata can't be exported: ") + unicode(sys.exc_info()[1])
+                          )
       return
 
     QMessageBox.information(self.iface.mainWindow(),
                             QCoreApplication.translate("Metatools", "Metatools"),
-                            QCoreApplication.translate("Metatools", "Metadata was exported successful!"))
+                            QCoreApplication.translate("Metatools", "Metadata was exported successful!")
+                           )

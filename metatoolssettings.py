@@ -47,13 +47,13 @@ class MetatoolsSettings(QDialog, Ui_MetatoolsSettingsDialog):
 
     self.readSettings()
 
-    QObject.connect(self.btnSelectFilter, SIGNAL("clicked()"), self.updateFilter)
+    self.btnSelectFilter.clicked.connect(self.updateFilter)
 
   def manageGui(self):
     # populate profiles combobox
     profilesDir = QDir(QDir.toNativeSeparators(os.path.join(currentPath, "xml_profiles")))
     profilesDir.setFilter(QDir.Files | QDir.NoSymLinks | QDir.NoDotAndDotDot)
-    fileFilter = QStringList() << "*.xml" << "*.XML"
+    fileFilter = ["*.xml", "*.XML"]
     profilesDir.setNameFilters(fileFilter)
     profiles = profilesDir.entryList()
     self.defaultProfileComboBox.addItems(profiles)
@@ -61,7 +61,7 @@ class MetatoolsSettings(QDialog, Ui_MetatoolsSettingsDialog):
     # populate iso and fgdc stylesheet comboboxes
     xslDir = QDir(QDir.toNativeSeparators(os.path.join(currentPath, "xsl")))
     xslDir.setFilter(QDir.Files | QDir.NoSymLinks | QDir.NoDotAndDotDot)
-    fileFilter = QStringList() << "*.xsl" << "*.XSL"
+    fileFilter = ["*.xsl", "*.XSL"]
     xslDir.setNameFilters(fileFilter)
     xsls = xslDir.entryList()
     self.cmbIsoViewStylesheet.addItems(xsls)
@@ -73,29 +73,33 @@ class MetatoolsSettings(QDialog, Ui_MetatoolsSettingsDialog):
 
   def readSettings(self):
     settings = QSettings("NextGIS", "metatools")
-    self.leFilterFileName.setText(settings.value("general/filterFile", QVariant()).toString())
+    self.leFilterFileName.setText(settings.value("general/filterFile", ""))
 
     # restore default profile
-    profile = settings.value("general/defaultProfile", QVariant()).toString()
+    profile = settings.value("general/defaultProfile", "")
     self.defaultProfileComboBox.setCurrentIndex(self.defaultProfileComboBox.findText(profile))
 
     # restore preview image format
-    preview_format = settings.value("preview/format", QVariant('jpg')).toString()
+    preview_format = settings.value("preview/format", "jpg")
     self.cmbImgFormat.setCurrentIndex(self.cmbImgFormat.findText(preview_format))
 
     # restore iso stylesheet
-    isoXsl = settings.value("iso19115/stylesheet", QVariant('iso19115.xsl')).toString()
+    isoXsl = settings.value("iso19115/stylesheet", "iso19115.xsl")
     self.cmbIsoViewStylesheet.setCurrentIndex(self.cmbIsoViewStylesheet.findText(isoXsl))
 
     # restore fgdc stylesheet
-    fgdcXsl = settings.value("fgdc/stylesheet", QVariant('fgdc.xsl')).toString()
+    fgdcXsl = settings.value("fgdc/stylesheet", "fgdc.xsl")
     self.cmbFgdcViewStylesheet.setCurrentIndex(self.cmbFgdcViewStylesheet.findText(fgdcXsl))
 
 
   def updateFilter(self):
-    fileName = QFileDialog.getOpenFileName(self, self.tr('Select filter'), '.', self.tr('Text files (*.txt *.TXT)'))
+    fileName = QFileDialog.getOpenFileName(self,
+                                           self.tr('Select filter'),
+                                           '.',
+                                           self.tr('Text files (*.txt *.TXT)')
+                                          )
 
-    if fileName.isEmpty():
+    if fileName == "":
       return
 
     self.leFilterFileName.setText(fileName)

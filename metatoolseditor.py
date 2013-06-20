@@ -41,7 +41,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
   def __init__(self):
     QDialog.__init__(self)
     self.setupUi(self)
-    self.setWindowFlags( Qt.Window | Qt.WindowMaximizeButtonHint )
+    self.setWindowFlags(Qt.Window | Qt.WindowMaximizeButtonHint)
 
     self.tabWidget.setCurrentIndex(0)
     self.lblNodePath.setText("")
@@ -61,15 +61,15 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
     self.connect(self.actionCopyPath, SIGNAL("activated()"), self.slotCopyPath)
 
     # full metadata view
-    QObject.connect(self.treeFull, SIGNAL("clicked( QModelIndex )"), self.itemSelected)
-    QObject.connect(self.treeFull, SIGNAL("collapsed( QModelIndex )"), self.collapsedExpanded)
-    QObject.connect(self.treeFull, SIGNAL("expanded( QModelIndex )"), self.collapsedExpanded)
+    QObject.connect(self.treeFull, SIGNAL("clicked(QModelIndex)"), self.itemSelected)
+    QObject.connect(self.treeFull, SIGNAL("collapsed(QModelIndex)"), self.collapsedExpanded)
+    QObject.connect(self.treeFull, SIGNAL("expanded(QModelIndex)"), self.collapsedExpanded)
 
     # filtered metadata view
-    QObject.connect(self.tbwFiltered, SIGNAL("currentCellChanged ( int , int , int, int )"), self.cellSelected)
+    QObject.connect(self.tbwFiltered, SIGNAL("currentCellChanged (int , int , int, int)"), self.cellSelected)
 
     QObject.connect(self.textValue, SIGNAL("textChanged()"), self.valueModified)
-    QObject.connect(self.tabWidget, SIGNAL("currentChanged( int )"), self.tabChanged)
+    QObject.connect(self.tabWidget, SIGNAL("currentChanged(int)"), self.tabChanged)
 
     QObject.connect(self.btnApply, SIGNAL("clicked()"), self.applyEdits)
     QObject.connect(self.btnDiscard, SIGNAL("clicked()"), self.resetEdits)
@@ -85,7 +85,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
     self.metaProvider = metaProvider
 
     # load main model
-    #self.file = QFile( metaFilePath )
+    #self.file = QFile(metaFilePath)
     self.metaXML = QDomDocument()
     metadata = self.metaProvider.getMetadata().encode("utf-8")
     self.metaXML.setContent(metadata)
@@ -214,7 +214,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
       # TODO: create preview image if need
       self.btnSave.setEnabled(False)
     except:
-      QMessageBox.warning(self, self.tr("Metatools"), self.tr("Metadata can't be saved:\n") + str(sys.exc_info()[ 0 ]))
+      QMessageBox.warning(self, self.tr("Metatools"), self.tr("Metadata can't be saved:\n") + str(sys.exc_info()[0]))
 
   def loadFilter(self):
     settings = QSettings("NextGIS", "metatools")

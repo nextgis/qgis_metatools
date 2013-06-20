@@ -52,27 +52,27 @@ class OrganizationEditorDialog(QDialog, Ui_OrganizationEditorDialog):
     self.btnSave = self.buttonBox.button(QDialogButtonBox.Save)
     self.btnClose = self.buttonBox.button(QDialogButtonBox.Close)
 
-    QObject.connect(self.btnNew, SIGNAL("clicked()"), self.newOrganization)
-    QObject.connect(self.btnRemove, SIGNAL("clicked()"), self.removeOrganization)
+    self.btnNew.clicked.connect(self.newOrganization)
+    self.btnRemove.clicked.connect(self.removeOrganization)
 
-    QObject.connect(self.leName, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leDeliveryPoint, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leCity, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leAdminArea, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.lePostCode, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leCountry, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.lePhone, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leFax, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leEmail, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leContactPerson, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.lePersonTitle, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.lePersonPosition, SIGNAL("textEdited( QString )"), self.templateModified)
-    QObject.connect(self.leOfficeHours, SIGNAL("textEdited( QString )"), self.templateModified)
+    self.leName.textEdited.connect(self.templateModified)
+    self.leDeliveryPoint.textEdited.connect(self.templateModified)
+    self.leCity.textEdited.connect(self.templateModified)
+    self.leAdminArea.textEdited.connect(self.templateModified)
+    self.lePostCode.textEdited.connect(self.templateModified)
+    self.leCountry.textEdited.connect(self.templateModified)
+    self.lePhone.textEdited.connect(self.templateModified)
+    self.leFax.textEdited.connect(self.templateModified)
+    self.leEmail.textEdited.connect(self.templateModified)
+    self.leContactPerson.textEdited.connect(self.templateModified)
+    self.lePersonTitle.textEdited.connect(self.templateModified)
+    self.lePersonPosition.textEdited.connect(self.templateModified)
+    self.leOfficeHours.textEdited.connect(self.templateModified)
 
-    QObject.connect(self.cmbOrganization, SIGNAL("currentIndexChanged( QString )"), self.organizationChanged)
+    self.cmbOrganization.currentIndexChanged.connect(self.organizationChanged)
 
-    QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
-    QObject.connect(self.btnSave, SIGNAL("clicked()"), self.saveTemplate)
+    self.buttonBox.accepted.disconnect(self.accept)
+    self.btnSave.clicked.connect(self.saveTemplate)
 
     self.manageGui()
 
@@ -86,7 +86,10 @@ class OrganizationEditorDialog(QDialog, Ui_OrganizationEditorDialog):
     self.cmbOrganization.addItems(self.orgTemplateManager.tempalateNames())
 
   def newOrganization(self):
-    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Create new template without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+    if self.btnSave.isEnabled() and QMessageBox.question(None,
+                                                         self.tr("Metatools"),
+                                                         self.tr("Template contains unsaved data. Create new template without saving?"),
+                                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
       return
     self.clearFormFields()
     self.orgTemplate = OrganizationTemplate()
@@ -106,12 +109,12 @@ class OrganizationEditorDialog(QDialog, Ui_OrganizationEditorDialog):
 
   def organizationChanged(self):
     templateName = self.cmbOrganization.currentText()
-    if templateName.isEmpty():
+    if templateName == "":
       self.orgTemplate = OrganizationTemplate()
       self.btnRemove.setEnabled(False)
       return
 
-    self.orgTemplate = self.orgTemplateManager.organizations[ templateName ]
+    self.orgTemplate = self.orgTemplateManager.organizations[templateName]
     self.templateToForm(self.orgTemplate)
     self.btnSave.setEnabled(False)
     self.btnRemove.setEnabled(True)
@@ -182,6 +185,12 @@ class OrganizationEditorDialog(QDialog, Ui_OrganizationEditorDialog):
     return template
 
   def reject(self):
-    if self.btnSave.isEnabled() and QMessageBox.question(None, self.tr("Metatools"), self.tr("Template contains unsaved data. Close the window without saving?"), QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
+    if self.btnSave.isEnabled() and QMessageBox.question(None,
+                                                         self.tr("Metatools"),
+                                                         self.tr("Template contains unsaved data. Close the window without saving?"),
+                                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.No:
       return
     QDialog.reject(self)
+
+  def accept(self):
+    QDialog.accept(self)

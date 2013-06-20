@@ -46,7 +46,7 @@ def getMetafilePath(layer):
   #not standard implementation in original plugin
   originalFilePath = unicode(layer.source())
   #originalFileName = os.path.splitext(originalFilePath)
-  #metaFilePath = originalFileName[ 0 ] + META_EXT
+  #metaFilePath = originalFileName[0] + META_EXT
   metaFilePath = originalFilePath + META_EXT
   return metaFilePath
 
@@ -55,13 +55,13 @@ def previewPathFromLayerPath(layerPath):
   format_preview = settings.value("preview/format", QVariant('jpg')).toString()
 
   originalFileName = os.path.splitext(unicode(layerPath))
-  metaFilePath = originalFileName[ 0 ] + PREVIEW_SUFFIX + '.' + format_preview
+  metaFilePath = originalFileName[0] + PREVIEW_SUFFIX + '.' + format_preview
   return metaFilePath
 
 def mdPathFromLayerPath(layerPath):
   #not standard implementation in original plugin
   #originalFileName = os.path.splitext(unicode(layerPath))
-  #metaFilePath = originalFileName[ 0 ] + META_EXT
+  #metaFilePath = originalFileName[0] + META_EXT
   metaFilePath = layerPath + META_EXT
   return metaFilePath
 
@@ -112,10 +112,10 @@ def getGeneralRasterInfo(path):
 
   gt = raster.GetGeoTransform()
 
-  xMin = gt[ 0 ]
-  yMin = gt[ 3 ] + width * gt[ 4 ] + height * gt[ 5 ]
-  xMax = gt[ 0 ] + width * gt[ 1 ] + height * gt[ 2 ]
-  yMax = gt[ 3 ]
+  xMin = gt[0]
+  yMin = gt[3] + width * gt[4] + height * gt[5]
+  xMax = gt[0] + width * gt[1] + height * gt[2]
+  yMax = gt[3]
 
   rasterSR = raster.GetProjectionRef()
   layerSR = osr.SpatialReference()
@@ -125,9 +125,9 @@ def getGeneralRasterInfo(path):
   wgsSR.ImportFromEPSG(4326)
 
   #transform coord if layer CRS is defined otherwise assume WGS84
-  if ( layerSR is not None ) and ( not wgsSR.IsSame(layerSR) ):
+  if (layerSR is not None) and (not wgsSR.IsSame(layerSR)):
     transform = osr.CoordinateTransformation(layerSR, wgsSR)
-    coord = transform.TransformPoints([(xMin, yMin), (xMax, yMax) ])
+    coord = transform.TransformPoints([(xMin, yMin), (xMax, yMax)])
     xMin = coord[0][0]
     yMin = coord[0][1]
     xMax = coord[1][0]
@@ -136,7 +136,7 @@ def getGeneralRasterInfo(path):
 
   raster = None
 
-  return bands, [ xMin, yMin, xMax, yMax ]
+  return bands, [xMin, yMin, xMax, yMax]
 
 def getBandInfo(path, bandNumber):
   raster = gdal.Open(unicode(path).encode("utf8"))
@@ -173,9 +173,9 @@ def getGeneralVectorInfo(path):
   wgsSR.ImportFromEPSG(4326)
 
   #transform coord if layer CRS is defined otherwise assume WGS84
-  if ( layerSR is not None ) and ( not wgsSR.IsSame(layerSR) ):
+  if (layerSR is not None) and (not wgsSR.IsSame(layerSR)):
     transform = osr.CoordinateTransformation(layerSR, wgsSR)
-    coord = transform.TransformPoints([(xMin, yMin), (xMax, yMax) ])
+    coord = transform.TransformPoints([(xMin, yMin), (xMax, yMax)])
     xMin = coord[0][0]
     yMin = coord[0][1]
     xMax = coord[1][0]
@@ -185,7 +185,7 @@ def getGeneralVectorInfo(path):
   layer = None
   ogrDataSource = None
 
-  return [ xMin, yMin, xMax, yMax ]
+  return [xMin, yMin, xMax, yMax]
 
 
 # helper functions for XML processing
@@ -269,22 +269,22 @@ def writeRasterInfo(dataFile, metadataFile):
   mdWestBound = getOrCreateChild(mdGeoBbox, "westBoundLongitude")
   mdCharStringElement = getOrCreateChild(mdWestBound, "gco:Decimal")
   textNode = getOrCreateTextChild(mdCharStringElement)
-  textNode.setNodeValue(str(extent[ 0 ]))
+  textNode.setNodeValue(str(extent[0]))
 
   mdEastBound = getOrCreateChild(mdGeoBbox, "eastBoundLongitude")
   mdCharStringElement = getOrCreateChild(mdEastBound, "gco:Decimal")
   textNode = getOrCreateTextChild(mdCharStringElement)
-  textNode.setNodeValue(str(extent[ 2 ]))
+  textNode.setNodeValue(str(extent[2]))
 
   mdSouthBound = getOrCreateChild(mdGeoBbox, "southBoundLatitude")
   mdCharStringElement = getOrCreateChild(mdSouthBound, "gco:Decimal")
   textNode = getOrCreateTextChild(mdCharStringElement)
-  textNode.setNodeValue(str(extent[ 1 ]))
+  textNode.setNodeValue(str(extent[1]))
 
   mdNorthBound = getOrCreateChild(mdGeoBbox, "northBoundLatitude")
   mdCharStringElement = getOrCreateChild(mdNorthBound, "gco:Decimal")
   textNode = getOrCreateTextChild(mdCharStringElement)
-  textNode.setNodeValue(str(extent[ 3 ]))
+  textNode.setNodeValue(str(extent[3]))
 
   # raster bands
   mdContentInfo = getOrCreateChild(root, "contentInfo")
@@ -300,8 +300,8 @@ def writeRasterInfo(dataFile, metadataFile):
   # create new demensions
   for bandNumber in range(1, bands + 1):
     min_value, max_value, dt = getBandInfo(dataFile, bandNumber)
-    #mdDimension = insertAfterChild( mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"] ) #standard version
-    #mdBand = getOrCreateChild( mdDimension, "MD_Band") #standard version
+    #mdDimension = insertAfterChild(mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"]) #standard version
+    #mdBand = getOrCreateChild(mdDimension, "MD_Band") #standard version
     mdBand = createChild(mdDimension, "MD_Band") #profile version
     mdMaxValue = getOrCreateChild(mdBand, "maxValue")
     mdGcoReal = getOrCreateChild(mdMaxValue, "gco:Real")
@@ -346,22 +346,22 @@ def writeVectorInfo(dataFile, metadataFile):
   mdWestBound = getOrCreateChild(mdGeoBbox, "westBoundLongitude")
   mdCharStringElement = getOrCreateChild(mdWestBound, "gco:Decimal")
   textNode = getOrCreateTextChild(mdCharStringElement)
-  textNode.setNodeValue(str(extent[ 0 ]))
+  textNode.setNodeValue(str(extent[0]))
 
   mdEastBound = getOrCreateChild(mdGeoBbox, "eastBoundLongitude")
   mdCharStringElement = getOrCreateChild(mdEastBound, "gco:Decimal")
   textNode = getOrCreateTextChild(mdCharStringElement)
-  textNode.setNodeValue(str(extent[ 2 ]))
+  textNode.setNodeValue(str(extent[2]))
 
   mdSouthBound = getOrCreateChild(mdGeoBbox, "southBoundLatitude")
   mdCharStringElement = getOrCreateChild(mdSouthBound, "gco:Decimal")
   textNode = getOrCreateTextChild(mdCharStringElement)
-  textNode.setNodeValue(str(extent[ 1 ]))
+  textNode.setNodeValue(str(extent[1]))
 
   mdNorthBound = getOrCreateChild(mdGeoBbox, "northBoundLatitude")
   mdCharStringElement = getOrCreateChild(mdNorthBound, "gco:Decimal")
   textNode = getOrCreateTextChild(mdCharStringElement)
-  textNode.setNodeValue(str(extent[ 3 ]))
+  textNode.setNodeValue(str(extent[3]))
 
 
   f = QFile(metadataFile)
