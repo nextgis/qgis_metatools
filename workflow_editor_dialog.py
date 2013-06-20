@@ -37,7 +37,7 @@ import os, sys
 
 from workflow_template_manager import WorkflowTemplateManager, WorkflowTemplate
 
-from ui_workflow_editor import Ui_WorkflowEditorDialog
+from ui.ui_workflow_editor import Ui_WorkflowEditorDialog
 
 currentPath = os.path.abspath(os.path.dirname(__file__))
 

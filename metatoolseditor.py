@@ -35,7 +35,7 @@ from qgis.gui import *
 
 import sys
 from dom_model import DomModel, FilterDomModel
-from ui_editor import Ui_MetatoolsEditor
+from ui.ui_editor import Ui_MetatoolsEditor
 
 class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
   def __init__(self):
@@ -54,12 +54,12 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
     self.editorButtonBox.clear()
     self.editorButtonBox.addButton(self.btnApply, QDialogButtonBox.AcceptRole)
     self.editorButtonBox.addButton(self.btnDiscard, QDialogButtonBox.RejectRole)
-    
+
     #contextmenu
     self.lblNodePath.setContextMenuPolicy(Qt.ActionsContextMenu)
     self.lblNodePath.addAction(self.actionCopyPath)
     self.connect(self.actionCopyPath, SIGNAL("activated()"), self.slotCopyPath)
-    
+
     # full metadata view
     QObject.connect(self.treeFull, SIGNAL("clicked( QModelIndex )"), self.itemSelected)
     QObject.connect(self.treeFull, SIGNAL("collapsed( QModelIndex )"), self.collapsedExpanded)
@@ -76,10 +76,10 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
 
     QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
     QObject.connect(self.btnSave, SIGNAL("clicked()"), self.saveMetadata)
-    
+
   def slotCopyPath(self):
     QApplication.clipboard().setText(self.lblNodePath.text())
-  
+
 
   def setContent(self, metaProvider):
     self.metaProvider = metaProvider
@@ -96,7 +96,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
     self.treeFull.hideColumn(1) # hide attrs
     self.treeFull.resizeColumnToContents(0) # resize value column
 
-    # load filtered list 
+    # load filtered list
     self.filteredIndexes = None # lazy init
     # set filtered view
     #self.fillTableWidget()

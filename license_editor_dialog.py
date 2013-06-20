@@ -35,7 +35,7 @@ from qgis.gui import *
 
 import os, sys
 
-from ui_license_editor import Ui_LicenseEditorDialog
+from ui.ui_license_editor import Ui_LicenseEditorDialog
 
 from license_template_manager import LicenseTemplateManager, LicenseTemplate
 

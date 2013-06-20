@@ -1,51 +1,48 @@
-#/***************************************************************************
-# Metatools
-# 
-# Metadata browser/editor
-#                             -------------------
-#        begin                : 2011-02-21
-#        copyright            : (C) 2011 by NextGIS
-#        email                : info@nextgis.ru
-# ***************************************************************************/
-# 
-#/***************************************************************************
-# *                                                                         *
-# *   This program is free software; you can redistribute it and/or modify  *
-# *   it under the terms of the GNU General Public License as published by  *
-# *   the Free Software Foundation; either version 2 of the License, or     *
-# *   (at your option) any later version.                                   *
-# *                                                                         *
-# ***************************************************************************/
+UI_PATH=ui
+UI_SOURCES=$(wildcard $(UI_PATH)/*.ui)
+UI_FILES=$(patsubst $(UI_PATH)/%.ui, $(UI_PATH)/%.py, $(UI_SOURCES))
 
-# Makefile for a PyQGIS plugin 
+LANG_PATH=i18n
+LANG_SOURCES=$(wildcard $(LANG_PATH)/*.ts)
+LANG_FILES=$(patsubst $(LANG_PATH)/%.ts, $(LANG_PATH)/%.qm, $(LANG_SOURCES))
 
-PLUGINNAME = metatools
+RES_PATH=.
+RES_SOURCES=$(wildcard $(RES_PATH)/*.qrc)
+RES_FILES=$(patsubst $(RES_PATH)/%.qrc, $(RES_PATH)/%_rc.py, $(RES_SOURCES))
 
-PY_FILES = metatools.py metatoolsdialog.py __init__.py
+PRO_PATH=.
+PRO_FILES=$(wildcard $(PRO_PATH)/*.pro)
 
-EXTRAS = icon.png 
+ALL_FILES= ${RES_FILES} ${UI_FILES} ${LANG_FILES}
 
-UI_FILES = ui_metatools.py
+all: $(ALL_FILES)
 
-RESOURCE_FILES = resources.py
+ui: $(UI_FILES)
 
-default: compile
+ts: $(PRO_FILES)
+	pylupdate4 -verbose $<
 
-compile: $(UI_FILES) $(RESOURCE_FILES)
+lang: $(LANG_FILES)
 
-%.py : %.qrc
-	pyrcc4 -o $@  $<
+res: $(RES_FILES)
 
-%.py : %.ui
+$(UI_FILES): $(UI_PATH)/%.py: $(UI_PATH)/%.ui
 	pyuic4 -o $@ $<
 
-# The deploy  target only works on unix like operating system where
-# the Python plugin directory is located at:
-# $HOME/.qgis/python/plugins
-deploy: compile
-	mkdir -p $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(PY_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(UI_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(RESOURCE_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(EXTRAS) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
+$(LANG_FILES): $(LANG_PATH)/%.qm: $(LANG_PATH)/%.ts
+	lrelease $<
 
+$(RES_FILES): $(RES_PATH)/%_rc.py: $(RES_PATH)/%.qrc
+	pyrcc4 -o $@ $<
+
+clean:
+	rm -f $(ALL_FILES)
+	find -name "*.pyc" -exec rm -f {} \;
+	rm -f *.zip
+
+package:
+	cd .. && rm -f *.zip && zip -r metatools.zip metatools -x \*.pyc \*.ts \*.ui \*.qrc \*.pro \*~ \*.git\* \*Makefile*
+	mv ../metatools.zip .
+
+upload:
+	plugin_uploader.py metatools.zip

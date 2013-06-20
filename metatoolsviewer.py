@@ -34,7 +34,7 @@ from PyQt4.QtXmlPatterns  import *
 from qgis.core import *
 from qgis.gui import *
 
-from ui_viewer import Ui_MetatoolsViewer
+from ui.ui_viewer import Ui_MetatoolsViewer
 from error_handler import ErrorHandler
 
 
@@ -43,7 +43,7 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
     QDialog.__init__(self)
     self.setupUi(self)
     self.setWindowFlags( Qt.Window | Qt.WindowMaximizeButtonHint )
-    
+
     #set browser context menu
     self.webView.setContextMenuPolicy(Qt.CustomContextMenu)
     self.webView.customContextMenuRequested.connect(self.openMenu)
@@ -51,7 +51,7 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
     self.connect(self.actionCopy, SIGNAL("activated()"), self.slotCopy)
     self.connect(self.actionPrint, SIGNAL("activated()"), self.slotPrint)
     self.connect(self.actionCopyAll, SIGNAL("activated()"), self.slotCopyAll)
-    
+
 
   def openMenu(self, position):
     self.contextMenu.clear()
@@ -60,23 +60,23 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
     self.contextMenu.addAction(self.actionCopyAll)
     self.contextMenu.addSeparator()
     self.contextMenu.addAction(self.actionPrint)
-    
+
     self.contextMenu.exec_(self.webView.mapToGlobal(position))
-    
-        
+
+
   def slotPrint(self):
     printer = QPrinter()
     dialog = QPrintDialog(printer)
     if dialog.exec_() == QDialog.Accepted:
       self.webView.print_(printer)
-  
+
   def slotCopyAll(self):
     mimeData=QMimeData()
     mimeData.setHtml(self.webView.page().mainFrame().toHtml())
     mimeData.setText(self.webView.page().mainFrame().toPlainText())
     clipboard = QApplication.clipboard()
     clipboard.setMimeData(mimeData)
-  
+
   def slotCopy(self):
     if self.webView.selectedText():
       clipboard = QApplication.clipboard()
@@ -106,7 +106,7 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
     #  QMessageBox.information( self, "Valid", "Invalid!" )
 
     #result = qry.evaluateToString()
-	  #workaround, for PyQt < 4.8
+    #workaround, for PyQt < 4.8
     array = QByteArray()
     buf = QBuffer(array)
     buf.open(QIODevice.WriteOnly)

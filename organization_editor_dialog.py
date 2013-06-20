@@ -35,7 +35,7 @@ from qgis.gui import *
 
 import os
 
-from ui_organization_editor import Ui_OrganizationEditorDialog
+from ui.ui_organization_editor import Ui_OrganizationEditorDialog
 from organization_template_manager import OrganizationTemplateManager, OrganizationTemplate
 
 currentPath = os.path.abspath(os.path.dirname(__file__))

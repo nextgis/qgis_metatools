@@ -26,24 +26,6 @@
 #
 #******************************************************************************
 
-def name():
-  return "Metatools"
-
-def description():
-  return "Metadata browser/editor"
-
-def category():
-  return "Plugins"
-
-def version():
-  return "0.3.0"
-
-def icon():
-  return "icons/metafile.png"
-
-def qgisMinimumVersion():
-  return "1.5"
-
 def classFactory(iface):
   from metatools import MetatoolsPlugin
   return MetatoolsPlugin(iface)

@@ -47,7 +47,7 @@ from organization_template_manager import OrganizationTemplateManager
 from datatype_editor_dialog import DataTypeEditorDialog
 from datatype_template_manager import DatatypeTemplateManager
 
-from ui_apply_templates import Ui_ApplyTemplatesDialog
+from ui.ui_apply_templates import Ui_ApplyTemplatesDialog
 
 from standard import MetaInfoStandard
 from metadata_provider import FileMetadataProvider
