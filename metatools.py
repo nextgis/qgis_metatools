@@ -135,6 +135,12 @@ class MetatoolsPlugin:
     self.mpAction.setStatusTip(QCoreApplication.translate("Metatools", "MP Tool"))
     self.mpAction.setWhatsThis(QCoreApplication.translate("Metatools", "MP Tool"))
 
+    settings = QSettings("NextGIS", "metatools")
+    hasTools = settings.value("QgsCollapsibleGroupBox/gbFGDCTools/checked", False)
+    if not hasTools:
+      self.usgsAction.setEnabled(False)
+      self.mpAction.setEnabled(False)
+
     self.editAction.triggered.connect(self.doEdit)
     self.applyTemplatesAction.triggered.connect(self.doApplyTemplates)
     self.viewAction.triggered.connect(self.doView)
@@ -232,10 +238,13 @@ class MetatoolsPlugin:
     self.exportAction.setEnabled(False)
 
   def enableLayerActions(self):
+    settings = QSettings("NextGIS", "metatools")
+    hasTools = settings.value("tools/hasFGDC", False)
+
     self.viewAction.setEnabled(True)
     self.editAction.setEnabled(True)
-    self.usgsAction.setEnabled(True)
-    self.mpAction.setEnabled(True)
+    self.usgsAction.setEnabled(hasTools and settings.value("tools/tkme", "") != "")
+    self.mpAction.setEnabled(hasTools and settings.value("tools/mp", "") != "")
     self.validateAction.setEnabled(True)
     self.importAction.setEnabled(True)
     self.exportAction.setEnabled(True)
@@ -270,6 +279,12 @@ class MetatoolsPlugin:
   def doConfigure(self):
     dlg = MetatoolsSettings()
     dlg.exec_()
+
+    settings = QSettings("NextGIS", "metatools")
+    hasTools = settings.value("tools/hasFGDC", False)
+    if hasTools:
+      self.usgsAction.setEnabled(settings.value("tools/tkme", "") != "")
+      self.mpAction.setEnabled(settings.value("tools/mp", "") != "")
 
   def doApplyTemplates(self):
     try:
@@ -355,6 +370,10 @@ class MetatoolsPlugin:
   # ----------------- external tools -----------------
 
   def execUsgs(self):
+    settings = QSettings("NextGIS", "metatools")
+    if not settings.value("tools/hasFGDC", False):
+      return
+
     # check if metadata file exists
     if not self.checkMetadata():
       return
@@ -370,17 +389,7 @@ class MetatoolsPlugin:
       return
 
     # start tool
-    toolPath = self.pluginPath + '/external_tools/tkme'
-    if sys.platform == 'win32':
-        execFilePath = toolPath + '/tkme.exe'
-    else:
-        execFilePath = toolPath + '/tkme.kit'
-
-        #bug in qgis plugin installer:
-        tclkitFilePath = toolPath + '/tclkit'
-        import stat
-        os.chmod(execFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
-        os.chmod(tclkitFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
+    execFilePath = settings.value("tools/tkme", "")
 
     try:
       import subprocess
@@ -395,6 +404,10 @@ class MetatoolsPlugin:
                           )
 
   def execMp(self):
+    settings = QSettings("NextGIS", "metatools")
+    if not settings.value("tools/hasFGDC", False):
+      return
+
     # check if metadata exists
     if not self.checkMetadata():
       return
@@ -410,21 +423,8 @@ class MetatoolsPlugin:
       return
 
     # start tool
-    toolPath = self.pluginPath + '/external_tools/mp'
-
-    if sys.platform == 'win32':
-        mpFilePath = toolPath + '/mp.exe'
-        errFilePath = toolPath + '/err2html.exe'
-        throwShell = True
-    else:
-        mpFilePath = toolPath + '/mp.lnx'
-        errFilePath = toolPath + '/err2html.lnx'
-        throwShell = False
-
-        #bug in qgis plugin installer:
-        import stat
-        os.chmod(mpFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
-        os.chmod(errFilePath, stat.S_IXUSR | stat.S_IWUSR | stat.S_IRUSR)
+    mpFilePath = settings.value("tools/mp", "")
+    errFilePath = settings.value("tools/err2html", "")
 
     tempPath = os.tempnam()
     temporaryMetafile = self.metaProvider.SaveToTempFile()

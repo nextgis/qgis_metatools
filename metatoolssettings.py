@@ -43,11 +43,17 @@ class MetatoolsSettings(QDialog, Ui_MetatoolsSettingsDialog):
     QDialog.__init__(self)
     self.setupUi(self)
 
+    self.settings = QSettings("NextGIS", "metatools")
+    self.gbFGDCTools.setSettings(self.settings)
+
     self.manageGui()
 
     self.readSettings()
 
     self.btnSelectFilter.clicked.connect(self.updateFilter)
+    self.btnSelectTkme.clicked.connect(self.selectTkme)
+    self.btnSelectMp.clicked.connect(self.selectMp)
+    self.btnSelectErr2Html.clicked.connect(self.selectErr2Html)
 
   def manageGui(self):
     # populate profiles combobox
@@ -72,25 +78,28 @@ class MetatoolsSettings(QDialog, Ui_MetatoolsSettingsDialog):
     self.cmbImgFormat.addItems(formats)
 
   def readSettings(self):
-    settings = QSettings("NextGIS", "metatools")
-    self.leFilterFileName.setText(settings.value("general/filterFile", ""))
+    self.leFilterFileName.setText(self.settings.value("general/filterFile", ""))
 
     # restore default profile
-    profile = settings.value("general/defaultProfile", "")
+    profile = self.settings.value("general/defaultProfile", "")
     self.defaultProfileComboBox.setCurrentIndex(self.defaultProfileComboBox.findText(profile))
 
     # restore preview image format
-    preview_format = settings.value("preview/format", "jpg")
+    preview_format = self.settings.value("preview/format", "jpg")
     self.cmbImgFormat.setCurrentIndex(self.cmbImgFormat.findText(preview_format))
 
     # restore iso stylesheet
-    isoXsl = settings.value("iso19115/stylesheet", "iso19115.xsl")
+    isoXsl = self.settings.value("iso19115/stylesheet", "iso19115.xsl")
     self.cmbIsoViewStylesheet.setCurrentIndex(self.cmbIsoViewStylesheet.findText(isoXsl))
 
     # restore fgdc stylesheet
-    fgdcXsl = settings.value("fgdc/stylesheet", "fgdc.xsl")
+    fgdcXsl = self.settings.value("fgdc/stylesheet", "fgdc.xsl")
     self.cmbFgdcViewStylesheet.setCurrentIndex(self.cmbFgdcViewStylesheet.findText(fgdcXsl))
 
+    # FGDC tools
+    self.leTkmePath.setText(self.settings.value("tools/tkme", ""))
+    self.leMpPath.setText(self.settings.value("tools/mp", ""))
+    self.leErr2HtmlPath.setText(self.settings.value("tools/err2html", ""))
 
   def updateFilter(self):
     fileName = QFileDialog.getOpenFileName(self,
@@ -104,18 +113,58 @@ class MetatoolsSettings(QDialog, Ui_MetatoolsSettingsDialog):
 
     self.leFilterFileName.setText(fileName)
 
+  def selectTkme(self):
+    fileName = QFileDialog.getOpenFileName(self,
+                                           self.tr('Select file'),
+                                           '.',
+                                           self.tr('Executable files (*.exe *.EXE);;All files (*)')
+                                          )
+
+    if fileName == "":
+      return
+
+    self.leTkmePath.setText(fileName)
+
+  def selectMp(self):
+    fileName = QFileDialog.getOpenFileName(self,
+                                           self.tr('Select file'),
+                                           '.',
+                                           self.tr('Executable files (*.exe *.EXE);;All files (*)')
+                                          )
+
+    if fileName == "":
+      return
+
+    self.leMpPath.setText(fileName)
+
+  def selectErr2Html(self):
+    fileName = QFileDialog.getOpenFileName(self,
+                                           self.tr('Select file'),
+                                           '.',
+                                           self.tr('Executable files (*.exe *.EXE);;All files (*)')
+                                          )
+
+    if fileName == "":
+      return
+
+    self.leErr2HtmlPath.setText(fileName)
+
   def accept(self):
     # save settings
-    settings = QSettings("NextGIS", "metatools")
-    settings.setValue("general/filterFile", self.leFilterFileName.text())
+    self.settings.setValue("general/filterFile", self.leFilterFileName.text())
 
-    settings.setValue("general/defaultProfile", self.defaultProfileComboBox.currentText())
+    self.settings.setValue("general/defaultProfile", self.defaultProfileComboBox.currentText())
 
-    settings.setValue("preview/format", self.cmbImgFormat.currentText())
+    self.settings.setValue("preview/format", self.cmbImgFormat.currentText())
 
-    settings.setValue("iso19115/stylesheet", self.cmbIsoViewStylesheet.currentText())
+    self.settings.setValue("iso19115/stylesheet", self.cmbIsoViewStylesheet.currentText())
 
-    settings.setValue("fgdc/stylesheet", self.cmbFgdcViewStylesheet.currentText())
+    self.settings.setValue("fgdc/stylesheet", self.cmbFgdcViewStylesheet.currentText())
+
+    self.settings.setValue("tools/hasFGDC", self.gbFGDCTools.isChecked())
+    self.settings.setValue("tools/tkme", self.leTkmePath.text())
+    self.settings.setValue("tools/mp", self.leMpPath.text())
+    self.settings.setValue("tools/err2html", self.leErr2HtmlPath.text())
 
     # close dialog
     QDialog.accept(self)
