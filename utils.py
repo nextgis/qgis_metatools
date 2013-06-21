@@ -41,7 +41,6 @@ from metadata_provider import MetadataProvider
 META_EXT = '.xml'
 PREVIEW_SUFFIX = '_preview'
 
-
 def getMetafilePath(layer):
   #not standard implementation in original plugin
   originalFilePath = unicode(layer.source())
@@ -52,7 +51,7 @@ def getMetafilePath(layer):
 
 def previewPathFromLayerPath(layerPath):
   settings = QSettings("NextGIS", "metatools")
-  format_preview = settings.value("preview/format", QVariant('jpg')).toString()
+  format_preview = settings.value("preview/format", "jpg")
 
   originalFileName = os.path.splitext(unicode(layerPath))
   metaFilePath = originalFileName[0] + PREVIEW_SUFFIX + '.' + format_preview
@@ -67,10 +66,10 @@ def mdPathFromLayerPath(layerPath):
 
 def getSupportedLayerNames():
   layermap = QgsMapLayerRegistry.instance().mapLayers()
-  layerList = QStringList()
+  layerList = []
   for name, layer in layermap.iteritems():
     if MetadataProvider.IsLayerSupport(layer)[0]:
-      layerList << layer.name()
+      layerList.append(layer.name())
   return layerList
 
 def getSupportedLayers():
@@ -85,7 +84,7 @@ def getRasterLayerByName(layerName):
   layermap = QgsMapLayerRegistry.instance().mapLayers()
   for name, layer in layermap.iteritems():
     if layer.type() == QgsMapLayer.RasterLayer:
-      if layer.usesProvider() and layer.providerKey() != "gdal":
+      if layer.providerType() != "gdal":
         continue
       if layer.name() == layerName:
         return layer
@@ -95,7 +94,7 @@ def getRasterLayerByPath(layerPath):
   layermap = QgsMapLayerRegistry.instance().mapLayers()
   for name, layer in layermap.iteritems():
     if layer.type() == QgsMapLayer.RasterLayer:
-      if layer.usesProvider() and layer.providerKey() != "gdal":
+      if layer.providerType() != "gdal":
         continue
       if layer.source() == layerPath:
         return layer
@@ -186,7 +185,6 @@ def getGeneralVectorInfo(path):
   ogrDataSource = None
 
   return [xMin, yMin, xMax, yMax]
-
 
 # helper functions for XML processing
 def createChild(element, childName):
@@ -294,7 +292,6 @@ def writeRasterInfo(dataFile, metadataFile):
   while not (mdImageDescription.firstChildElement("dimension")).isNull():
     mdImageDescription.removeChild(mdImageDescription.firstChildElement("dimension"))
 
-
   mdDimension = insertAfterChild(mdImageDescription, "dimension", ["dimension", "contentType", "attributeDescription"]) #profile version
 
   # create new demensions
@@ -363,23 +360,21 @@ def writeVectorInfo(dataFile, metadataFile):
   textNode = getOrCreateTextChild(mdCharStringElement)
   textNode.setNodeValue(str(extent[3]))
 
-
   f = QFile(metadataFile)
   f.open(QFile.WriteOnly)
   stream = QTextStream(f)
   metaXML.save(stream, 2)
   f.close()
 
-
 def generatePreview(dataFile):
   # get raster
   rasterLayer = getRasterLayerByPath(dataFile)
   if not rasterLayer:
-      rasterLayer = QgsRasterLayer(dataFile, QString(), True)
+      rasterLayer = QgsRasterLayer(dataFile, "", True)
 
   #get size
   width = 512
-  height = int(rasterLayer.height()*width / rasterLayer.width())
+  height = int(rasterLayer.height() * width / rasterLayer.width())
   preview = QPixmap(width, height)
 
   # generate preview

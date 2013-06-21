@@ -37,7 +37,6 @@ from qgis.gui import *
 from ui.ui_viewer import Ui_MetatoolsViewer
 from error_handler import ErrorHandler
 
-
 class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
   def __init__(self):
     QDialog.__init__(self)
@@ -48,10 +47,9 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
     self.webView.setContextMenuPolicy(Qt.CustomContextMenu)
     self.webView.customContextMenuRequested.connect(self.openMenu)
     self.contextMenu=QMenu()
-    self.connect(self.actionCopy, SIGNAL("activated()"), self.slotCopy)
-    self.connect(self.actionPrint, SIGNAL("activated()"), self.slotPrint)
-    self.connect(self.actionCopyAll, SIGNAL("activated()"), self.slotCopyAll)
-
+    self.actionCopy.activated.connect(self.slotCopy)
+    self.actionPrint.activated.connect(self.slotPrint)
+    self.actionCopyAll.activated.connect(self.slotCopyAll)
 
   def openMenu(self, position):
     self.contextMenu.clear()
@@ -62,7 +60,6 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
     self.contextMenu.addAction(self.actionPrint)
 
     self.contextMenu.exec_(self.webView.mapToGlobal(position))
-
 
   def slotPrint(self):
     printer = QPrinter()
@@ -86,7 +83,7 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
     # load data
     xsltFile = QFile(xsltFilePath)
     xsltFile.open(QIODevice.ReadOnly)
-    xslt = QString(xsltFile.readAll())
+    xslt = unicode(xsltFile.readAll())
     xsltFile.close()
 
     src = metaProvider.getMetadata()
@@ -100,18 +97,14 @@ class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):
     qry.setFocus(src)
     qry.setQuery(xslt)
 
-    #if qry.isValid():
-    #  QMessageBox.information(self, "Valid", "Valid!")
-    #else:
-    #  QMessageBox.information(self, "Valid", "Invalid!")
+    result = qry.evaluateToString()
 
-    #result = qry.evaluateToString()
     #workaround, for PyQt < 4.8
-    array = QByteArray()
-    buf = QBuffer(array)
-    buf.open(QIODevice.WriteOnly)
-    qry.evaluateTo(buf)
-    result = QString.fromUtf8(array)
+    #array = ""
+    #buf = QBuffer(array)
+    #buf.open(QIODevice.WriteOnly)
+    #qry.evaluateTo(buf)
+    #result = unicode(array)
 
     if result:
       #QXmlPattern not support CDATA section

@@ -47,7 +47,7 @@ class DomItem:
 
     self.hasOneGco=False
     if self.domNode.nodeType() == QDomNode.ElementNode and not self.editable:
-      self.hasOneGco=self.domNode.childNodes().count() == 1 and self.domNode.childNodes().at(0).nodeType() == QDomNode.ElementNode and  self.domNode.childNodes().at(0).nodeName().contains("gco:", Qt.CaseInsensitive)
+      self.hasOneGco=self.domNode.childNodes().count() == 1 and self.domNode.childNodes().at(0).nodeType() == QDomNode.ElementNode and "gco:" in self.domNode.childNodes().at(0).nodeName().lower()
 
   def node(self):
     return self.domNode
@@ -104,7 +104,6 @@ class DomItem:
   def hasOneGcoElement(self):
     return self.hasOneGco
 
-
 class DomModel(QAbstractItemModel):
   def __init__(self, document, parent = None):
     QAbstractItemModel.__init__(self, parent)
@@ -117,14 +116,14 @@ class DomModel(QAbstractItemModel):
   # get editable flag by index
   def isEditable(self, index):
     if not index.isValid():
-      return QVariant()
+      return None
 
     item = index.internalPointer()
     return item.isEditable()
 
   def nodePath(self, index):
     if not index.isValid():
-      return QString()
+      return ""
     item = index.internalPointer()
     return item.getNodePath()
 
@@ -134,38 +133,37 @@ class DomModel(QAbstractItemModel):
     item = index.internalPointer()
     return item.hasOneGco
 
-
   def data(self, index, role):
     if not index.isValid():
-      return QVariant()
+      return None
 
     if role != Qt.DisplayRole:
-      return QVariant()
+      return None
 
     item = index.internalPointer()
     node = item.node()
-    attributes = QStringList()
+    attributes = []
     attributeMap = node.attributes()
 
     if index.column() == 0:
-      return QVariant(node.nodeName())
+      return node.nodeName()
     elif index.column() == 1:
       for i in range(0, attributeMap.count()):
         attribute = attributeMap.item(i)
         attributes.append(attribute.nodeName() + "=\"" + attribute.nodeValue() + "\"")
 
-      return QVariant(attributes.join(" "))
+      return " ".join(attributes)
     elif index.column() == 2:
       #return QVariant(node.nodeValue().split("\n").join(" "))
-      return QVariant(item.itemValue().split("\n").join(" "))
+      return " ".join(item.itemValue().split("\n"))
     else:
-      return QVariant()
+      return None
 
   def setData(self, index, value, role = Qt.EditRole):
     if index.isValid():
       item = index.internalPointer()
       #node = item.node() ?not used never
-      item.setItemValue(QVariant(value).toString())
+      item.setItemValue(value)
 
       self.emit(SIGNAL("dataChanged(const QModelIndex &, const QModelIndex &)"), index, index)
       return True
@@ -181,15 +179,15 @@ class DomModel(QAbstractItemModel):
   def headerData(self, section, orientation, role):
     if orientation == Qt.Horizontal and role == Qt.DisplayRole:
       if section == 0:
-        return QVariant(self.tr("Name"))
+        return self.tr("Name")
       elif section == 1:
-        return QVariant(self.tr("Attributes"))
+        return self.tr("Attributes")
       elif section == 2:
-        return QVariant(self.tr("Value"))
+        return self.tr("Value")
       else:
-        return QVariant()
+        return None
 
-    return QVariant()
+    return None
 
   def index(self, row, column, parent):
     if row < 0 or column < 0 or row >= self.rowCount(parent) or column >= self.columnCount(parent):
@@ -238,7 +236,7 @@ class FilterDomModel(QSortFilterProxyModel):
     if len(self.filter) == 0:
       return True
     index = self.sourceModel().index(sourceRow, 0, sourceParent)
-    value = self.sourceModel().data(index, Qt.DisplayRole).toString()
+    value = self.sourceModel().data(index, Qt.DisplayRole)
     if value in self.filter:
       return True
     else:

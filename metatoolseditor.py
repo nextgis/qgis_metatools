@@ -61,25 +61,24 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
     self.connect(self.actionCopyPath, SIGNAL("activated()"), self.slotCopyPath)
 
     # full metadata view
-    QObject.connect(self.treeFull, SIGNAL("clicked(QModelIndex)"), self.itemSelected)
-    QObject.connect(self.treeFull, SIGNAL("collapsed(QModelIndex)"), self.collapsedExpanded)
-    QObject.connect(self.treeFull, SIGNAL("expanded(QModelIndex)"), self.collapsedExpanded)
+    self.treeFull.clicked.connect(self.itemSelected)
+    self.treeFull.collapsed.connect(self.collapsedExpanded)
+    self.treeFull.expanded.connect(self.collapsedExpanded)
 
     # filtered metadata view
-    QObject.connect(self.tbwFiltered, SIGNAL("currentCellChanged (int , int , int, int)"), self.cellSelected)
+    self.tbwFiltered.currentCellChanged.connect(self.cellSelected)
 
-    QObject.connect(self.textValue, SIGNAL("textChanged()"), self.valueModified)
-    QObject.connect(self.tabWidget, SIGNAL("currentChanged(int)"), self.tabChanged)
+    self.textValue.textChanged.connect(self.valueModified)
+    self.tabWidget.currentChanged.connect(self.tabChanged)
 
-    QObject.connect(self.btnApply, SIGNAL("clicked()"), self.applyEdits)
-    QObject.connect(self.btnDiscard, SIGNAL("clicked()"), self.resetEdits)
+    self.btnApply.clicked.connect(self.applyEdits)
+    self.btnDiscard.clicked.connect(self.resetEdits)
 
-    QObject.disconnect(self.buttonBox, SIGNAL("accepted()"), self.accept)
-    QObject.connect(self.btnSave, SIGNAL("clicked()"), self.saveMetadata)
+    self.buttonBox.accepted.disconnect(self.accept)
+    self.btnSave.clicked.connect(self.saveMetadata)
 
   def slotCopyPath(self):
     QApplication.clipboard().setText(self.lblNodePath.text())
-
 
   def setContent(self, metaProvider):
     self.metaProvider = metaProvider
@@ -109,7 +108,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
 
     path = ""
     editable = False
-    self.text = QVariant()
+    self.text = None
 
    # full view
     self.mindex = self.model.index(mindex.row(), 2, mindex.parent())
@@ -119,7 +118,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
 
     self.lblNodePath.setText(path)
     if editable:
-      self.textValue.setPlainText(self.text.toString())
+      self.textValue.setPlainText(self.text)
       self.groupBox.setEnabled(True)
       self.editorButtonBox.setEnabled(False)
     else:
@@ -132,7 +131,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
 
     path = ""
     editable = False
-    self.text = QVariant()
+    self.text = None
 
     self.mindex = self.filteredIndexes[currentRow][1]
     path = self.model.nodePath(self.mindex)
@@ -141,7 +140,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
 
     self.lblNodePath.setText(path)
     if editable:
-      self.textValue.setPlainText(self.text.toString())
+      self.textValue.setPlainText(self.text)
       self.groupBox.setEnabled(True)
       self.editorButtonBox.setEnabled(False)
     else:
@@ -162,7 +161,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
 
     path = ""
     editable = False
-    self.text = QVariant()
+    self.text = None
 
     if tab == 0:
       mindex = self.treeFull.currentIndex()
@@ -189,7 +188,7 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
 
     self.lblNodePath.setText(path)
     if editable:
-      self.textValue.setPlainText(self.text.toString())
+      self.textValue.setPlainText(self.text)
       self.groupBox.setEnabled(True)
       self.editorButtonBox.setEnabled(False)
     else:
@@ -205,29 +204,35 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
         self.fillTableWidget()
 
   def resetEdits(self):
-    self.textValue.setPlainText(self.text.toString())
+    self.textValue.setPlainText(self.text)
     self.editorButtonBox.setEnabled(False)
 
   def saveMetadata(self):
     try:
-      self.metaProvider.setMetadata(unicode(self.metaXML.toString().toUtf8(), "utf-8"))
+      self.metaProvider.setMetadata(unicode(self.metaXML.toString()))
       # TODO: create preview image if need
       self.btnSave.setEnabled(False)
     except:
-      QMessageBox.warning(self, self.tr("Metatools"), self.tr("Metadata can't be saved:\n") + str(sys.exc_info()[0]))
+      QMessageBox.warning(self,
+                          self.tr("Metatools"),
+                          self.tr("Metadata can't be saved:\n") + unicode(sys.exc_info()[0])
+                         )
 
   def loadFilter(self):
     settings = QSettings("NextGIS", "metatools")
-    fileName = settings.value("general/filterFile", QVariant()).toString()
+    fileName = settings.value("general/filterFile", "")
 
-    if fileName.isEmpty():
+    if fileName == "":
       return []
 
     # read filter from file
     filter_lines = []
     f = QFile(fileName)
     if not f.open(QIODevice.ReadOnly):
-      QMessageBox.warning(self, self.tr('I/O error'), self.tr("Can't open file %1").arg(fileName))
+      QMessageBox.warning(self,
+                          self.tr('I/O error'),
+                          self.tr("Can't open file %s") % (fileName)
+                         )
       return []
 
     stream = QTextStream(f)
@@ -252,10 +257,13 @@ class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
   def fillTableWidget(self):
       row = 0
       for nameItemIndex, valueItemIndex in self.filteredIndexes:
-          name = self.model.data(nameItemIndex, Qt.DisplayRole).toString()
-          value = self.model.data(valueItemIndex, Qt.DisplayRole).toString()
+          name = unicode(self.model.data(nameItemIndex, Qt.DisplayRole))
+          value = unicode(self.model.data(valueItemIndex, Qt.DisplayRole))
           self.tbwFiltered.setItem(row, 0, QTableWidgetItem(name))
           self.tbwFiltered.setItem(row, 1, QTableWidgetItem(value))
           row += 1
 
       self.tbwFiltered.resizeColumnToContents(0)
+
+  def accept(self):
+    QDialog.accept(self)
