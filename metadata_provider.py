@@ -29,8 +29,6 @@ from os import path, tempnam, remove
 import codecs
 import uuid
 
-
-
 NO_PSYCOPG2 = False
 try:
   import psycopg2
@@ -87,7 +85,6 @@ class MetadataProvider:
     #save to provider
     self.setMetadata(content)
 
-
   @staticmethod
   def IsLayerSupport(layer):
     # Null layers are not supported :)
@@ -98,10 +95,10 @@ class MetadataProvider:
     if layer.type() != QgsMapLayer.VectorLayer and layer.type() != QgsMapLayer.RasterLayer:
       return (False, "Only vector and raster layers are supported now!")
 
-    # Check raster layers  
+    # Check raster layers
     if layer.type() == QgsMapLayer.RasterLayer:
       # Only gdal-based raster are supported now!
-      if layer.usesProvider() and layer.providerKey() != "gdal":
+      if layer.providerType() != "gdal":
         return (False, "Only gdal-based raster are supported now!")
       # Only file based rasters are supported now
       if not path.exists(unicode(layer.source())):
@@ -115,13 +112,13 @@ class MetadataProvider:
         if layer.storageType() != "ESRI Shapefile":
           return (False, "Only 'ESRI Shapefile' ogr provider is supported now!")
       if layer.providerType() == "postgres":
-	if NO_PSYCOPG2:
-	  return (False, "psycopg2 libraries are not installed!")
+        if NO_PSYCOPG2:
+          return (False, "psycopg2 libraries are not installed!")
         if not PostgresMetadataProvider.checkExtension(layer.source()):
           if not PostgresMetadataProvider.installExtension(layer.source()):
             return (False, "MetadataPostgis extension are not installed for this DB or connection has failed!")
 
-    # layer is supported 
+    # layer is supported
     return (True, "Layer is supported")
 
   @staticmethod
@@ -143,14 +140,10 @@ class MetadataProvider:
     # WTF
     return None
 
-
-
-
 # Metadata provider based on files
-
 class FileMetadataProvider(MetadataProvider):
   META_EXT = '.xml'
-  
+
   def __init__(self, layer):
     if type(layer) == type(unicode()):
       self.layerFilePath = layer
@@ -159,7 +152,7 @@ class FileMetadataProvider(MetadataProvider):
     self.metaFilePath = self.layerFilePath + self.META_EXT
 
   def checkExists(self):
-    # TODO: Add content check on empty 
+    # TODO: Add content check on empty
     return path.exists(self.metaFilePath)
 
   def getMetadata(self):
@@ -167,7 +160,6 @@ class FileMetadataProvider(MetadataProvider):
     metaFile = codecs.open(self.metaFilePath, "r", encoding="utf-8")
     content = metaFile.read()
     metaFile.close()
-    #return data
     return content
 
   def setMetadata(self, metadata):
@@ -175,25 +167,24 @@ class FileMetadataProvider(MetadataProvider):
     metaFile.write(metadata)
     metaFile.close()
 
-
 # Metadata provider based on FS DB
 class LocalDbMetadataProvider(MetadataProvider):
   pass
 
-# Abstract metadata provider for remoute DB 
+# Abstract metadata provider for remoute DB
 class RemouteDbMetadataProvider(MetadataProvider):
   def __init__(self, layer):
     self.uri = layer.source()
     self.dsURI = QgsDataSourceURI(self.uri)
 
 
-# Metadata provider for postgresql 
+# Metadata provider for postgresql
 class PostgresMetadataProvider(RemouteDbMetadataProvider):
   def checkExists(self):
     if self.getMetadata():
       return True
     else:
-      return False    
+      return False
 
   def getMetadata(self):
     conn = psycopg2.connect(str(self.dsURI.connectionInfo()))
@@ -235,17 +226,14 @@ class PostgresMetadataProvider(RemouteDbMetadataProvider):
     dsUri = QgsDataSourceURI(uri)
     try:
       file = (path.join(path.abspath(path.dirname(__file__)), 'postgresql_ext/extension.sql'))
-      procedures  = open(file,'r').read() 
-      #print "", procedures
+      procedures  = open(file,'r').read()
       conn = psycopg2.connect(str(dsUri.connectionInfo()))
       cur = conn.cursor()
-      cur.execute(procedures) 
+      cur.execute(procedures)
       conn.commit()
       cur.close()
       conn.close()
       return True
-    except psycopg2.DatabaseError, e: 
+    except psycopg2.DatabaseError, e:
       print "Exception executing sql: ", e
       return False
-
-
