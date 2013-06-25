@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1">
+<!DOCTYPE TS><TS version="2.0">
 <context>
     <name>ApplyTemplatesDialog</name>
     <message>
@@ -78,65 +78,65 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="136"/>
+        <location filename="apply_templates_dialog.py" line="135"/>
         <source>Select files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="136"/>
+        <location filename="apply_templates_dialog.py" line="135"/>
         <source>All files (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="200"/>
+        <location filename="apply_templates_dialog.py" line="203"/>
         <source>Select log file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="200"/>
+        <location filename="apply_templates_dialog.py" line="203"/>
         <source>Text files (*.txt);;Log files (*.log);;All files (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="247"/>
+        <location filename="apply_templates_dialog.py" line="255"/>
         <source>No profile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="247"/>
+        <location filename="apply_templates_dialog.py" line="255"/>
         <source>No profile selected. Please set default profile in plugin settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="314"/>
+        <location filename="apply_templates_dialog.py" line="330"/>
         <source>Metatools</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="262"/>
+        <location filename="apply_templates_dialog.py" line="273"/>
         <source>Metadata file can&apos;t be created: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="269"/>
-        <source>File %1 has unsupported metadata standard! Only ISO19115 supported now!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="apply_templates_dialog.py" line="305"/>
+        <location filename="apply_templates_dialog.py" line="317"/>
         <source>Done!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="314"/>
+        <location filename="apply_templates_dialog.py" line="330"/>
         <source>Operation can&apos;t be completed: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="apply_templates_dialog.py" line="283"/>
+        <source>File %s has unsupported metadata standard! Only ISO19115 supported now!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>DataTypeEditorDialog</name>
     <message>
-        <location filename="datatype_editor_dialog.py" line="140"/>
+        <location filename="datatype_editor_dialog.py" line="145"/>
         <source>Manage data types</source>
         <translation type="unfinished"></translation>
     </message>
@@ -196,52 +196,52 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="223"/>
+        <location filename="datatype_editor_dialog.py" line="247"/>
         <source>Metatools</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="93"/>
+        <location filename="datatype_editor_dialog.py" line="92"/>
         <source>Template contains unsaved data. Create new template without saving?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="129"/>
+        <location filename="datatype_editor_dialog.py" line="131"/>
         <source>The name of the data type template must be specified!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="140"/>
+        <location filename="datatype_editor_dialog.py" line="145"/>
         <source>Template can&apos;t be saved: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="154"/>
+        <location filename="datatype_editor_dialog.py" line="162"/>
         <source>Template contains unsaved data. Close the window without saving?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="212"/>
+        <location filename="datatype_editor_dialog.py" line="228"/>
         <source>New keyword</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="212"/>
+        <location filename="datatype_editor_dialog.py" line="228"/>
         <source>Input keyword:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="210"/>
+        <location filename="datatype_editor_dialog.py" line="223"/>
         <source>Select keyword for edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="220"/>
+        <location filename="datatype_editor_dialog.py" line="241"/>
         <source>Select keyword for remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="223"/>
+        <location filename="datatype_editor_dialog.py" line="247"/>
         <source>Remove this keyword?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -249,17 +249,17 @@
 <context>
     <name>DomModel</name>
     <message>
-        <location filename="dom_model.py" line="184"/>
+        <location filename="dom_model.py" line="182"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dom_model.py" line="186"/>
+        <location filename="dom_model.py" line="184"/>
         <source>Attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dom_model.py" line="188"/>
+        <location filename="dom_model.py" line="186"/>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -267,7 +267,7 @@
 <context>
     <name>LicenseEditorDialog</name>
     <message>
-        <location filename="license_editor_dialog.py" line="124"/>
+        <location filename="license_editor_dialog.py" line="130"/>
         <source>Manage licenses</source>
         <translation type="unfinished"></translation>
     </message>
@@ -302,7 +302,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="license_editor_dialog.py" line="157"/>
+        <location filename="license_editor_dialog.py" line="166"/>
         <source>Metatools</source>
         <translation type="unfinished"></translation>
     </message>
@@ -312,17 +312,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="license_editor_dialog.py" line="113"/>
+        <location filename="license_editor_dialog.py" line="116"/>
         <source>The name of the license must be specified!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="license_editor_dialog.py" line="124"/>
+        <location filename="license_editor_dialog.py" line="130"/>
         <source>Template can&apos;t be saved: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="license_editor_dialog.py" line="157"/>
+        <location filename="license_editor_dialog.py" line="166"/>
         <source>Template contains unsaved data. Close the window without saving?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -383,222 +383,222 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="76"/>
-        <source>Quantum GIS version detected: %1.%2
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="metatools.py" line="76"/>
-        <source>This version of Metatools requires at least QGIS version 1.5.0
-Plugin will not be enabled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="metatools.py" line="83"/>
-        <source>Qt version detected: %1
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="metatools.py" line="83"/>
-        <source>This version of Metatools requires at least Qt version %1
-Plugin will not be enabled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="metatools.py" line="92"/>
+        <location filename="metatools.py" line="93"/>
         <source>Edit metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="95"/>
+        <location filename="metatools.py" line="96"/>
         <source>Apply templates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="97"/>
+        <location filename="metatools.py" line="98"/>
         <source>Edit and apply templates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="102"/>
+        <location filename="metatools.py" line="103"/>
         <source>View metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="105"/>
+        <location filename="metatools.py" line="106"/>
         <source>Configure Metatools plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="107"/>
+        <location filename="metatools.py" line="108"/>
         <source>Configure plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="112"/>
+        <location filename="metatools.py" line="113"/>
         <source>Validate metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="118"/>
+        <location filename="metatools.py" line="117"/>
         <source>Import metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="117"/>
+        <location filename="metatools.py" line="116"/>
         <source>Import metadata from file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="121"/>
+        <location filename="metatools.py" line="120"/>
         <source>Export metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="122"/>
+        <location filename="metatools.py" line="121"/>
         <source>Export metadata to file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="126"/>
+        <location filename="metatools.py" line="125"/>
         <source>Metadata browser</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="132"/>
+        <location filename="metatools.py" line="131"/>
         <source>USGS Tool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="138"/>
+        <location filename="metatools.py" line="136"/>
         <source>MP Tool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="582"/>
+        <location filename="metatools.py" line="571"/>
         <source>Metatools</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="179"/>
+        <location filename="metatools.py" line="181"/>
         <source>Metatools: FGDC tools</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="258"/>
-        <source>Editor can&apos;t be loaded: %1 %2!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="metatools.py" line="319"/>
+        <location filename="metatools.py" line="318"/>
         <source>Unsupported metadata standard! Only ISO19115 and FGDC supported now!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="291"/>
-        <source>Applyer can&apos;t be loaded: %1 %2!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="metatools.py" line="305"/>
-        <source>Viewer can&apos;t be loaded: %1 %2!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="metatools.py" line="340"/>
+        <location filename="metatools.py" line="339"/>
         <source>The layer does not have metadata! Create metadata?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="349"/>
+        <location filename="metatools.py" line="350"/>
         <source>No profile selected. Please set default profile in plugin settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="357"/>
+        <location filename="metatools.py" line="359"/>
         <source>Metadata file can&apos;t be created: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="378"/>
+        <location filename="metatools.py" line="385"/>
         <source>USGS tool support only FGDC standard!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="404"/>
+        <location filename="metatools.py" line="401"/>
         <source>USGS tool can&apos;t be runing: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="418"/>
+        <location filename="metatools.py" line="419"/>
         <source>MP tool support only FGDC standard!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="458"/>
+        <location filename="metatools.py" line="447"/>
         <source>MP tool can&apos;t be runing: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="474"/>
+        <location filename="metatools.py" line="463"/>
         <source>MP result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="492"/>
+        <location filename="metatools.py" line="476"/>
         <source>Unsupported metadata standard! Only FGDC supported now!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="505"/>
+        <location filename="metatools.py" line="490"/>
         <source>Metadata is invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="515"/>
-        <source>Shcema for validate not loaded!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="metatools.py" line="528"/>
+        <location filename="metatools.py" line="513"/>
         <source>Metadata is valid!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="539"/>
+        <location filename="metatools.py" line="525"/>
         <source>Select metadata file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="565"/>
+        <location filename="metatools.py" line="553"/>
         <source>XML files (*.xml);;Text files (*.txt *.TXT);;All files (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="550"/>
+        <location filename="metatools.py" line="537"/>
         <source>Metadata can&apos;t be imported: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="556"/>
+        <location filename="metatools.py" line="543"/>
         <source>Metadata was imported successful!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="565"/>
+        <location filename="metatools.py" line="553"/>
         <source>Save metadata to file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="576"/>
+        <location filename="metatools.py" line="565"/>
         <source>Metadata can&apos;t be exported: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatools.py" line="582"/>
+        <location filename="metatools.py" line="571"/>
         <source>Metadata was exported successful!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="75"/>
+        <source>Quantum GIS version detected: %d.%d
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="75"/>
+        <source>This version of Metatools requires at least QGIS version 2.0
+Plugin will not be enabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="83"/>
+        <source>Qt version detected: %s
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="83"/>
+        <source>This version of Metatools requires at least Qt version %s
+Plugin will not be enabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="256"/>
+        <source>Editor can&apos;t be loaded: %s %s!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="293"/>
+        <source>Applyer can&apos;t be loaded: %s %s!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="305"/>
+        <source>Viewer can&apos;t be loaded: %s %s!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="500"/>
+        <source>Schema for validate not loaded!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -665,37 +665,47 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatoolseditor.py" line="217"/>
+        <location filename="metatoolseditor.py" line="216"/>
         <source>Metatools</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatoolseditor.py" line="217"/>
+        <location filename="metatoolseditor.py" line="216"/>
         <source>Metadata can&apos;t be saved:
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatoolseditor.py" line="230"/>
+        <location filename="metatoolseditor.py" line="232"/>
         <source>I/O error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatoolseditor.py" line="230"/>
-        <source>Can&apos;t open file %1</source>
+        <location filename="metatoolseditor.py" line="232"/>
+        <source>Can&apos;t open file %s</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MetatoolsSettings</name>
     <message>
-        <location filename="metatoolssettings.py" line="96"/>
+        <location filename="metatoolssettings.py" line="105"/>
         <source>Select filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatoolssettings.py" line="96"/>
+        <location filename="metatoolssettings.py" line="105"/>
         <source>Text files (*.txt *.TXT)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="metatoolssettings.py" line="141"/>
+        <source>Select file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="metatoolssettings.py" line="141"/>
+        <source>Executable files (*.exe *.EXE);;All files (*)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -722,7 +732,7 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ui_settings.ui" line="46"/>
+        <location filename="ui/ui_settings.ui" line="156"/>
         <source>Browse</source>
         <translation type="unfinished"></translation>
     </message>
@@ -747,18 +757,38 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ui_settings.ui" line="115"/>
+        <location filename="ui/ui_settings.ui" line="177"/>
         <source>ISO 19115</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ui_settings.ui" line="138"/>
+        <location filename="ui/ui_settings.ui" line="200"/>
         <source>View stylesheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ui_settings.ui" line="132"/>
+        <location filename="ui/ui_settings.ui" line="194"/>
         <source>FGDC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/ui_settings.ui" line="101"/>
+        <source>FGDC tools</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/ui_settings.ui" line="139"/>
+        <source>mp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/ui_settings.ui" line="149"/>
+        <source>err2html</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/ui_settings.ui" line="163"/>
+        <source>tkme</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -800,7 +830,7 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="metatoolsviewer.py" line="97"/>
+        <location filename="metatoolsviewer.py" line="94"/>
         <source>Translation error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -903,7 +933,7 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="organization_editor_dialog.py" line="185"/>
+        <location filename="organization_editor_dialog.py" line="188"/>
         <source>Metatools</source>
         <translation type="unfinished"></translation>
     </message>
@@ -913,7 +943,7 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="organization_editor_dialog.py" line="185"/>
+        <location filename="organization_editor_dialog.py" line="188"/>
         <source>Template contains unsaved data. Close the window without saving?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -921,7 +951,7 @@ Plugin will not be enabled.</source>
 <context>
     <name>WorkflowEditorDialog</name>
     <message>
-        <location filename="workflow_editor_dialog.py" line="127"/>
+        <location filename="workflow_editor_dialog.py" line="129"/>
         <source>Manage workflows</source>
         <translation type="unfinished"></translation>
     </message>
@@ -951,7 +981,7 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="workflow_editor_dialog.py" line="157"/>
+        <location filename="workflow_editor_dialog.py" line="162"/>
         <source>Metatools</source>
         <translation type="unfinished"></translation>
     </message>
@@ -961,17 +991,17 @@ Plugin will not be enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="workflow_editor_dialog.py" line="116"/>
+        <location filename="workflow_editor_dialog.py" line="115"/>
         <source>The name of the workflow must be specified!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="workflow_editor_dialog.py" line="127"/>
+        <location filename="workflow_editor_dialog.py" line="129"/>
         <source>Template can&apos;t be saved: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="workflow_editor_dialog.py" line="157"/>
+        <location filename="workflow_editor_dialog.py" line="162"/>
         <source>Template contains unsaved data. Close the window without saving?</source>
         <translation type="unfinished"></translation>
     </message>

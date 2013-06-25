@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="uk_UA">
+<!DOCTYPE TS>
+<TS version="2.0" language="uk_UA">
 <context>
     <name>ApplyTemplatesDialog</name>
     <message>
@@ -13,57 +14,57 @@
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="136"/>
+        <location filename="apply_templates_dialog.py" line="135"/>
         <source>Select files</source>
         <translation>Вибрати файли</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="136"/>
+        <location filename="apply_templates_dialog.py" line="135"/>
         <source>All files (*.*)</source>
         <translation>Всі файли (*.*)</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="200"/>
+        <location filename="apply_templates_dialog.py" line="203"/>
         <source>Select log file</source>
         <translation>Вибрати log-файл</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="200"/>
+        <location filename="apply_templates_dialog.py" line="203"/>
         <source>Text files (*.txt);;Log files (*.log);;All files (*)</source>
         <translation>Текстові файли (*.txt);;Log-файли (*.log);;Всі файли (*.*)</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="247"/>
+        <location filename="apply_templates_dialog.py" line="255"/>
         <source>No profile</source>
         <translation>Профіль відсутній</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="247"/>
+        <location filename="apply_templates_dialog.py" line="255"/>
         <source>No profile selected. Please set default profile in plugin settings</source>
         <translation>Не вибрано профіль. Буд ласка вкажіть профіль в налаштуваннях модуля</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="314"/>
+        <location filename="apply_templates_dialog.py" line="330"/>
         <source>Metatools</source>
         <translation>Metatools</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="262"/>
+        <location filename="apply_templates_dialog.py" line="273"/>
         <source>Metadata file can&apos;t be created: </source>
         <translation>Не вдалося створити файл метаданих:</translation>
     </message>
     <message>
         <location filename="apply_templates_dialog.py" line="269"/>
         <source>File %1 has unsupported metadata standard! Only ISO19115 supported now!</source>
-        <translation>Формат метаданих файла %1 не підтримується! На сьогодні підтримується лише ISO19115!</translation>
+        <translation type="obsolete">Формат метаданих файла %1 не підтримується! На сьогодні підтримується лише ISO19115!</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="305"/>
+        <location filename="apply_templates_dialog.py" line="317"/>
         <source>Done!</source>
         <translation>Виконано!</translation>
     </message>
     <message>
-        <location filename="apply_templates_dialog.py" line="314"/>
+        <location filename="apply_templates_dialog.py" line="330"/>
         <source>Operation can&apos;t be completed: </source>
         <translation>Не вдалося завершити операцію: </translation>
     </message>
@@ -132,11 +133,16 @@
         <source>DataType</source>
         <translation>Тип даних</translation>
     </message>
+    <message>
+        <location filename="apply_templates_dialog.py" line="283"/>
+        <source>File %s has unsupported metadata standard! Only ISO19115 supported now!</source>
+        <translation>Формат метаданих файла %s не підтримується! На сьогодні підтримується лише ISO19115!</translation>
+    </message>
 </context>
 <context>
     <name>DataTypeEditorDialog</name>
     <message>
-        <location filename="datatype_editor_dialog.py" line="140"/>
+        <location filename="datatype_editor_dialog.py" line="145"/>
         <source>Manage data types</source>
         <translation>Управління шаблонами типів даних</translation>
     </message>
@@ -196,52 +202,52 @@
         <translation>Редагувати</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="223"/>
+        <location filename="datatype_editor_dialog.py" line="247"/>
         <source>Metatools</source>
         <translation>Metatools</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="93"/>
+        <location filename="datatype_editor_dialog.py" line="92"/>
         <source>Template contains unsaved data. Create new template without saving?</source>
         <translation>Поточний шаблон містить незбережені дані. Створити новий шаблон без збереження змін?</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="129"/>
+        <location filename="datatype_editor_dialog.py" line="131"/>
         <source>The name of the data type template must be specified!</source>
         <translation>Необхідно вказати назву шаблона типу даних!</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="140"/>
+        <location filename="datatype_editor_dialog.py" line="145"/>
         <source>Template can&apos;t be saved: </source>
         <translation>Не вдалося зберегти шаблон: </translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="154"/>
+        <location filename="datatype_editor_dialog.py" line="162"/>
         <source>Template contains unsaved data. Close the window without saving?</source>
         <translation>Шаблон містить незбережені дані. Закрити вікно без збереження?</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="212"/>
+        <location filename="datatype_editor_dialog.py" line="228"/>
         <source>New keyword</source>
         <translation>Нове ключове слово</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="212"/>
+        <location filename="datatype_editor_dialog.py" line="228"/>
         <source>Input keyword:</source>
         <translation>Введіть ключове слово:</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="210"/>
+        <location filename="datatype_editor_dialog.py" line="223"/>
         <source>Select keyword for edit</source>
         <translation>Виберіть ключове слово для редагування</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="220"/>
+        <location filename="datatype_editor_dialog.py" line="241"/>
         <source>Select keyword for remove</source>
         <translation>Виберіть ключове слово для видалення</translation>
     </message>
     <message>
-        <location filename="datatype_editor_dialog.py" line="223"/>
+        <location filename="datatype_editor_dialog.py" line="247"/>
         <source>Remove this keyword?</source>
         <translation>Видалити це ключове слово?</translation>
     </message>
@@ -249,17 +255,17 @@
 <context>
     <name>DomModel</name>
     <message>
-        <location filename="dom_model.py" line="184"/>
+        <location filename="dom_model.py" line="182"/>
         <source>Name</source>
         <translation>Ім&apos;я</translation>
     </message>
     <message>
-        <location filename="dom_model.py" line="186"/>
+        <location filename="dom_model.py" line="184"/>
         <source>Attributes</source>
         <translation>Атрибути</translation>
     </message>
     <message>
-        <location filename="dom_model.py" line="188"/>
+        <location filename="dom_model.py" line="186"/>
         <source>Value</source>
         <translation>Значення</translation>
     </message>
@@ -267,7 +273,7 @@
 <context>
     <name>LicenseEditorDialog</name>
     <message>
-        <location filename="license_editor_dialog.py" line="157"/>
+        <location filename="license_editor_dialog.py" line="166"/>
         <source>Metatools</source>
         <translation>Metatools</translation>
     </message>
@@ -277,22 +283,22 @@
         <translation>Поточний шаблон містить незбережені дані. Створити новий шаблон без збереження змін?</translation>
     </message>
     <message>
-        <location filename="license_editor_dialog.py" line="124"/>
+        <location filename="license_editor_dialog.py" line="130"/>
         <source>Manage licenses</source>
         <translation>Управління шаблонами ліцензій</translation>
     </message>
     <message>
-        <location filename="license_editor_dialog.py" line="113"/>
+        <location filename="license_editor_dialog.py" line="116"/>
         <source>The name of the license must be specified!</source>
         <translation>Необхідно вказати назву ліцензії!</translation>
     </message>
     <message>
-        <location filename="license_editor_dialog.py" line="124"/>
+        <location filename="license_editor_dialog.py" line="130"/>
         <source>Template can&apos;t be saved: </source>
         <translation>Не вдалося зберегти шаблон: </translation>
     </message>
     <message>
-        <location filename="license_editor_dialog.py" line="157"/>
+        <location filename="license_editor_dialog.py" line="166"/>
         <source>Template contains unsaved data. Close the window without saving?</source>
         <translation>Шаблон містить незбережені дані. Закрити вікно без збереження?</translation>
     </message>
@@ -381,69 +387,69 @@
         <location filename="metatools.py" line="76"/>
         <source>Quantum GIS version detected: %1.%2
 </source>
-        <translation>Знайдено Quantum GIS версії: %1.%2
+        <translation type="obsolete">Знайдено Quantum GIS версії: %1.%2
 </translation>
     </message>
     <message>
         <location filename="metatools.py" line="76"/>
         <source>This version of Metatools requires at least QGIS version 1.5.0
 Plugin will not be enabled.</source>
-        <translation>Поточна версія Metatools потребує QGIS версії 1.5.0 або старше
+        <translation type="obsolete">Поточна версія Metatools потребує QGIS версії 1.5.0 або старше
 Модуль не буде завантажено.</translation>
     </message>
     <message>
         <location filename="metatools.py" line="83"/>
         <source>Qt version detected: %1
 </source>
-        <translation>Знайдено Qt версії: %1
+        <translation type="obsolete">Знайдено Qt версії: %1
 </translation>
     </message>
     <message>
         <location filename="metatools.py" line="83"/>
         <source>This version of Metatools requires at least Qt version %1
 Plugin will not be enabled.</source>
-        <translation>Поточна версія Metatools потребує Qt версії %1 або старше
+        <translation type="obsolete">Поточна версія Metatools потребує Qt версії %1 або старше
 Модуль не буде завантажено.</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="92"/>
+        <location filename="metatools.py" line="93"/>
         <source>Edit metadata</source>
         <translation>Редагування метаданих</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="95"/>
+        <location filename="metatools.py" line="96"/>
         <source>Apply templates</source>
         <translation>Застосувати шаблони</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="97"/>
+        <location filename="metatools.py" line="98"/>
         <source>Edit and apply templates</source>
         <translation>Редагувати та застосувати шаблони</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="102"/>
+        <location filename="metatools.py" line="103"/>
         <source>View metadata</source>
         <translation>Перегляд метаданих</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="105"/>
+        <location filename="metatools.py" line="106"/>
         <source>Configure Metatools plugin</source>
         <translation>Налаштувати модуль Metatools</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="107"/>
+        <location filename="metatools.py" line="108"/>
         <source>Configure plugin</source>
         <translation>Налаштувати модуль</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="582"/>
+        <location filename="metatools.py" line="571"/>
         <source>Metatools</source>
         <translation>Metatools</translation>
     </message>
     <message>
         <location filename="metatools.py" line="258"/>
         <source>Editor can&apos;t be loaded: %1 %2!</source>
-        <translation>Не вдалося завантажити редактор: %1 %2!</translation>
+        <translation type="obsolete">Не вдалося завантажити редактор: %1 %2!</translation>
     </message>
     <message>
         <location filename="metatools.py" line="222"/>
@@ -453,12 +459,12 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="metatools.py" line="305"/>
         <source>Viewer can&apos;t be loaded: %1 %2!</source>
-        <translation>Не вдалося завантажити переглядач: %1 %2!</translation>
+        <translation type="obsolete">Не вдалося завантажити переглядач: %1 %2!</translation>
     </message>
     <message>
         <location filename="metatools.py" line="291"/>
         <source>Applyer can&apos;t be loaded: %1 %2!</source>
-        <translation>Не вдалося завантажити редактор шаблонів: %1 %2!</translation>
+        <translation type="obsolete">Не вдалося завантажити редактор шаблонів: %1 %2!</translation>
     </message>
     <message>
         <location filename="metatools.py" line="258"/>
@@ -466,12 +472,12 @@ Plugin will not be enabled.</source>
         <translation type="obsolete">Шар не має метаданих! Створити файл метаданих?</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="349"/>
+        <location filename="metatools.py" line="350"/>
         <source>No profile selected. Please set default profile in plugin settings</source>
         <translation>Не вибрано профіль. Буд ласка вкажіть профіль в налаштуваннях модуля</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="357"/>
+        <location filename="metatools.py" line="359"/>
         <source>Metadata file can&apos;t be created: </source>
         <translation>Не вдалося створити файл метаданих:</translation>
     </message>
@@ -481,139 +487,187 @@ Plugin will not be enabled.</source>
         <translation>Відсутній</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="112"/>
+        <location filename="metatools.py" line="113"/>
         <source>Validate metadata</source>
         <translation>Перевірка метаданих</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="118"/>
+        <location filename="metatools.py" line="117"/>
         <source>Import metadata</source>
         <translation>Імпорт метаданих</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="117"/>
+        <location filename="metatools.py" line="116"/>
         <source>Import metadata from file</source>
         <translation>Імпорт метаданих із файла</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="121"/>
+        <location filename="metatools.py" line="120"/>
         <source>Export metadata</source>
         <translation>Експорт метаданих</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="122"/>
+        <location filename="metatools.py" line="121"/>
         <source>Export metadata to file</source>
         <translation>Експорт метаданих у файл</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="126"/>
+        <location filename="metatools.py" line="125"/>
         <source>Metadata browser</source>
         <translation>Переглядач метаданих</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="132"/>
+        <location filename="metatools.py" line="131"/>
         <source>USGS Tool</source>
         <translation>Інструмент USGC</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="138"/>
+        <location filename="metatools.py" line="136"/>
         <source>MP Tool</source>
         <translation>Інструмент MP</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="179"/>
+        <location filename="metatools.py" line="181"/>
         <source>Metatools: FGDC tools</source>
         <translation>Metatools: інструменти FGDC</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="319"/>
+        <location filename="metatools.py" line="318"/>
         <source>Unsupported metadata standard! Only ISO19115 and FGDC supported now!</source>
         <translation>Стандарт метаданих не підтримується! На сьогодні підтримується лише ISO19115 та FGDC!</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="340"/>
+        <location filename="metatools.py" line="339"/>
         <source>The layer does not have metadata! Create metadata?</source>
         <translation>Шар не має метаданих! Створити файл метаданих?</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="378"/>
+        <location filename="metatools.py" line="385"/>
         <source>USGS tool support only FGDC standard!</source>
         <translation>Інструмент USGC підтримує лише стандарт FGDC!</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="404"/>
+        <location filename="metatools.py" line="401"/>
         <source>USGS tool can&apos;t be runing: </source>
         <translation>Не вдалося запустити інструмент FGDC: </translation>
     </message>
     <message>
-        <location filename="metatools.py" line="418"/>
+        <location filename="metatools.py" line="419"/>
         <source>MP tool support only FGDC standard!</source>
         <translation>Інструмент MP підтримує лише стандарт FGDC!</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="458"/>
+        <location filename="metatools.py" line="447"/>
         <source>MP tool can&apos;t be runing: </source>
         <translation>Не вдалося запустити інструмент MP: </translation>
     </message>
     <message>
-        <location filename="metatools.py" line="474"/>
+        <location filename="metatools.py" line="463"/>
         <source>MP result</source>
         <translation>Результат обробки MP</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="492"/>
+        <location filename="metatools.py" line="476"/>
         <source>Unsupported metadata standard! Only FGDC supported now!</source>
         <translation>Стандарт метаданих не підтримується! На сьогодні підтримується лише FGDC!</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="505"/>
+        <location filename="metatools.py" line="490"/>
         <source>Metadata is invalid</source>
         <translation>Метадані не відповідають стандарту</translation>
     </message>
     <message>
         <location filename="metatools.py" line="515"/>
         <source>Shcema for validate not loaded!</source>
-        <translation>Схему для перевірки не завантажено!</translation>
+        <translation type="obsolete">Схему для перевірки не завантажено!</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="528"/>
+        <location filename="metatools.py" line="513"/>
         <source>Metadata is valid!</source>
         <translation>Метадані відповідають стандарту!</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="539"/>
+        <location filename="metatools.py" line="525"/>
         <source>Select metadata file</source>
         <translation>Виберіть файл з метаданими</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="565"/>
+        <location filename="metatools.py" line="553"/>
         <source>XML files (*.xml);;Text files (*.txt *.TXT);;All files (*.*)</source>
         <translation>Файли XML (*.xml);;Текстові файли (*.txt *.TXT);;Всі файли (*.*)</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="550"/>
+        <location filename="metatools.py" line="537"/>
         <source>Metadata can&apos;t be imported: </source>
         <translation>Не вдалося імпортувати метадані: </translation>
     </message>
     <message>
-        <location filename="metatools.py" line="556"/>
+        <location filename="metatools.py" line="543"/>
         <source>Metadata was imported successful!</source>
         <translation>Метадані імпортовані успішно!</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="565"/>
+        <location filename="metatools.py" line="553"/>
         <source>Save metadata to file</source>
         <translation>Зберегти метадані</translation>
     </message>
     <message>
-        <location filename="metatools.py" line="576"/>
+        <location filename="metatools.py" line="565"/>
         <source>Metadata can&apos;t be exported: </source>
         <translation>Не вдалося єкспортувати метадані: </translation>
     </message>
     <message>
-        <location filename="metatools.py" line="582"/>
+        <location filename="metatools.py" line="571"/>
         <source>Metadata was exported successful!</source>
         <translation>Експорт метаданих виконано!</translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="75"/>
+        <source>Quantum GIS version detected: %d.%d
+</source>
+        <translation>Знайдено Quantum GIS версії: %d.%d
+</translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="75"/>
+        <source>This version of Metatools requires at least QGIS version 2.0
+Plugin will not be enabled.</source>
+        <translation>Поточна версія Metatools потребує QGIS версії 2.0 або старше
+Модуль не буде завантажено.</translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="83"/>
+        <source>Qt version detected: %s
+</source>
+        <translation>Знайдено Qt версії: %s
+</translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="83"/>
+        <source>This version of Metatools requires at least Qt version %s
+Plugin will not be enabled.</source>
+        <translation>Поточна версія Metatools потребує Qt версії %s або старше
+Модуль не буде завантажено.</translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="256"/>
+        <source>Editor can&apos;t be loaded: %s %s!</source>
+        <translation>Не вдалося завантажити редактор: %s %s!</translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="293"/>
+        <source>Applyer can&apos;t be loaded: %s %s!</source>
+        <translation>Не вдалося завантажити редактор шаблонів: %s %s!</translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="305"/>
+        <source>Viewer can&apos;t be loaded: %s %s!</source>
+        <translation>Не вдалося завантажити переглядач: %s %s!</translation>
+    </message>
+    <message>
+        <location filename="metatools.py" line="500"/>
+        <source>Schema for validate not loaded!</source>
+        <translation>Схему для перевірки не завантажено!</translation>
     </message>
 </context>
 <context>
@@ -629,7 +683,7 @@ Plugin will not be enabled.</source>
         <translation>Відмінити</translation>
     </message>
     <message>
-        <location filename="metatoolseditor.py" line="217"/>
+        <location filename="metatoolseditor.py" line="216"/>
         <source>Metatools</source>
         <translation>Metatools</translation>
     </message>
@@ -641,14 +695,14 @@ Plugin will not be enabled.</source>
 </translation>
     </message>
     <message>
-        <location filename="metatoolseditor.py" line="230"/>
+        <location filename="metatoolseditor.py" line="232"/>
         <source>I/O error</source>
         <translation>Помилка вводження/виводження</translation>
     </message>
     <message>
         <location filename="metatoolseditor.py" line="230"/>
         <source>Can&apos;t open file %1</source>
-        <translation>Неможливо відкрити файл %1</translation>
+        <translation type="obsolete">Неможливо відкрити файл %1</translation>
     </message>
     <message>
         <location filename="ui/ui_editor.ui" line="14"/>
@@ -701,24 +755,39 @@ Plugin will not be enabled.</source>
         <translation>Копіювати шлях до вузла у буфер обміну</translation>
     </message>
     <message>
-        <location filename="metatoolseditor.py" line="217"/>
+        <location filename="metatoolseditor.py" line="216"/>
         <source>Metadata can&apos;t be saved:
 </source>
         <translation>Неможливо зберегти метадані:
 </translation>
     </message>
+    <message>
+        <location filename="metatoolseditor.py" line="232"/>
+        <source>Can&apos;t open file %s</source>
+        <translation>Неможливо відкрити файл %s</translation>
+    </message>
 </context>
 <context>
     <name>MetatoolsSettings</name>
     <message>
-        <location filename="metatoolssettings.py" line="96"/>
+        <location filename="metatoolssettings.py" line="105"/>
         <source>Select filter</source>
         <translation>Вибрати фільтр</translation>
     </message>
     <message>
-        <location filename="metatoolssettings.py" line="96"/>
+        <location filename="metatoolssettings.py" line="105"/>
         <source>Text files (*.txt *.TXT)</source>
         <translation>Текстові файли (*.txt *.TXT)</translation>
+    </message>
+    <message>
+        <location filename="metatoolssettings.py" line="141"/>
+        <source>Select file</source>
+        <translation>Вибрати файл</translation>
+    </message>
+    <message>
+        <location filename="metatoolssettings.py" line="141"/>
+        <source>Executable files (*.exe *.EXE);;All files (*)</source>
+        <translation>Файли програм (*.exe *.EXE);;Всі файли (*)</translation>
     </message>
 </context>
 <context>
@@ -744,7 +813,7 @@ Plugin will not be enabled.</source>
         <translation>Файл фільтра</translation>
     </message>
     <message>
-        <location filename="ui/ui_settings.ui" line="46"/>
+        <location filename="ui/ui_settings.ui" line="156"/>
         <source>Browse</source>
         <translation>Огляд</translation>
     </message>
@@ -759,7 +828,7 @@ Plugin will not be enabled.</source>
         <translation>Формат зображення</translation>
     </message>
     <message>
-        <location filename="ui/ui_settings.ui" line="115"/>
+        <location filename="ui/ui_settings.ui" line="177"/>
         <source>ISO 19115</source>
         <translation>ISO 19115</translation>
     </message>
@@ -774,14 +843,34 @@ Plugin will not be enabled.</source>
         <translation>Виберіть профіль</translation>
     </message>
     <message>
-        <location filename="ui/ui_settings.ui" line="138"/>
+        <location filename="ui/ui_settings.ui" line="200"/>
         <source>View stylesheet</source>
         <translation>Стиль перегляду</translation>
     </message>
     <message>
-        <location filename="ui/ui_settings.ui" line="132"/>
+        <location filename="ui/ui_settings.ui" line="194"/>
         <source>FGDC</source>
         <translation>FGDC</translation>
+    </message>
+    <message>
+        <location filename="ui/ui_settings.ui" line="101"/>
+        <source>FGDC tools</source>
+        <translation>Інструменти FGDC</translation>
+    </message>
+    <message>
+        <location filename="ui/ui_settings.ui" line="139"/>
+        <source>mp</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ui/ui_settings.ui" line="149"/>
+        <source>err2html</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ui/ui_settings.ui" line="163"/>
+        <source>tkme</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -822,7 +911,7 @@ Plugin will not be enabled.</source>
         <translation>Ctrl+C</translation>
     </message>
     <message>
-        <location filename="metatoolsviewer.py" line="97"/>
+        <location filename="metatoolsviewer.py" line="94"/>
         <source>Translation error</source>
         <translation>Помилка перетворення</translation>
     </message>
@@ -830,7 +919,7 @@ Plugin will not be enabled.</source>
 <context>
     <name>OrganizationEditorDialog</name>
     <message>
-        <location filename="organization_editor_dialog.py" line="185"/>
+        <location filename="organization_editor_dialog.py" line="188"/>
         <source>Metatools</source>
         <translation>Metatools</translation>
     </message>
@@ -840,7 +929,7 @@ Plugin will not be enabled.</source>
         <translation>Поточний шаблон містить незбережені дані. Створити новий шаблон без збереження змін?</translation>
     </message>
     <message>
-        <location filename="organization_editor_dialog.py" line="185"/>
+        <location filename="organization_editor_dialog.py" line="188"/>
         <source>Template contains unsaved data. Close the window without saving?</source>
         <translation>Шаблон містить незбережені дані. Закрити вікно без збереження?</translation>
     </message>
@@ -912,7 +1001,7 @@ Plugin will not be enabled.</source>
     <message>
         <location filename="ui/ui_organization_editor.ui" line="132"/>
         <source>Person title</source>
-        <translation type="unfinished"></translation>
+        <translation>Звернення</translation>
     </message>
     <message>
         <location filename="ui/ui_organization_editor.ui" line="142"/>
@@ -943,7 +1032,7 @@ Plugin will not be enabled.</source>
 <context>
     <name>WorkflowEditorDialog</name>
     <message>
-        <location filename="workflow_editor_dialog.py" line="157"/>
+        <location filename="workflow_editor_dialog.py" line="162"/>
         <source>Metatools</source>
         <translation>Metatools</translation>
     </message>
@@ -953,22 +1042,22 @@ Plugin will not be enabled.</source>
         <translation>Поточний шаблон містить незбережені дані. Створити новий шаблон без збереження змін?</translation>
     </message>
     <message>
-        <location filename="workflow_editor_dialog.py" line="127"/>
+        <location filename="workflow_editor_dialog.py" line="129"/>
         <source>Manage workflows</source>
         <translation>Управління шаблонами обробки</translation>
     </message>
     <message>
-        <location filename="workflow_editor_dialog.py" line="116"/>
+        <location filename="workflow_editor_dialog.py" line="115"/>
         <source>The name of the workflow must be specified!</source>
         <translation>Необхідно вказати назву процеса обробки!</translation>
     </message>
     <message>
-        <location filename="workflow_editor_dialog.py" line="127"/>
+        <location filename="workflow_editor_dialog.py" line="129"/>
         <source>Template can&apos;t be saved: </source>
         <translation>Неможливо зберегти шаблон: </translation>
     </message>
     <message>
-        <location filename="workflow_editor_dialog.py" line="157"/>
+        <location filename="workflow_editor_dialog.py" line="162"/>
         <source>Template contains unsaved data. Close the window without saving?</source>
         <translation>Шаблон містить незбережені дані. Закрити вікно без збереження?</translation>
     </message>
