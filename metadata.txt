@@ -12,8 +12,8 @@ icon=icons/metafile.png
 
 tags=raster,vector,metadata
 
-homepage=
-tracker=
+homepage=http://gis-lab.info/qa/metatools-eng.html
+tracker=http://hub.qgis.org/projects/metatools/issues
 repository=http://github.com/nextgis/metatools
 
 experimental=True
