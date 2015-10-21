@@ -35,7 +35,7 @@ from qgis.gui import *
 
 import os, sys
 
-from ui.ui_datatype_editor import Ui_DataTypeEditorDialog
+from ui_datatype_editor import Ui_DataTypeEditorDialog
 
 from datatype_template_manager import DatatypeTemplateManager, DatatypeTemplate
 
