@@ -34,7 +34,7 @@ from qgis.gui import *
 
 import os
 
-from ui.ui_settings import Ui_MetatoolsSettingsDialog
+from ui_settings import Ui_MetatoolsSettingsDialog
 
 currentPath = os.path.abspath(os.path.dirname(__file__))
 

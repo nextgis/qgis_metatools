@@ -32,7 +32,7 @@ class MetaInfoStandard:
   @staticmethod
   def tryDetermineStandard(metaProvider):
     text = metaProvider.getMetadata()
-    print "TryDetStd ", text, " Text"
+    # print "TryDetStd ", text, " Text"
 
     # simple test for iso doc
     if text.find("MD_Metadata") >= 0 or text.find("MI_Metadata") >= 0:
