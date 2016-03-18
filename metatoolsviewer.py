@@ -34,7 +34,7 @@ from PyQt4.QtXmlPatterns  import *
 from qgis.core import *
 from qgis.gui import *
 
-from ui.ui_viewer import Ui_MetatoolsViewer
+from ui_viewer import Ui_MetatoolsViewer
 from error_handler import ErrorHandler
 
 class MetatoolsViewer(QDialog, Ui_MetatoolsViewer):

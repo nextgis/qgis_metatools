@@ -35,7 +35,7 @@ from qgis.gui import *
 
 import sys
 from dom_model import DomModel, FilterDomModel
-from ui.ui_editor import Ui_MetatoolsEditor
+from ui_editor import Ui_MetatoolsEditor
 
 class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
   def __init__(self):
