@@ -25,6 +25,7 @@
 #
 #******************************************************************************
 
+from PyQt4 import uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtXml import *
@@ -47,7 +48,8 @@ from organization_template_manager import OrganizationTemplateManager
 from datatype_editor_dialog import DataTypeEditorDialog
 from datatype_template_manager import DatatypeTemplateManager
 
-from ui_apply_templates import Ui_ApplyTemplatesDialog
+import os
+FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui/apply_templates.ui'))
 
 from standard import MetaInfoStandard
 from metadata_provider import FileMetadataProvider
@@ -55,9 +57,9 @@ import utils
 
 currentPath = os.path.abspath(os.path.dirname(__file__))
 
-class ApplyTemplatesDialog(QDialog, Ui_ApplyTemplatesDialog):
-  def __init__(self, iface):
-    QDialog.__init__(self)
+class ApplyTemplatesDialog(QDialog, FORM_CLASS):
+  def __init__(self,iface,parent=None):
+    super(ApplyTemplatesDialog, self).__init__(parent)
     self.setupUi(self)
     self.iface = iface
 

@@ -6,8 +6,7 @@
 # ---------------------------------------------------------
 # Metadata browser/editor
 #
-# Copyright (C) 2011 BV (enickulin@bv.com)
-# Copyright (C) 2011 NextGIS (info@nextgis.ru)
+# Copyright (C) 2011-2016 NextGIS (info@nextgis.com)
 #
 # This source is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -38,7 +37,7 @@ from metatoolssettings import MetatoolsSettings
 from standard import MetaInfoStandard
 from error_handler import ErrorHandler
 from metadata_provider import MetadataProvider
-import resources_rc
+import resources
 
 minQtVersion = '4.6.0'
 currentPath = os.path.abspath(os.path.dirname(__file__))

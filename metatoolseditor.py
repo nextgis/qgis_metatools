@@ -6,8 +6,7 @@
 # ---------------------------------------------------------
 # Metadata browser/editor
 #
-# Copyright (C) 2011 BV (enickulin@bv.com)
-# Copyright (C) 2011 NextGIS (info@nextgis.ru)
+# Copyright (C) 2011-2016 NextGIS (info@nextgis.com)
 #
 # This source is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -26,6 +25,7 @@
 #
 #******************************************************************************
 
+from PyQt4 import uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtXml import *
@@ -33,13 +33,14 @@ from PyQt4.QtXml import *
 from qgis.core import *
 from qgis.gui import *
 
-import sys
+import os, sys
 from dom_model import DomModel, FilterDomModel
-from ui_editor import Ui_MetatoolsEditor
 
-class MetatoolsEditor(QDialog, Ui_MetatoolsEditor):
-  def __init__(self):
-    QDialog.__init__(self)
+FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui/editor.ui'))
+
+class MetatoolsEditor(QDialog, FORM_CLASS):
+  def __init__(self, parent=None):
+    super(MetatoolsEditor, self).__init__(parent)
     self.setupUi(self)
     self.setWindowFlags(Qt.Window | Qt.WindowMaximizeButtonHint)
 

@@ -25,6 +25,7 @@
 #
 #******************************************************************************
 
+from PyQt4 import uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtXml import *
@@ -35,15 +36,15 @@ from qgis.gui import *
 
 import os, sys
 
-from ui_datatype_editor import Ui_DataTypeEditorDialog
+FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui/datatype_editor.ui'))
 
 from datatype_template_manager import DatatypeTemplateManager, DatatypeTemplate
 
 currentPath = os.path.abspath(os.path.dirname(__file__))
 
-class DataTypeEditorDialog(QDialog, Ui_DataTypeEditorDialog):
-  def __init__(self):
-    QDialog.__init__(self)
+class DataTypeEditorDialog(QDialog, FORM_CLASS):
+  def __init__(self,parent=None):
+    super(WorkflowEditorDialog, self).__init__(parent)
     self.setupUi(self)
 
     self.datatypeTemplateManager = DatatypeTemplateManager(currentPath)

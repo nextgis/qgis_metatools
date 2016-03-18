@@ -25,6 +25,7 @@
 #
 #******************************************************************************
 
+from PyQt4 import uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtXml import *
@@ -37,13 +38,13 @@ import os, sys
 
 from workflow_template_manager import WorkflowTemplateManager, WorkflowTemplate
 
-from ui_workflow_editor import Ui_WorkflowEditorDialog
+FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui/workflow_editor.ui'))
 
 currentPath = os.path.abspath(os.path.dirname(__file__))
 
-class WorkflowEditorDialog(QDialog, Ui_WorkflowEditorDialog):
-  def __init__(self):
-    QDialog.__init__(self)
+class WorkflowEditorDialog(QDialog, FORM_CLASS):
+  def __init__(self, parent=None):
+    super(WorkflowEditorDialog, self).__init__(parent)
     self.setupUi(self)
 
     self.workflowTemplateManager = WorkflowTemplateManager(currentPath)

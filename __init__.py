@@ -7,7 +7,7 @@
 # Metadata browser/editor
 #
 # Copyright (C) 2011 BV (enickulin@bv.com)
-# Copyright (C) 2011 NextGIS (info@nextgis.ru)
+# Copyright (C) 2011-2016 NextGIS (info@nextgis.com)
 #
 # This source is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free

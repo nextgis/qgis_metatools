@@ -6,7 +6,7 @@
 # ---------------------------------------------------------
 # Metadata browser/editor
 #
-# Copyright (C) 2011 NextGIS (info@nextgis.ru)
+# Copyright (C) 2011-2016 NextGIS (info@nextgis.com)
 #
 # This source is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -25,6 +25,7 @@
 #
 #******************************************************************************
 
+from PyQt4 import uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtXml import *
@@ -35,14 +36,14 @@ from qgis.gui import *
 
 import os
 
-from ui_organization_editor import Ui_OrganizationEditorDialog
+FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui/organization_editor.ui'))
 from organization_template_manager import OrganizationTemplateManager, OrganizationTemplate
 
 currentPath = os.path.abspath(os.path.dirname(__file__))
 
-class OrganizationEditorDialog(QDialog, Ui_OrganizationEditorDialog):
-  def __init__(self):
-    QDialog.__init__(self)
+class OrganizationEditorDialog(QDialog, FORM_CLASS):
+  def __init__(self, parent=None):
+    super(OrganizationEditorDialog, self).__init__(parent)
     self.setupUi(self)
 
     path = os.path.join(currentPath, "templates/institutions.xml")

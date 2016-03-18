@@ -1,20 +1,21 @@
 [general]
 name=Metatools
 description=Metadata browser/editor
+about=Browse and edit metadata for geospatial data.
 category=Plugins
-version=0.3.0
+version=0.3.1
 qgisMinimumVersion=2.0
 
-author=NextGIS, BV
-email=info@nextgis.org
+author=NextGIS
+email=info@nextgis.com
 
 icon=icons/metafile.png
 
 tags=raster,vector,metadata
 
-homepage=http://gis-lab.info/qa/metatools-eng.html
-tracker=http://hub.qgis.org/projects/metatools/issues
-repository=http://github.com/nextgis/metatools
+homepage=https://github.com/nextgis/metatools
+tracker=https://github.com/nextgis/metatools/issues
+repository=https://github.com/nextgis/metatools
 
-experimental=True
+experimental=False
 deprecated=False
