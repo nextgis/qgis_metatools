@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#******************************************************************************
+# ******************************************************************************
 #
 # Metatools
 # ---------------------------------------------------------
@@ -23,7 +23,7 @@
 # to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 # MA 02111-1307, USA.
 #
-#******************************************************************************
+# ******************************************************************************
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -31,120 +31,145 @@ from PyQt4.QtXml import *
 
 import os, codecs
 
+
 class DatatypeTemplateManager:
-  SUBFOLDER = 'templates/datatype'
-  EXT = '.xml'
+    SUBFOLDER = "templates/datatype"
+    EXT = ".xml"
 
-  def __init__(self, basePluginPath):
-    self.basePluginPath = unicode(basePluginPath)
+    def __init__(self, basePluginPath):
+        self.basePluginPath = unicode(basePluginPath)
 
-  def getTemplatesPath(self):
-    return os.path.join(self.basePluginPath, self.SUBFOLDER)
+    def getTemplatesPath(self):
+        return os.path.join(self.basePluginPath, self.SUBFOLDER)
 
-  def getTemplateFilePath(self, templateName):
-    return os.path.join(self.getTemplatesPath(), unicode(templateName) + self.EXT)
+    def getTemplateFilePath(self, templateName):
+        return os.path.join(
+            self.getTemplatesPath(), unicode(templateName) + self.EXT
+        )
 
-  def getTemplateList(self):
-    templatesList = []
-    for filename in os.listdir(self.getTemplatesPath()):
-      name, ext = os.path.splitext(filename)
-      if ext == self.EXT:
-        templatesList.append(name)
-    return templatesList
+    def getTemplateList(self):
+        templatesList = []
+        for filename in os.listdir(self.getTemplatesPath()):
+            name, ext = os.path.splitext(filename)
+            if ext == self.EXT:
+                templatesList.append(name)
+        return templatesList
 
-  def loadTemplate(self, templateName):
-    # TODO: more cheks on struct!
-    template = DatatypeTemplate()
-    templateFile = QFile(self.getTemplateFilePath(templateName))
+    def loadTemplate(self, templateName):
+        # TODO: more cheks on struct!
+        template = DatatypeTemplate()
+        templateFile = QFile(self.getTemplateFilePath(templateName))
 
-    xmlTemplate = QDomDocument()
-    xmlTemplate.setContent(templateFile)
+        xmlTemplate = QDomDocument()
+        xmlTemplate.setContent(templateFile)
 
-    root = xmlTemplate.documentElement()
+        root = xmlTemplate.documentElement()
 
-    nameElement = root.elementsByTagName("Name").at(0)
-    template.name = nameElement.childNodes().at(0).nodeValue()
+        nameElement = root.elementsByTagName("Name").at(0)
+        template.name = nameElement.childNodes().at(0).nodeValue()
 
-    typeElement = root.elementsByTagName("Type").at(0)
-    template.type = typeElement.childNodes().at(0).nodeValue()
+        typeElement = root.elementsByTagName("Type").at(0)
+        template.type = typeElement.childNodes().at(0).nodeValue()
 
-    accuracyElement = root.elementsByTagName("Accuracy").at(0)
-    template.accuracy = accuracyElement.childNodes().at(0).nodeValue()
+        accuracyElement = root.elementsByTagName("Accuracy").at(0)
+        template.accuracy = accuracyElement.childNodes().at(0).nodeValue()
 
-    scaleElement = root.elementsByTagName("Scale").at(0)
-    template.scale = scaleElement.childNodes().at(0).nodeValue()
+        scaleElement = root.elementsByTagName("Scale").at(0)
+        template.scale = scaleElement.childNodes().at(0).nodeValue()
 
-    thematicAccuracyElement = root.elementsByTagName("ThematicAccuracy").at(0)
-    template.thematicAccuracy = thematicAccuracyElement.childNodes().at(0).nodeValue()
+        thematicAccuracyElement = root.elementsByTagName(
+            "ThematicAccuracy"
+        ).at(0)
+        template.thematicAccuracy = (
+            thematicAccuracyElement.childNodes().at(0).nodeValue()
+        )
 
-    template.keywords = []
-    keywordsElements = root.elementsByTagName("Keyword")
-    for number in range(keywordsElements.length()):
-      template.keywords.append(keywordsElements.at(number).childNodes().at(0).nodeValue())
+        template.keywords = []
+        keywordsElements = root.elementsByTagName("Keyword")
+        for number in range(keywordsElements.length()):
+            template.keywords.append(
+                keywordsElements.at(number).childNodes().at(0).nodeValue()
+            )
 
-    return template
+        return template
 
-  def saveTemplate(self, template):
-    xmlTemplate = QDomDocument()
+    def saveTemplate(self, template):
+        xmlTemplate = QDomDocument()
 
-    # create root
-    root = xmlTemplate.createElement("DatatypeTemplate")
-    xmlTemplate.appendChild(root)
+        # create root
+        root = xmlTemplate.createElement("DatatypeTemplate")
+        xmlTemplate.appendChild(root)
 
-    # set name
-    element = xmlTemplate.createElement("Name")
-    textNode = xmlTemplate.createTextNode(template.name)
-    element.appendChild(textNode)
-    root.appendChild(element)
+        # set name
+        element = xmlTemplate.createElement("Name")
+        textNode = xmlTemplate.createTextNode(template.name)
+        element.appendChild(textNode)
+        root.appendChild(element)
 
-    # set type
-    element = xmlTemplate.createElement("Type")
-    textNode = xmlTemplate.createTextNode(template.type)
-    element.appendChild(textNode)
-    root.appendChild(element)
+        # set type
+        element = xmlTemplate.createElement("Type")
+        textNode = xmlTemplate.createTextNode(template.type)
+        element.appendChild(textNode)
+        root.appendChild(element)
 
-    # set accuracy
-    element = xmlTemplate.createElement("Accuracy")
-    textNode = xmlTemplate.createTextNode(template.accuracy)
-    element.appendChild(textNode)
-    root.appendChild(element)
+        # set accuracy
+        element = xmlTemplate.createElement("Accuracy")
+        textNode = xmlTemplate.createTextNode(template.accuracy)
+        element.appendChild(textNode)
+        root.appendChild(element)
 
-    # set scale
-    element = xmlTemplate.createElement("Scale")
-    textNode = xmlTemplate.createTextNode(template.scale)
-    element.appendChild(textNode)
-    root.appendChild(element)
+        # set scale
+        element = xmlTemplate.createElement("Scale")
+        textNode = xmlTemplate.createTextNode(template.scale)
+        element.appendChild(textNode)
+        root.appendChild(element)
 
-    # set thematicAccuracy
-    element = xmlTemplate.createElement("ThematicAccuracy")
-    textNode = xmlTemplate.createTextNode(template.thematicAccuracy)
-    element.appendChild(textNode)
-    root.appendChild(element)
+        # set thematicAccuracy
+        element = xmlTemplate.createElement("ThematicAccuracy")
+        textNode = xmlTemplate.createTextNode(template.thematicAccuracy)
+        element.appendChild(textNode)
+        root.appendChild(element)
 
-    # set keywords
-    for keyword in template.keywords:
-      element = xmlTemplate.createElement("Keyword")
-      textNode = xmlTemplate.createTextNode(keyword)
-      element.appendChild(textNode)
-      root.appendChild(element)
+        # set keywords
+        for keyword in template.keywords:
+            element = xmlTemplate.createElement("Keyword")
+            textNode = xmlTemplate.createTextNode(keyword)
+            element.appendChild(textNode)
+            root.appendChild(element)
 
-    templateFile = codecs.open(self.getTemplateFilePath(template.name), "w", encoding="utf-8")
-    templateFile.write(unicode(xmlTemplate.toString()))
-    templateFile.close()
+        templateFile = codecs.open(
+            self.getTemplateFilePath(template.name), "w", encoding="utf-8"
+        )
+        templateFile.write(unicode(xmlTemplate.toString()))
+        templateFile.close()
 
-  def removeTemplate(self, templateName):
-    os.remove(self.getTemplateFilePath(templateName))
+    def removeTemplate(self, templateName):
+        os.remove(self.getTemplateFilePath(templateName))
+
 
 class DatatypeTemplate:
-  TYPES = {"vector":"Vector data", "image":"Imagery", "thematicClassification":"Thematic raster", "physicalMeasurement":"Physical measurement"}
+    TYPES = {
+        "vector": "Vector data",
+        "image": "Imagery",
+        "thematicClassification": "Thematic raster",
+        "physicalMeasurement": "Physical measurement",
+    }
 
-  def __init__(self, name=None, type=None, accuracy=None, scale=None, keywords=[], thematicAccuracy=None):
-    self.name = name
-    self.type = type
-    self.accuracy = accuracy
-    self.scale = scale
-    self.keywords = keywords
-    self.thematicAccuracy = thematicAccuracy
+    def __init__(
+        self,
+        name=None,
+        type=None,
+        accuracy=None,
+        scale=None,
+        keywords=[],
+        thematicAccuracy=None,
+    ):
+        self.name = name
+        self.type = type
+        self.accuracy = accuracy
+        self.scale = scale
+        self.keywords = keywords
+        self.thematicAccuracy = thematicAccuracy
 
-  def stringRepresentation(self):
-    return self.name + '::' + self.type
+    def stringRepresentation(self):
+        return self.name + "::" + self.type

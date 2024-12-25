@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#******************************************************************************
+# ******************************************************************************
 #
 # Metatools
 # ---------------------------------------------------------
@@ -23,103 +23,105 @@
 # to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 # MA 02111-1307, USA.
 #
-#******************************************************************************
+# ******************************************************************************
 
 from PyQt4 import uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtXml import *
-from PyQt4.QtXmlPatterns  import *
+from PyQt4.QtXmlPatterns import *
 
 from qgis.core import *
 from qgis.gui import *
 
 import os
 
-FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui/viewer.ui'))
+FORM_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "ui/viewer.ui")
+)
 
 from error_handler import ErrorHandler
 
+
 class MetatoolsViewer(QDialog, FORM_CLASS):
-  def __init__(self, parent=None):
-    super(MetatoolsViewer, self).__init__(parent)
-    self.setupUi(self)
-    self.setWindowFlags(Qt.Window | Qt.WindowMaximizeButtonHint)
+    def __init__(self, parent=None):
+        super(MetatoolsViewer, self).__init__(parent)
+        self.setupUi(self)
+        self.setWindowFlags(Qt.Window | Qt.WindowMaximizeButtonHint)
 
-    #set browser context menu
-    self.webView.setContextMenuPolicy(Qt.CustomContextMenu)
-    self.webView.customContextMenuRequested.connect(self.openMenu)
-    self.contextMenu=QMenu()
-    self.actionCopy.activated.connect(self.slotCopy)
-    self.actionPrint.activated.connect(self.slotPrint)
-    self.actionCopyAll.activated.connect(self.slotCopyAll)
+        # set browser context menu
+        self.webView.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.webView.customContextMenuRequested.connect(self.openMenu)
+        self.contextMenu = QMenu()
+        self.actionCopy.activated.connect(self.slotCopy)
+        self.actionPrint.activated.connect(self.slotPrint)
+        self.actionCopyAll.activated.connect(self.slotCopyAll)
 
-  def openMenu(self, position):
-    self.contextMenu.clear()
-    if self.webView.selectedText():
-      self.contextMenu.addAction(self.actionCopy)
-    self.contextMenu.addAction(self.actionCopyAll)
-    self.contextMenu.addSeparator()
-    self.contextMenu.addAction(self.actionPrint)
+    def openMenu(self, position):
+        self.contextMenu.clear()
+        if self.webView.selectedText():
+            self.contextMenu.addAction(self.actionCopy)
+        self.contextMenu.addAction(self.actionCopyAll)
+        self.contextMenu.addSeparator()
+        self.contextMenu.addAction(self.actionPrint)
 
-    self.contextMenu.exec_(self.webView.mapToGlobal(position))
+        self.contextMenu.exec_(self.webView.mapToGlobal(position))
 
-  def slotPrint(self):
-    printer = QPrinter()
-    dialog = QPrintDialog(printer)
-    if dialog.exec_() == QDialog.Accepted:
-      self.webView.print_(printer)
+    def slotPrint(self):
+        printer = QPrinter()
+        dialog = QPrintDialog(printer)
+        if dialog.exec_() == QDialog.Accepted:
+            self.webView.print_(printer)
 
-  def slotCopyAll(self):
-    mimeData=QMimeData()
-    mimeData.setHtml(self.webView.page().mainFrame().toHtml())
-    mimeData.setText(self.webView.page().mainFrame().toPlainText())
-    clipboard = QApplication.clipboard()
-    clipboard.setMimeData(mimeData)
+    def slotCopyAll(self):
+        mimeData = QMimeData()
+        mimeData.setHtml(self.webView.page().mainFrame().toHtml())
+        mimeData.setText(self.webView.page().mainFrame().toPlainText())
+        clipboard = QApplication.clipboard()
+        clipboard.setMimeData(mimeData)
 
-  def slotCopy(self):
-    if self.webView.selectedText():
-      clipboard = QApplication.clipboard()
-      clipboard.setText(self.webView.selectedText())
+    def slotCopy(self):
+        if self.webView.selectedText():
+            clipboard = QApplication.clipboard()
+            clipboard.setText(self.webView.selectedText())
 
-  def setContent(self, metaProvider, xsltFilePath):
-    # load data
-    xsltFile = QFile(xsltFilePath)
-    xsltFile.open(QIODevice.ReadOnly)
-    xslt = unicode(xsltFile.readAll())
-    xsltFile.close()
+    def setContent(self, metaProvider, xsltFilePath):
+        # load data
+        xsltFile = QFile(xsltFilePath)
+        xsltFile.open(QIODevice.ReadOnly)
+        xslt = unicode(xsltFile.readAll())
+        xsltFile.close()
 
-    src = metaProvider.getMetadata()
+        src = metaProvider.getMetadata()
 
-    # translate
-    qry = QXmlQuery(QXmlQuery.XSLT20)
+        # translate
+        qry = QXmlQuery(QXmlQuery.XSLT20)
 
-    self.handler = ErrorHandler(self.tr("Translation error"))
-    qry.setMessageHandler(self.handler)
+        self.handler = ErrorHandler(self.tr("Translation error"))
+        qry.setMessageHandler(self.handler)
 
-    qry.setFocus(src)
-    qry.setQuery(xslt)
+        qry.setFocus(src)
+        qry.setQuery(xslt)
 
-    result = qry.evaluateToString()
+        result = qry.evaluateToString()
 
-    #workaround, for PyQt < 4.8
-    #array = ""
-    #buf = QBuffer(array)
-    #buf.open(QIODevice.WriteOnly)
-    #qry.evaluateTo(buf)
-    #result = unicode(array)
+        # workaround, for PyQt < 4.8
+        # array = ""
+        # buf = QBuffer(array)
+        # buf.open(QIODevice.WriteOnly)
+        # qry.evaluateTo(buf)
+        # result = unicode(array)
 
-    if result:
-      #QXmlPattern not support CDATA section
-      result = result.replace('&amp;', '&')
-      result = result.replace('&gt;', '>')
-      result = result.replace('&lt;', '<')
+        if result:
+            # QXmlPattern not support CDATA section
+            result = result.replace("&amp;", "&")
+            result = result.replace("&gt;", ">")
+            result = result.replace("&lt;", "<")
 
-      self.webView.setHtml(result) # QString.fromUtf8(result))
-      return True
-    else:
-      return False
+            self.webView.setHtml(result)  # QString.fromUtf8(result))
+            return True
+        else:
+            return False
 
-  def setHtml(self, html):
-    self.webView.setHtml(html)
-
+    def setHtml(self, html):
+        self.webView.setHtml(html)

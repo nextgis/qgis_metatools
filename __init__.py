@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#******************************************************************************
+# ******************************************************************************
 #
 # Metatools
 # ---------------------------------------------------------
@@ -24,8 +24,10 @@
 # to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 # MA 02111-1307, USA.
 #
-#******************************************************************************
+# ******************************************************************************
+
 
 def classFactory(iface):
-  from metatools import MetatoolsPlugin
-  return MetatoolsPlugin(iface)
+    from metatools import MetatoolsPlugin
+
+    return MetatoolsPlugin(iface)
